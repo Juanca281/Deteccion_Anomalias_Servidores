@@ -1,8 +1,8 @@
-# 🤖 Detección de Anomalías en Servidores
+# Detección de Anomalías en Servidores
 
 Proyecto de Inteligencia Artificial enfocado en detectar automáticamente comportamientos anormales en servidores mediante el análisis de sus métricas.
 
-## 🎯 Problema
+## Problema
 
 Un servidor puede presentar comportamientos anormales antes de fallar, por ejemplo:
 
@@ -16,7 +16,7 @@ Un servidor puede presentar comportamientos anormales antes de fallar, por ejemp
 
 El sistema analizará estas variables y determinará si el comportamiento es **normal o anómalo**.
 
-## 🧠 Ejemplo
+## Ejemplo
 
 |     CPU |     RAM |   Disco |   Latencia | Solicitudes/min | Estado          |
 | ------: | ------: | ------: | ---------: | --------------: | --------------- |
@@ -29,7 +29,7 @@ El sistema analizará estas variables y determinará si el comportamiento es **n
 Resultado esperado:
 
 ```text
-🚨 ANOMALÍA OPERATIVA DETECTADA
+ANOMALÍA OPERATIVA DETECTADA
 
 CPU: 98%
 RAM: 96%
@@ -45,7 +45,7 @@ Respuesta:
 Generar alerta y recomendar revisión del servicio.
 ```
 
-## 🔥 Funcionamiento
+## Funcionamiento
 
 El proyecto no se limitará a reglas simples como `CPU > 90`.
 
@@ -71,6 +71,6 @@ Regla de respuesta
 Alerta
 ```
 
-## 🚧 Estado
+## Estado
 
 **En desarrollo.**
