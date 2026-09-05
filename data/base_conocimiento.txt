@@ -1,0 +1,8 @@
+CPU alta o memoria elevada pueden causar lentitud en el servidor. Se recomienda revisar procesos activos y consumo de recursos antes de reiniciar servicios.
+Cuando un servidor presenta respuesta lenta sin caída total, se debe revisar uso de CPU, memoria RAM y procesos con consumo anormal.
+Si el disco tiene poco espacio disponible, se deben revisar archivos temporales, logs y crecimiento de bases de datos antes de liberar almacenamiento.
+Errores DNS o pérdida de conectividad deben revisarse validando resolución de nombres, puerta de enlace, enlace de red y comunicación con otros servidores.
+Una latencia elevada entre servidores puede indicar congestión de red, pérdida de paquetes o problemas en la ruta de comunicación.
+Si un servicio o servidor no responde, se debe validar disponibilidad del proceso, puertos de escucha, dependencias y eventos recientes antes de reiniciarlo.
+Intentos repetidos de inicio de sesión, cuentas bloqueadas o accesos denegados deben revisarse como posibles eventos de seguridad o problemas de credenciales.
+Reinicios inesperados o indisponibilidad recurrente deben investigarse revisando eventos del sistema, consumo de recursos y estado de los servicios críticos.
