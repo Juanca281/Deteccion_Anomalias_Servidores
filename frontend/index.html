@@ -1,21 +1,16 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>
         Detección de Anomalías en Servidores | IA
     </title>
 
-    <link
-        rel="stylesheet"
-        href="/frontend/css/styles.css"
-    >
+    <link rel="stylesheet" href="/frontend/css/styles.css">
 </head>
 
 <body>
@@ -42,50 +37,40 @@
 
         <nav class="menu">
 
-            <button
-                class="menu-item active"
-                data-section="inicio"
-            >
+            <button class="menu-item active" data-section="inicio">
                 <span class="menu-number">00</span>
                 Inicio
             </button>
 
-            <button
-                class="menu-item"
-                data-section="semana2"
-            >
+            <button class="menu-item" data-section="semana2">
                 <span class="menu-number">02</span>
                 Semana 2
             </button>
 
-            <button
-                class="menu-item"
-                data-section="semana3"
-            >
+            <button class="menu-item" data-section="semana3">
                 <span class="menu-number">03</span>
                 Semana 3
             </button>
 
-            <button
-                class="menu-item"
-                data-section="semana4"
-            >
+            <button class="menu-item" data-section="semana4">
                 <span class="menu-number">04</span>
                 Semana 4
             </button>
 
-            <button
-                class="menu-item"
-                data-section="semana5"
-            >
+            <button class="menu-item" data-section="semana5">
                 <span class="menu-number">05</span>
                 Semana 5
             </button>
 
-            <button
-                class="menu-item"
-                data-section="arquitectura"
-            >
+            <button class="menu-item" data-section="semana7">
+                <span class="menu-number">
+                    07
+                </span>
+
+                Semana 7
+            </button>
+
+            <button class="menu-item" data-section="arquitectura">
                 <span class="menu-number">⌘</span>
                 Arquitectura
             </button>
@@ -139,10 +124,7 @@
              INICIO
         ================================================== -->
 
-        <section
-            id="inicio"
-            class="content-section active"
-        >
+        <section id="inicio" class="content-section active">
 
             <div class="hero">
 
@@ -166,10 +148,7 @@
                         anomalías de infraestructura.
                     </p>
 
-                    <button
-                        class="primary-button"
-                        onclick="openWeek('semana5')"
-                    >
+                    <button class="primary-button" onclick="openWeek('semana5')">
                         Ver avance actual
                     </button>
 
@@ -245,10 +224,7 @@
 
             <div class="timeline">
 
-                <article
-                    class="timeline-card"
-                    onclick="openWeek('semana2')"
-                >
+                <article class="timeline-card" onclick="openWeek('semana2')">
 
                     <div class="week-number">
                         02
@@ -271,10 +247,7 @@
                 </article>
 
 
-                <article
-                    class="timeline-card"
-                    onclick="openWeek('semana3')"
-                >
+                <article class="timeline-card" onclick="openWeek('semana3')">
 
                     <div class="week-number">
                         03
@@ -297,10 +270,7 @@
                 </article>
 
 
-                <article
-                    class="timeline-card"
-                    onclick="openWeek('semana4')"
-                >
+                <article class="timeline-card" onclick="openWeek('semana4')">
 
                     <div class="week-number">
                         04
@@ -323,10 +293,7 @@
                 </article>
 
 
-                <article
-                    class="timeline-card highlight"
-                    onclick="openWeek('semana5')"
-                >
+                <article class="timeline-card highlight" onclick="openWeek('semana5')">
 
                     <div class="week-number">
                         05
@@ -357,10 +324,7 @@
              SEMANA 2
         ================================================== -->
 
-        <section
-            id="semana2"
-            class="content-section"
-        >
+        <section id="semana2" class="content-section">
 
             <div class="week-header">
 
@@ -413,22 +377,16 @@
 
                 </div>
 
-                <button
-                    class="run-button"
-                    onclick="runScript(
+                <button class="run-button" onclick="runScript(
                         'semana2',
                         'output-semana2'
-                    )"
-                >
+                    )">
                     ▶ Ejecutar código
                 </button>
 
             </div>
 
-            <pre
-                id="output-semana2"
-                class="terminal-output"
-            >La salida del programa aparecerá aquí.</pre>
+            <pre id="output-semana2" class="terminal-output">La salida del programa aparecerá aquí.</pre>
 
 
             <!-- CONCEPTOS -->
@@ -516,22 +474,16 @@
                         </h3>
                     </div>
 
-                    <button
-                        class="secondary-button"
-                        onclick="loadFile(
+                    <button class="secondary-button" onclick="loadFile(
                             'src/semana02_fundamentos.py',
                             'viewer-semana2'
-                        )"
-                    >
+                        )">
                         Ver código
                     </button>
 
                 </div>
 
-                <pre
-                    id="viewer-semana2"
-                    class="code-viewer"
-                >Selecciona "Ver código" para cargar el archivo.</pre>
+                <pre id="viewer-semana2" class="code-viewer">Selecciona "Ver código" para cargar el archivo.</pre>
 
             </div>
 
@@ -542,10 +494,7 @@
              SEMANA 3
         ================================================== -->
 
-        <section
-            id="semana3"
-            class="content-section"
-        >
+        <section id="semana3" class="content-section">
 
             <div class="week-header">
 
@@ -597,22 +546,16 @@
 
                 </div>
 
-                <button
-                    class="run-button"
-                    onclick="runScript(
+                <button class="run-button" onclick="runScript(
                         'semana3',
                         'output-semana3'
-                    )"
-                >
+                    )">
                     ▶ Ejecutar código
                 </button>
 
             </div>
 
-            <pre
-                id="output-semana3"
-                class="terminal-output"
-            >La salida del programa aparecerá aquí.</pre>
+            <pre id="output-semana3" class="terminal-output">La salida del programa aparecerá aquí.</pre>
 
 
             <!-- FLUJO -->
@@ -664,22 +607,16 @@
                             </h3>
                         </div>
 
-                        <button
-                            class="secondary-button"
-                            onclick="loadFile(
+                        <button class="secondary-button" onclick="loadFile(
                                 'src/semana03_taxonomia.py',
                                 'viewer-semana3'
-                            )"
-                        >
+                            )">
                             Ver código
                         </button>
 
                     </div>
 
-                    <pre
-                        id="viewer-semana3"
-                        class="code-viewer"
-                    >Código de Semana 3.</pre>
+                    <pre id="viewer-semana3" class="code-viewer">Código de Semana 3.</pre>
 
                 </div>
 
@@ -696,22 +633,16 @@
                             </h3>
                         </div>
 
-                        <button
-                            class="secondary-button"
-                            onclick="loadFile(
+                        <button class="secondary-button" onclick="loadFile(
                                 'reports/semana03.md',
                                 'report-semana3'
-                            )"
-                        >
+                            )">
                             Ver reporte
                         </button>
 
                     </div>
 
-                    <pre
-                        id="report-semana3"
-                        class="code-viewer report"
-                    >Reporte de Semana 3.</pre>
+                    <pre id="report-semana3" class="code-viewer report">Reporte de Semana 3.</pre>
 
                 </div>
 
@@ -724,10 +655,7 @@
              SEMANA 4
         ================================================== -->
 
-        <section
-            id="semana4"
-            class="content-section"
-        >
+        <section id="semana4" class="content-section">
 
             <div class="week-header">
 
@@ -781,23 +709,17 @@
 
                 <div class="run-actions">
 
-                    <button
-                        class="run-button"
-                        onclick="runScript(
+                    <button class="run-button" onclick="runScript(
                             'semana4_astar',
                             'output-semana4'
-                        )"
-                    >
+                        )">
                         ▶ Ejecutar A*
                     </button>
 
-                    <button
-                        class="run-button secondary-run"
-                        onclick="runScript(
+                    <button class="run-button secondary-run" onclick="runScript(
                             'semana4_minimax',
                             'output-semana4'
-                        )"
-                    >
+                        )">
                         ▶ Ejecutar Minimax
                     </button>
 
@@ -805,10 +727,7 @@
 
             </div>
 
-            <pre
-                id="output-semana4"
-                class="terminal-output"
-            >Selecciona A* o Minimax para ejecutar el algoritmo.</pre>
+            <pre id="output-semana4" class="terminal-output">Selecciona A* o Minimax para ejecutar el algoritmo.</pre>
 
 
             <!-- ALGORITMOS -->
@@ -840,13 +759,10 @@
                         <li>Costo: conexión</li>
                     </ul>
 
-                    <button
-                        class="secondary-button"
-                        onclick="loadFile(
+                    <button class="secondary-button" onclick="loadFile(
                             'src/semana04_astar.py',
                             'viewer-astar'
-                        )"
-                    >
+                        )">
                         Ver implementación
                     </button>
 
@@ -878,13 +794,10 @@
                         <li>Función de utilidad</li>
                     </ul>
 
-                    <button
-                        class="secondary-button"
-                        onclick="loadFile(
+                    <button class="secondary-button" onclick="loadFile(
                             'src/semana04_minimax.py',
                             'viewer-minimax'
-                        )"
-                    >
+                        )">
                         Ver implementación
                     </button>
 
@@ -911,10 +824,7 @@
 
                     </div>
 
-                    <pre
-                        id="viewer-astar"
-                        class="code-viewer"
-                    >Carga el código A*.</pre>
+                    <pre id="viewer-astar" class="code-viewer">Carga el código A*.</pre>
 
                 </div>
 
@@ -933,10 +843,7 @@
 
                     </div>
 
-                    <pre
-                        id="viewer-minimax"
-                        class="code-viewer"
-                    >Carga el código Minimax.</pre>
+                    <pre id="viewer-minimax" class="code-viewer">Carga el código Minimax.</pre>
 
                 </div>
 
@@ -957,22 +864,16 @@
                         </h3>
                     </div>
 
-                    <button
-                        class="secondary-button"
-                        onclick="loadFile(
+                    <button class="secondary-button" onclick="loadFile(
                             'reports/semana04.md',
                             'report-semana4'
-                        )"
-                    >
+                        )">
                         Ver reporte
                     </button>
 
                 </div>
 
-                <pre
-                    id="report-semana4"
-                    class="code-viewer report"
-                >Reporte Semana 4.</pre>
+                <pre id="report-semana4" class="code-viewer report">Reporte Semana 4.</pre>
 
             </div>
 
@@ -983,10 +884,7 @@
              SEMANA 5
         ================================================== -->
 
-        <section
-            id="semana5"
-            class="content-section"
-        >
+        <section id="semana5" class="content-section">
 
             <div class="week-header">
 
@@ -1041,22 +939,16 @@
 
                 </div>
 
-                <button
-                    class="run-button"
-                    onclick="runScript(
+                <button class="run-button" onclick="runScript(
                         'semana5',
                         'output-semana5'
-                    )"
-                >
+                    )">
                     ▶ Ejecutar sistema híbrido
                 </button>
 
             </div>
 
-            <pre
-                id="output-semana5"
-                class="terminal-output"
-            >Presiona "Ejecutar sistema híbrido" para iniciar.</pre>
+            <pre id="output-semana5" class="terminal-output">Presiona "Ejecutar sistema híbrido" para iniciar.</pre>
 
 
             <!-- FLUJO HÍBRIDO -->
@@ -1340,22 +1232,16 @@
 
                         </div>
 
-                        <button
-                            class="secondary-button"
-                            onclick="loadFile(
+                        <button class="secondary-button" onclick="loadFile(
                                 'src/semana05_sistema_hibrido.py',
                                 'viewer-semana5'
-                            )"
-                        >
+                            )">
                             Ver código
                         </button>
 
                     </div>
 
-                    <pre
-                        id="viewer-semana5"
-                        class="code-viewer"
-                    >Código Semana 5.</pre>
+                    <pre id="viewer-semana5" class="code-viewer">Código Semana 5.</pre>
 
                 </div>
 
@@ -1376,22 +1262,16 @@
 
                         </div>
 
-                        <button
-                            class="secondary-button"
-                            onclick="loadFile(
+                        <button class="secondary-button" onclick="loadFile(
                                 'data/base_conocimiento.txt',
                                 'viewer-kb'
-                            )"
-                        >
+                            )">
                             Ver base
                         </button>
 
                     </div>
 
-                    <pre
-                        id="viewer-kb"
-                        class="code-viewer"
-                    >Base de conocimiento.</pre>
+                    <pre id="viewer-kb" class="code-viewer">Base de conocimiento.</pre>
 
                 </div>
 
@@ -1416,36 +1296,296 @@
 
                     </div>
 
-                    <button
-                        class="primary-button small"
-                        onclick="loadFile(
+                    <button class="primary-button small" onclick="loadFile(
                             'reports/semana05.md',
                             'report-semana5'
-                        )"
-                    >
+                        )">
                         Ver resultados
                     </button>
 
                 </div>
 
-                <pre
-                    id="report-semana5"
-                    class="code-viewer report"
-                >Ejecuta primero semana05_sistema_hibrido.py.</pre>
+                <pre id="report-semana5" class="code-viewer report">Ejecuta primero semana05_sistema_hibrido.py.</pre>
 
             </div>
 
         </section>
 
+        <!-- =================================================
+     SEMANA 7
+================================================== -->
+
+        <section id="semana7" class="content-section">
+
+            <div class="week-header">
+
+                <div class="large-number current">
+                    07
+                </div>
+
+                <div>
+
+                    <span class="eyebrow">
+                        SEMANA 7
+                    </span>
+
+                    <h2>
+                        Representaciones del reconocimiento
+                    </h2>
+
+                    <p>
+                        Un mismo estado del servidor se representa
+                        mediante datos numéricos, hechos simbólicos
+                        y un autómata que analiza patrones
+                        temporales de anomalías.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- =============================================
+         FORMULARIO
+    ============================================== -->
+
+            <div class="week7-form">
+
+                <div class="form-heading">
+
+                    <span class="execution-label">
+                        DATOS DEL SERVIDOR
+                    </span>
+
+                    <h3>
+                        Analizar una observación
+                    </h3>
+
+                    <p>
+                        Ingresa las métricas actuales del servidor
+                        y una secuencia temporal utilizando
+                        N para estado normal y A para anomalía.
+                    </p>
+
+                </div>
+
+
+                <div class="input-grid">
+
+                    <div class="input-group">
+
+                        <label for="s7-temperatura">
+                            Temperatura °C
+                        </label>
+
+                        <input id="s7-temperatura" type="number" step="0.1" value="72">
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="s7-carga">
+                            Carga
+                        </label>
+
+                        <input id="s7-carga" type="number" min="0" max="1" step="0.01" value="0.85">
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="s7-errores">
+                            Cantidad de errores
+                        </label>
+
+                        <input id="s7-errores" type="number" min="0" step="1" value="3">
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="s7-secuencia">
+                            Secuencia N/A
+                        </label>
+
+                        <input id="s7-secuencia" type="text" value="NAA" maxlength="30">
+
+                        <small>
+                            Ejemplo: NNAAA
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <button class="run-button" onclick="runSemana7()">
+                    ▶ Analizar servidor
+                </button>
+
+            </div>
+
+
+            <!-- =============================================
+         SALIDA
+    ============================================== -->
+
+            <pre id="output-semana7" class="terminal-output">Ingresa los datos y selecciona "Analizar servidor".</pre>
+
+
+            <!-- =============================================
+         TRES REPRESENTACIONES
+    ============================================== -->
+
+            <div class="section-heading">
+
+                <span>
+                    REPRESENTACIONES
+                </span>
+
+                <h3>
+                    Tres formas de observar el mismo fenómeno
+                </h3>
+
+            </div>
+
+
+            <div class="trace-grid">
+
+                <article>
+
+                    <span>01</span>
+
+                    <h4>
+                        Numérica
+                    </h4>
+
+                    <p>
+                        Convierte temperatura, carga y errores
+                        en un vector y calcula su distancia
+                        respecto a valores de referencia.
+                    </p>
+
+                </article>
+
+
+                <article>
+
+                    <span>02</span>
+
+                    <h4>
+                        Simbólica
+                    </h4>
+
+                    <p>
+                        Convierte los valores en hechos como
+                        temperatura_alta o carga_alta y aplica
+                        reglas comprensibles.
+                    </p>
+
+                </article>
+
+
+                <article>
+
+                    <span>03</span>
+
+                    <h4>
+                        Autómata
+                    </h4>
+
+                    <p>
+                        Analiza una secuencia de estados normales
+                        y anómalos para identificar una anomalía
+                        persistente.
+                    </p>
+
+                </article>
+
+            </div>
+
+
+            <!-- =============================================
+         CÓDIGO Y REPORTE
+    ============================================== -->
+
+            <div class="two-columns">
+
+                <div class="file-panel">
+
+                    <div class="file-panel-header">
+
+                        <div>
+
+                            <span>
+                                CÓDIGO
+                            </span>
+
+                            <h3>
+                                semana07_representaciones.py
+                            </h3>
+
+                        </div>
+
+
+                        <button class="secondary-button" onclick="loadFile(
+                        'src/semana07_representaciones.py',
+                        'viewer-semana7'
+                    )">
+                            Ver código
+                        </button>
+
+                    </div>
+
+
+                    <pre id="viewer-semana7" class="code-viewer">Código de Semana 7.</pre>
+
+                </div>
+
+
+                <div class="file-panel">
+
+                    <div class="file-panel-header">
+
+                        <div>
+
+                            <span>
+                                REPORTE
+                            </span>
+
+                            <h3>
+                                reports/semana07.md
+                            </h3>
+
+                        </div>
+
+
+                        <button class="secondary-button" onclick="loadFile(
+                        'reports/semana07.md',
+                        'report-semana7'
+                    )">
+                            Ver reporte
+                        </button>
+
+                    </div>
+
+
+                    <pre id="report-semana7" class="code-viewer report">Ejecuta primero el análisis de Semana 7.</pre>
+
+                </div>
+
+            </div>
+
+        </section>
 
         <!-- =================================================
              ARQUITECTURA
         ================================================== -->
 
-        <section
-            id="arquitectura"
-            class="content-section"
-        >
+        <section id="arquitectura" class="content-section">
 
             <div class="section-heading">
 
@@ -1692,4 +1832,5 @@ Deteccion_Anomalias_Servidores/
     <script src="/frontend/js/app.js"></script>
 
 </body>
+
 </html>

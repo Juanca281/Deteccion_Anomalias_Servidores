@@ -36,6 +36,9 @@ const titles = {
     semana5:
         "Semana 5 · Sistema híbrido",
 
+    semana7:
+        "Semana 7 · Representaciones del reconocimiento",
+
     arquitectura:
         "Arquitectura del proyecto",
 };
@@ -424,3 +427,168 @@ if (
 // ============================================================
 
 checkBackend();
+// ============================================================
+// SEMANA 7
+// ============================================================
+
+async function runSemana7() {
+
+    const output =
+        document.getElementById(
+            "output-semana7"
+        );
+
+
+    const temperature =
+        document.getElementById(
+            "s7-temperatura"
+        ).value;
+
+
+    const load =
+        document.getElementById(
+            "s7-carga"
+        ).value;
+
+
+    const errors =
+        document.getElementById(
+            "s7-errores"
+        ).value;
+
+
+    const sequence =
+        document.getElementById(
+            "s7-secuencia"
+        ).value
+            .trim()
+            .toUpperCase();
+
+
+    output.classList.remove(
+        "success",
+        "error"
+    );
+
+
+    output.textContent =
+        "$ Analizando servidor...\n";
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/semana7",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify(
+                        {
+                            temperatura:
+                                temperature,
+
+                            carga:
+                                load,
+
+                            errores:
+                                errors,
+
+                            secuencia:
+                                sequence,
+                        }
+                    )
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                result.error
+                || "Error en Semana 7."
+            );
+
+        }
+
+
+        let text = "";
+
+        text +=
+            "$ python semana07_representaciones.py\n";
+
+        text +=
+            "========================================\n\n";
+
+
+        if (result.stdout) {
+
+            text +=
+                result.stdout;
+
+        }
+
+
+        if (result.stderr) {
+
+            text +=
+                "\n\n--- STDERR ---\n";
+
+            text +=
+                result.stderr;
+
+        }
+
+
+        text +=
+            "\n\n========================================\n";
+
+
+        if (result.success) {
+
+            text +=
+                "Estado: EJECUCIÓN CORRECTA";
+
+            output.classList.add(
+                "success"
+            );
+
+        } else {
+
+            text +=
+                "Estado: ERROR";
+
+            output.classList.add(
+                "error"
+            );
+
+        }
+
+
+        output.textContent =
+            text;
+
+
+    } catch (error) {
+
+        output.classList.add(
+            "error"
+        );
+
+
+        output.textContent =
+            "$ Error\n\n"
+            + error.message;
+
+    }
+
+}

@@ -3,7 +3,12 @@ import os
 import subprocess
 import sys
 
-from flask import Flask, jsonify, send_from_directory
+from flask import (
+    Flask,
+    jsonify,
+    request,
+    send_from_directory,
+)
 
 
 # ============================================================
@@ -33,6 +38,8 @@ SCRIPTS = {
     "semana4_minimax": ROOT / "src" / "semana04_minimax.py",
 
     "semana5": ROOT / "src" / "semana05_sistema_hibrido.py",
+
+    "semana7": ROOT / "src" / "semana07_representaciones.py",
 }
 
 
@@ -379,7 +386,226 @@ def status():
             "scripts": available_scripts,
         }
     )
+# ============================================================
+# SEMANA 7 - EJECUCIÓN CON DATOS DEL FRONTEND
+# ============================================================
 
+@app.route(
+    "/api/semana7",
+    methods=["POST"]
+)
+def run_semana7():
+
+    data = (
+        request.get_json(
+            silent=True
+        )
+        or {}
+    )
+
+
+    # ========================================================
+    # RECIBIR DATOS
+    # ========================================================
+
+    try:
+
+        temperature = float(
+            data.get(
+                "temperatura",
+                72
+            )
+        )
+
+        load = float(
+            data.get(
+                "carga",
+                0.85
+            )
+        )
+
+        errors = int(
+            data.get(
+                "errores",
+                3
+            )
+        )
+
+        sequence = str(
+            data.get(
+                "secuencia",
+                "NAA"
+            )
+        ).upper().strip()
+
+
+    except (
+        TypeError,
+        ValueError
+    ):
+
+        return jsonify(
+            {
+                "success": False,
+                "error": (
+                    "Los datos ingresados "
+                    "no son válidos."
+                )
+            }
+        ), 400
+
+
+    # ========================================================
+    # VALIDACIONES
+    # ========================================================
+
+    if temperature < 0:
+
+        return jsonify(
+            {
+                "success": False,
+                "error": (
+                    "La temperatura no puede "
+                    "ser negativa."
+                )
+            }
+        ), 400
+
+
+    if (
+        load < 0
+        or load > 1
+    ):
+
+        return jsonify(
+            {
+                "success": False,
+                "error": (
+                    "La carga debe estar "
+                    "entre 0 y 1."
+                )
+            }
+        ), 400
+
+
+    if errors < 0:
+
+        return jsonify(
+            {
+                "success": False,
+                "error": (
+                    "Los errores no pueden "
+                    "ser negativos."
+                )
+            }
+        ), 400
+
+
+    if (
+        not sequence
+        or any(
+            symbol not in {"N", "A"}
+            for symbol in sequence
+        )
+    ):
+
+        return jsonify(
+            {
+                "success": False,
+                "error": (
+                    "La secuencia solo puede "
+                    "contener N y A."
+                )
+            }
+        ), 400
+
+
+    script_path = SCRIPTS[
+        "semana7"
+    ]
+
+
+    # ========================================================
+    # UTF-8
+    # ========================================================
+
+    env = os.environ.copy()
+
+    env["PYTHONUTF8"] = "1"
+
+    env["PYTHONIOENCODING"] = (
+        "utf-8"
+    )
+
+
+    try:
+
+        process = subprocess.run(
+            [
+                sys.executable,
+                "-X",
+                "utf8",
+                str(script_path),
+
+                "--temperatura",
+                str(temperature),
+
+                "--carga",
+                str(load),
+
+                "--errores",
+                str(errors),
+
+                "--secuencia",
+                sequence,
+            ],
+
+            cwd=ROOT,
+
+            capture_output=True,
+
+            text=True,
+
+            encoding="utf-8",
+
+            errors="replace",
+
+            timeout=60,
+
+            env=env,
+        )
+
+
+        return jsonify(
+            {
+                "success": (
+                    process.returncode
+                    == 0
+                ),
+
+                "stdout": (
+                    process.stdout.strip()
+                ),
+
+                "stderr": (
+                    process.stderr.strip()
+                ),
+
+                "returncode": (
+                    process.returncode
+                ),
+            }
+        )
+
+
+    except Exception as error:
+
+        return jsonify(
+            {
+                "success": False,
+                "error": str(error)
+            }
+        ), 500
 
 # ============================================================
 # EJECUCIÓN PRINCIPAL
