@@ -1,93 +1,73 @@
-# Semana 07 - Representaciones del reconocimiento
+# Semana 7 - Representaciones del reconocimiento
 
-## Proyecto: Detección de anomalías en servidores
+## Descripción
 
-La Semana 07 representa un mismo evento de monitoreo mediante tres enfoques diferentes: representación numérica, representación simbólica y reconocimiento mediante autómatas.
+Se representó el comportamiento de un servidor mediante métodos numéricos, simbólicos y un autómata de estados. A diferencia de ingresar manualmente una secuencia, cada símbolo del autómata es generado automáticamente a partir de las telemetrías observadas.
 
 ## Datos analizados
 
-- **Temperatura:** 75.0 °C
-- **Carga:** 0.88
-- **Errores:** 4
-- **Secuencia temporal:** AAAN
+| Lectura | CPU | RAM | Disco | Latencia | Solicitudes/min | Errores | Estado | Símbolo |
+|---:|---:|---:|---:|---:|---:|---:|---|:---:|
+| 1 | 45.0% | 52.0% | 61.0% | 40.0 ms | 470 | 0 | Activo | N |
+| 2 | 83.0% | 74.0% | 65.0% | 90.0 ms | 720 | 2 | Activo | A |
+| 3 | 94.0% | 91.0% | 94.0% | 260.0 ms | 1600 | 18 | Activo | C |
+| 4 | 96.0% | 93.0% | 95.0% | 290.0 ms | 1700 | 24 | Activo | C |
+| 5 | 55.0% | 61.0% | 70.0% | 62.0 ms | 530 | 1 | Activo | R |
+| 6 | 48.0% | 57.0% | 68.0% | 45.0 ms | 500 | 0 | Activo | N |
 
----
+## Representación numérica
 
-## 1. Representación numérica
+| Lectura | Vector | Distancia al estado de referencia |
+|---:|---|---:|
+| 1 | [45.0, 52.0, 61.0, 40.0, 470.0, 0] | 0.0642 |
+| 2 | [83.0, 74.0, 65.0, 90.0, 720.0, 2] | 0.4094 |
+| 3 | [94.0, 91.0, 94.0, 260.0, 1600.0, 18] | 1.0234 |
+| 4 | [96.0, 93.0, 95.0, 290.0, 1700.0, 24] | 1.1399 |
+| 5 | [55.0, 61.0, 70.0, 62.0, 530.0, 1] | 0.1315 |
+| 6 | [48.0, 57.0, 68.0, 45.0, 500.0, 0] | 0.0854 |
 
-El servidor se representa mediante un vector formado por temperatura, carga y cantidad de errores.
+## Representación simbólica
 
-**Vector actual:** [75.0, 0.88, 4.0]
+| Lectura | Hechos | Conclusiones |
+|---:|---|---|
+| 1 | telemetrias_normales | operacion_normal |
+| 2 | cpu_alta | operacion_normal |
+| 3 | cpu_alta, memoria_alta, disco_critico, latencia_alta, solicitudes_altas, errores_altos | sobrecarga_recursos, posible_congestion, degradacion_servicio, riesgo_almacenamiento, anomalia_critica |
+| 4 | cpu_alta, memoria_alta, disco_critico, latencia_alta, solicitudes_altas, errores_altos | sobrecarga_recursos, posible_congestion, degradacion_servicio, riesgo_almacenamiento, anomalia_critica |
+| 5 | telemetrias_normales | operacion_normal |
+| 6 | telemetrias_normales | operacion_normal |
 
-**Vector de referencia:** [70.0, 0.8, 2.0]
+## Reconocimiento mediante autómata
 
-**Vector normalizado actual:** [0.75, 0.88, 0.4]
+Secuencia generada automáticamente: `NACCRN`
 
-**Distancia numérica:** 0.221
+| Paso | Entrada | Estado anterior | Estado resultante |
+|---:|:---:|---|---|
+| 1 | N | q0 - NORMAL | q0 - NORMAL |
+| 2 | A | q0 - NORMAL | q1 - ADVERTENCIA |
+| 3 | C | q1 - ADVERTENCIA | q3 - CRÍTICO |
+| 4 | C | q3 - CRÍTICO | q3 - CRÍTICO |
+| 5 | R | q3 - CRÍTICO | q4 - RECUPERACIÓN |
+| 6 | N | q4 - RECUPERACIÓN | q0 - NORMAL |
 
-Una distancia pequeña indica que el estado actual es parecido al estado de referencia. Una distancia mayor indica una diferencia más significativa.
+**Estado final:** q0 - NORMAL.
 
----
+El servidor finaliza en operación normal.
 
-## 2. Representación simbólica
+## Patrones reconocidos
 
-Los valores numéricos se convierten en conceptos que pueden ser utilizados por reglas explícitas.
-
-**Hechos detectados:** carga_alta, errores_presentes, temperatura_alta
-
-**Conclusiones simbólicas:** riesgo_termico, degradacion_servicio, anomalia_critica
-
-Por ejemplo, cuando temperatura_alta y carga_alta están presentes, el sistema puede concluir riesgo_termico.
-
----
-
-## 3. Reconocimiento mediante autómata
-
-El autómata analiza una secuencia temporal de estados del servidor.
-
-- **N:** comportamiento normal.
-- **A:** comportamiento anómalo.
-
-El estado q2 representa la detección de dos o más anomalías consecutivas al final de la secuencia.
-
-**Secuencia:** AAAN
-
-**Estado final:** q0
-
-**¿Se reconoce una anomalía persistente?:** No
-
-### Recorrido
-
-- q0 --A--> q1
-- q1 --A--> q2
-- q2 --A--> q2
-- q2 --N--> q0
-
----
+- **Degradación progresiva**: El servidor evolucionó desde operación normal hacia alerta y posteriormente a un estado crítico.
+- **Recuperación después de estado crítico**: Después de una condición crítica, las métricas regresaron a valores normales.
+- **Recuperación completada**: Después del proceso de recuperación, el servidor regresó al estado normal.
 
 ## Comparación de representaciones
 
-| Representación | Ventaja | Limitación | Pérdida de información |
+| Representación | Ventaja | Limitación | Información que se pierde |
 |---|---|---|---|
-| Numérica | Permite medir diferencias y comparar estados mediante distancias. | Requiere definir escalas y valores de referencia. | No explica por sí sola el significado operativo del resultado. |
-| Simbólica | Produce hechos y conclusiones fáciles de explicar. | Depende de umbrales y reglas definidas previamente. | Al convertir 72 °C en temperatura_alta se pierde el valor exacto. |
-| Autómata | Permite reconocer patrones secuenciales y persistencia de anomalías. | Solo reconoce patrones definidos mediante sus estados y transiciones. | La secuencia N/A no conserva los valores exactos de las métricas. |
+| Numérica | Permite comparar métricas y medir diferencias. | Requiere interpretar los valores. | Pierde parte del significado conceptual del problema. |
+| Simbólica | Facilita interpretar hechos y conclusiones. | Depende de reglas y umbrales definidos. | Reduce el detalle numérico original. |
+| Autómata | Permite representar la evolución temporal del servidor. | Resume varias métricas en pocos estados. | No conserva todos los valores exactos de cada lectura. |
 
-## Conversión entre representaciones
+## Análisis
 
-Los valores numéricos del monitoreo pueden convertirse en hechos simbólicos utilizando umbrales. Por ejemplo, una temperatura igual o superior a 70 °C se transforma en el hecho `temperatura_alta`.
-
-De forma similar, varias observaciones del servidor pueden convertirse en una secuencia de estados N y A. El autómata utiliza dicha secuencia para identificar persistencia en el comportamiento anómalo.
-
-## Limitaciones
-
-- Los valores de referencia y los umbrales son definidos para la práctica y deberían ajustarse con datos reales.
-- Una representación simbólica simplifica los valores originales.
-- El autómata solamente considera estados N y A, por lo que no diferencia tipos de anomalías.
-- La distancia numérica indica diferencia, pero por sí sola no determina la causa de la anomalía.
-
-## Conclusión
-
-La misma situación de un servidor puede representarse de diferentes maneras. La representación numérica permite realizar comparaciones matemáticas; la simbólica facilita la explicación mediante hechos y reglas; y el autómata permite reconocer patrones temporales.
-
-La combinación de estas representaciones complementa el sistema de detección de anomalías desarrollado durante el semestre.
+Las telemetrías se transformaron primero en representaciones numéricas y simbólicas. Posteriormente cada lectura fue clasificada automáticamente como normal, advertencia, crítica o recuperación. Estos símbolos fueron utilizados como entradas del autómata para identificar la evolución temporal del servidor y reconocer patrones de comportamiento.
