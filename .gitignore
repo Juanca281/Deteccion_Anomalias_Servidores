@@ -1,3 +1,9 @@
 .venv/
 __pycache__/
 *.pyc
+data/semana08/normal/
+data/semana08/sobrecarga/
+data/semana08/latencia/
+data/semana08/disco/
+data/semana08/critico/
+data/semana08/cargas/

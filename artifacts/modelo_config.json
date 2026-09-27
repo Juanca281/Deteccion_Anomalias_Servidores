@@ -1,0 +1,19 @@
+{
+    "image_width": 64,
+    "image_height": 64,
+    "input_features": 4096,
+    "hidden_layers": [
+        128,
+        64
+    ],
+    "classes": {
+        "0": "Normal",
+        "1": "Sobrecarga CPU/RAM",
+        "2": "Latencia alta",
+        "3": "Saturación de disco",
+        "4": "Estado crítico"
+    },
+    "accuracy": 0.988,
+    "training_images": 750,
+    "test_images": 250
+}

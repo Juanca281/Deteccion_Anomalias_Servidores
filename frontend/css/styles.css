@@ -2539,3 +2539,682 @@ button {
     }
 
 }
+
+/* ==========================================================
+   SEMANA 8
+========================================================== */
+
+.semana8-flow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 24px 0;
+    padding: 18px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    overflow-x: auto;
+}
+
+
+.semana8-flow-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 155px;
+}
+
+
+.semana8-flow-number {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: #e9f5ee;
+    color: #146c43;
+    font-weight: 700;
+}
+
+
+.semana8-flow-item div {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.semana8-flow-item strong {
+    font-size: 14px;
+    color: #1f2937;
+}
+
+
+.semana8-flow-item span {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+
+.semana8-flow-arrow {
+    color: #9ca3af;
+    font-size: 18px;
+}
+
+
+/* ==========================================================
+   CONTENEDORES
+========================================================== */
+
+.semana8-main-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+
+.semana8-results {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+
+.semana8-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 22px;
+}
+
+
+.semana8-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+
+.semana8-card h2 {
+    margin: 4px 0 0;
+    font-size: 20px;
+    color: #111827;
+}
+
+
+.semana8-card-label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: #16804d;
+    font-weight: 800;
+}
+
+
+/* ==========================================================
+   CARGA
+========================================================== */
+
+.semana8-upload-area {
+    min-height: 290px;
+    border: 2px dashed #b8c8be;
+    border-radius: 14px;
+    cursor: pointer;
+    background: #f9fbfa;
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease;
+}
+
+
+.semana8-upload-area:hover {
+    border-color: #16804d;
+    background: #f3faf6;
+}
+
+
+.semana8-upload-empty {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+    color: #4b5563;
+}
+
+
+.semana8-upload-empty strong {
+    font-size: 16px;
+}
+
+
+.semana8-upload-empty span {
+    font-size: 13px;
+    color: #9ca3af;
+}
+
+
+.semana8-upload-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #e8f4ed;
+    color: #137443;
+    font-size: 24px;
+    font-weight: 700;
+
+    margin-bottom: 5px;
+}
+
+
+.semana8-preview {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-height: 420px;
+    object-fit: contain;
+    background: #ffffff;
+}
+
+
+.semana8-file-info {
+    margin-top: 12px;
+    padding: 12px 14px;
+    background: #f5f7f6;
+    border-radius: 10px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+
+.semana8-file-info div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+
+.semana8-file-info span {
+    font-size: 11px;
+    color: #6b7280;
+}
+
+
+.semana8-file-info strong {
+    font-size: 13px;
+    color: #1f2937;
+    word-break: break-all;
+}
+
+
+.semana8-remove-button {
+    border: 0;
+    background: transparent;
+    color: #a53b3b;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+
+.semana8-analyze-button {
+    margin-top: 16px;
+    width: 100%;
+}
+
+
+.semana8-analyze-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+/* ==========================================================
+   ESTADOS
+========================================================== */
+
+.semana8-status-card {
+    min-height: 390px;
+}
+
+
+.semana8-initial-state,
+.semana8-loading {
+    height: 280px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+    gap: 8px;
+}
+
+
+.semana8-initial-state p {
+    max-width: 280px;
+    margin: 0;
+    font-size: 13px;
+    color: #6b7280;
+    line-height: 1.5;
+}
+
+
+.semana8-model-circle {
+    width: 64px;
+    height: 64px;
+
+    border-radius: 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #e8f4ed;
+    color: #146c43;
+
+    font-weight: 800;
+    font-size: 19px;
+
+    margin-bottom: 8px;
+}
+
+
+.semana8-spinner {
+    width: 38px;
+    height: 38px;
+
+    border: 4px solid #dce8e1;
+    border-top-color: #16804d;
+
+    border-radius: 50%;
+
+    animation: semana8Spin 0.8s linear infinite;
+}
+
+
+@keyframes semana8Spin {
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
+
+
+.semana8-loading span {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+
+.semana8-error {
+    margin-top: 25px;
+    padding: 16px;
+
+    background: #fff4f4;
+    border: 1px solid #f1caca;
+    border-radius: 12px;
+
+    color: #8a2f2f;
+
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+
+/* ==========================================================
+   PREDICCIÓN
+========================================================== */
+
+.semana8-result-main {
+    grid-column: span 1;
+}
+
+
+.semana8-prediction {
+    padding: 20px;
+    border-radius: 13px;
+    background: #f5faf7;
+
+    display: flex;
+    flex-direction: column;
+}
+
+
+.semana8-prediction span {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+
+.semana8-prediction strong {
+    margin-top: 3px;
+    font-size: 28px;
+    color: #125f3b;
+}
+
+
+.semana8-prediction p {
+    margin: 5px 0 0;
+    font-size: 13px;
+    color: #6b7280;
+}
+
+
+.semana8-confidence-badge {
+    padding: 7px 11px;
+    border-radius: 999px;
+
+    font-size: 12px;
+    font-weight: 800;
+
+    background: #eef2f0;
+    color: #374151;
+}
+
+
+.semana8-confidence-badge.confiable {
+    background: #e4f6eb;
+    color: #11683c;
+}
+
+
+.semana8-confidence-badge.moderada {
+    background: #fff5d9;
+    color: #8a6700;
+}
+
+
+.semana8-confidence-badge.no-concluyente {
+    background: #fdeaea;
+    color: #9c3030;
+}
+
+
+/* ==========================================================
+   BARRA DE CONFIANZA
+========================================================== */
+
+.semana8-confidence-container {
+    margin-top: 20px;
+}
+
+
+.semana8-confidence-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #4b5563;
+    margin-bottom: 8px;
+}
+
+
+.semana8-progress {
+    height: 10px;
+    border-radius: 999px;
+    background: #edf0ee;
+    overflow: hidden;
+}
+
+
+.semana8-progress-fill {
+    width: 0%;
+    height: 100%;
+    background: #16804d;
+    border-radius: inherit;
+
+    transition: width 0.6s ease;
+}
+
+
+/* ==========================================================
+   PROBABILIDADES
+========================================================== */
+
+.semana8-probabilities {
+    margin-top: 20px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+}
+
+
+.semana8-probability-row {
+    display: grid;
+    grid-template-columns: 155px 1fr 60px;
+    align-items: center;
+    gap: 10px;
+}
+
+
+.semana8-probability-name {
+    font-size: 12px;
+    color: #374151;
+}
+
+
+.semana8-probability-track {
+    height: 8px;
+    background: #edf0ee;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+
+.semana8-probability-fill {
+    height: 100%;
+    background: #5b9d77;
+    border-radius: inherit;
+}
+
+
+.semana8-probability-value {
+    text-align: right;
+    font-size: 12px;
+    font-weight: 700;
+    color: #374151;
+}
+
+
+/* ==========================================================
+   SQLITE
+========================================================== */
+
+.semana8-evidence-grid,
+.semana8-ontology-top {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+}
+
+
+.semana8-data-box {
+    padding: 14px;
+    background: #f7f9f8;
+    border-radius: 11px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+
+.semana8-data-box-wide {
+    grid-column: span 2;
+}
+
+
+.semana8-data-box span {
+    font-size: 11px;
+    color: #6b7280;
+}
+
+
+.semana8-data-box strong {
+    font-size: 14px;
+    color: #1f2937;
+    word-break: break-word;
+}
+
+
+/* ==========================================================
+   ONTOLOGÍA
+========================================================== */
+
+.semana8-ontology-card {
+    grid-column: span 2;
+}
+
+
+.semana8-metrics-block {
+    margin-top: 20px;
+}
+
+
+.semana8-metrics-block > span,
+.semana8-interpretation > span,
+.semana8-ontology-file > span {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+}
+
+
+.semana8-metrics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+
+.semana8-metric-chip {
+    padding: 7px 11px;
+    border-radius: 999px;
+
+    background: #e8f4ed;
+    color: #146c43;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+
+.semana8-interpretation {
+    margin-top: 20px;
+    padding: 16px;
+
+    background: #f7faf8;
+    border-left: 4px solid #16804d;
+    border-radius: 0 10px 10px 0;
+}
+
+
+.semana8-interpretation p {
+    margin: 0;
+
+    font-size: 14px;
+    line-height: 1.65;
+
+    color: #374151;
+}
+
+
+.semana8-ontology-file {
+    margin-top: 16px;
+
+    padding-top: 14px;
+
+    border-top: 1px solid #e5e7eb;
+}
+
+
+.semana8-ontology-file strong {
+    font-size: 12px;
+    color: #374151;
+}
+
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media (max-width: 900px) {
+
+    .semana8-main-grid,
+    .semana8-results {
+        grid-template-columns: 1fr;
+    }
+
+
+    .semana8-ontology-card {
+        grid-column: span 1;
+    }
+
+
+    .semana8-probability-row {
+        grid-template-columns: 125px 1fr 55px;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .semana8-evidence-grid,
+    .semana8-ontology-top {
+        grid-template-columns: 1fr;
+    }
+
+
+    .semana8-data-box-wide {
+        grid-column: span 1;
+    }
+
+
+    .semana8-flow-arrow {
+        display: none;
+    }
+
+
+    .semana8-probability-row {
+        grid-template-columns: 1fr;
+    }
+
+
+    .semana8-probability-value {
+        text-align: left;
+    }
+
+}
+/* ==========================================================
+   CORRECCIÓN ELEMENTOS OCULTOS
+========================================================== */
+
+[hidden] {
+    display: none !important;
+}

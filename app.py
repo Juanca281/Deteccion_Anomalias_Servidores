@@ -1,16 +1,18 @@
-from pathlib import Path
-import os
+import json
 import subprocess
 import sys
-import json
+import uuid
+
+from pathlib import Path
 
 from flask import (
     Flask,
-    jsonify,
     request,
+    jsonify,
     send_from_directory,
+    render_template,
 )
-
+from werkzeug.utils import secure_filename
 
 # ============================================================
 # CONFIGURACIÓN GENERAL
@@ -23,8 +25,54 @@ FRONTEND_DIR = ROOT / "frontend"
 
 app = Flask(__name__)
 
+# ============================================================
+# SEMANA 8 - CONFIGURACIÓN
+# ============================================================
+
+ROOT = Path(__file__).resolve().parent
+
+SEMANA8_UPLOADS = (
+    ROOT
+    / "data"
+    / "semana08"
+    / "cargas"
+)
+
+SEMANA8_UPLOADS.mkdir(
+    parents=True,
+    exist_ok=True,
+)
+
+ALLOWED_IMAGE_EXTENSIONS = {
+    "png",
+    "jpg",
+    "jpeg",
+}
+
+# Máximo 10 MB por imagen
+app.config[
+    "MAX_CONTENT_LENGTH"
+] = 10 * 1024 * 1024
+
 app.json.ensure_ascii = False
 
+def allowed_semana8_image(
+    filename,
+):
+
+    return (
+        "."
+        in filename
+
+        and filename
+        .rsplit(
+            ".",
+            1,
+        )[1]
+        .lower()
+
+        in ALLOWED_IMAGE_EXTENSIONS
+    )
 
 # ============================================================
 # SCRIPTS AUTORIZADOS
@@ -1071,6 +1119,264 @@ def run_semana7():
             }
         ), 500
 
+# ============================================================
+# API - SEMANA 8
+# Reconocimiento de imágenes + SQLite + Ontología
+# ============================================================
+
+@app.route(
+    "/api/semana8",
+    methods=[
+        "POST"
+    ],
+)
+def api_semana8():
+
+    try:
+
+        # ====================================================
+        # VALIDAR ARCHIVO
+        # ====================================================
+
+        if (
+            "imagen"
+            not in request.files
+        ):
+
+            return jsonify(
+                {
+                    "success": False,
+                    "error": (
+                        "No se recibió "
+                        "ninguna imagen."
+                    ),
+                }
+            ), 400
+
+
+        image = request.files[
+            "imagen"
+        ]
+
+
+        if not image.filename:
+
+            return jsonify(
+                {
+                    "success": False,
+                    "error": (
+                        "La imagen no "
+                        "tiene nombre."
+                    ),
+                }
+            ), 400
+
+
+        # ====================================================
+        # VALIDAR EXTENSIÓN
+        # ====================================================
+
+        if not allowed_semana8_image(
+            image.filename
+        ):
+
+            return jsonify(
+                {
+                    "success": False,
+                    "error": (
+                        "Formato no permitido. "
+                        "Utiliza PNG, JPG o JPEG."
+                    ),
+                }
+            ), 400
+
+
+        # ====================================================
+        # CREAR NOMBRE SEGURO
+        # ====================================================
+
+        original_name = secure_filename(
+            image.filename
+        )
+
+
+        unique_id = (
+            uuid.uuid4()
+            .hex[:12]
+        )
+
+
+        stored_name = (
+            f"{unique_id}_"
+            f"{original_name}"
+        )
+
+
+        image_path = (
+            SEMANA8_UPLOADS
+            / stored_name
+        )
+
+
+        # ====================================================
+        # GUARDAR IMAGEN
+        # ====================================================
+
+        image.save(
+            image_path
+        )
+
+
+        # ====================================================
+        # EJECUTAR ANÁLISIS INTEGRADO
+        # ====================================================
+
+        script_path = (
+            ROOT
+            / "src"
+            / "semana08_analisis.py"
+        )
+
+
+        process = subprocess.run(
+            [
+                sys.executable,
+                "-X",
+                "utf8",
+                str(
+                    script_path
+                ),
+                str(
+                    image_path
+                ),
+                "--json",
+            ],
+            cwd=str(
+                ROOT
+            ),
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=120,
+        )
+
+
+        stdout = (
+            process.stdout.strip()
+        )
+
+
+        stderr = (
+            process.stderr.strip()
+        )
+
+
+        # ====================================================
+        # VALIDAR EJECUCIÓN
+        # ====================================================
+
+        if not stdout:
+
+            return jsonify(
+                {
+                    "success": False,
+                    "error": (
+                        "El análisis no "
+                        "devolvió información."
+                    ),
+                    "detail": stderr,
+                }
+            ), 500
+
+
+        # ====================================================
+        # CONVERTIR JSON
+        # ====================================================
+
+        try:
+
+            analysis = json.loads(
+                stdout
+            )
+
+        except json.JSONDecodeError:
+
+            return jsonify(
+                {
+                    "success": False,
+                    "error": (
+                        "El análisis devolvió "
+                        "una respuesta inválida."
+                    ),
+                    "stdout": stdout,
+                    "stderr": stderr,
+                }
+            ), 500
+
+
+        # ====================================================
+        # ERROR DEVUELTO POR EL SCRIPT
+        # ====================================================
+
+        if not analysis.get(
+            "success",
+            False,
+        ):
+
+            return jsonify(
+                analysis
+            ), 400
+
+
+        # ====================================================
+        # INFORMACIÓN ADICIONAL
+        # ====================================================
+
+        analysis[
+            "upload"
+        ] = {
+            "original_name": (
+                image.filename
+            ),
+            "stored_name": (
+                stored_name
+            ),
+        }
+
+
+        # ====================================================
+        # RESPUESTA
+        # ====================================================
+
+        return jsonify(
+            analysis
+        )
+
+
+    except subprocess.TimeoutExpired:
+
+        return jsonify(
+            {
+                "success": False,
+                "error": (
+                    "El análisis superó "
+                    "el tiempo máximo permitido."
+                ),
+            }
+        ), 504
+
+
+    except Exception as error:
+
+        return jsonify(
+            {
+                "success": False,
+                "error": str(
+                    error
+                ),
+            }
+        ), 500
 
 # ============================================================
 # ESTADO DEL BACKEND

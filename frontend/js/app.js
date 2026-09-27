@@ -39,6 +39,7 @@ const sectionTitles = {
     semana4: "Semana 4",
     semana5: "Semana 5",
     semana7: "Semana 7",
+    semana8: "Semana 8 - Reconocimiento neuronal y ontología",
     arquitectura: "Arquitectura"
 };
 
@@ -3093,3 +3094,792 @@ function initializeApp() {
 // ============================================================
 
 initializeApp();
+
+
+// ============================================================
+// SEMANA 8
+// Reconocimiento neuronal + SQLite + Ontología
+// ============================================================
+
+let semana8SelectedFile = null;
+let semana8PreviewUrl = null;
+
+
+// ============================================================
+// ABRIR SELECTOR
+// ============================================================
+
+function openSemana8File() {
+
+    document
+        .getElementById("semana8ImageInput")
+        .click();
+}
+
+
+// ============================================================
+// ESCUCHAR ARCHIVO
+// ============================================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        const input = document.getElementById(
+            "semana8ImageInput"
+        );
+
+        if (!input) {
+            return;
+        }
+
+
+        input.addEventListener(
+            "change",
+            (event) => {
+
+                const file =
+                    event.target.files[0];
+
+                if (!file) {
+                    return;
+                }
+
+                selectSemana8Image(
+                    file
+                );
+            }
+        );
+
+    }
+);
+
+
+// ============================================================
+// SELECCIONAR IMAGEN
+// ============================================================
+
+function selectSemana8Image(file) {
+
+    const allowedTypes = [
+        "image/png",
+        "image/jpeg"
+    ];
+
+
+    if (
+        !allowedTypes.includes(
+            file.type
+        )
+    ) {
+
+        showSemana8Error(
+            "Solo se permiten imágenes PNG, JPG o JPEG."
+        );
+
+        return;
+    }
+
+
+    semana8SelectedFile = file;
+
+
+    // --------------------------------------------------------
+    // Eliminar URL anterior
+    // --------------------------------------------------------
+
+    if (semana8PreviewUrl) {
+
+        URL.revokeObjectURL(
+            semana8PreviewUrl
+        );
+    }
+
+
+    semana8PreviewUrl =
+        URL.createObjectURL(
+            file
+        );
+
+
+    // --------------------------------------------------------
+    // Vista previa
+    // --------------------------------------------------------
+
+    const preview =
+        document.getElementById(
+            "semana8Preview"
+        );
+
+
+    preview.src =
+        semana8PreviewUrl;
+
+    preview.hidden = false;
+
+
+    document.getElementById(
+        "semana8UploadEmpty"
+    ).hidden = true;
+
+
+    document.getElementById(
+        "semana8FileInfo"
+    ).hidden = false;
+
+
+    document.getElementById(
+        "semana8FileName"
+    ).textContent =
+        file.name;
+
+
+    document.getElementById(
+        "semana8AnalyzeButton"
+    ).disabled = false;
+
+
+    // Limpiar estados anteriores
+
+    document.getElementById(
+        "semana8Error"
+    ).hidden = true;
+
+
+    document.getElementById(
+        "semana8Results"
+    ).hidden = true;
+}
+
+
+// ============================================================
+// QUITAR IMAGEN
+// ============================================================
+
+function clearSemana8Image() {
+
+    semana8SelectedFile = null;
+
+
+    const input =
+        document.getElementById(
+            "semana8ImageInput"
+        );
+
+
+    input.value = "";
+
+
+    if (semana8PreviewUrl) {
+
+        URL.revokeObjectURL(
+            semana8PreviewUrl
+        );
+
+        semana8PreviewUrl = null;
+    }
+
+
+    const preview =
+        document.getElementById(
+            "semana8Preview"
+        );
+
+
+    preview.src = "";
+    preview.hidden = true;
+
+
+    document.getElementById(
+        "semana8UploadEmpty"
+    ).hidden = false;
+
+
+    document.getElementById(
+        "semana8FileInfo"
+    ).hidden = true;
+
+
+    document.getElementById(
+        "semana8AnalyzeButton"
+    ).disabled = true;
+
+
+    document.getElementById(
+        "semana8Results"
+    ).hidden = true;
+
+
+    resetSemana8Status();
+}
+
+
+// ============================================================
+// EJECUTAR ANÁLISIS
+// ============================================================
+
+async function runSemana8() {
+
+    if (!semana8SelectedFile) {
+
+        showSemana8Error(
+            "Selecciona una imagen antes de analizar."
+        );
+
+        return;
+    }
+
+
+    const button =
+        document.getElementById(
+            "semana8AnalyzeButton"
+        );
+
+
+    button.disabled = true;
+
+    button.textContent =
+        "Analizando...";
+
+
+    // --------------------------------------------------------
+    // Estado visual
+    // --------------------------------------------------------
+
+    document.getElementById(
+        "semana8InitialState"
+    ).hidden = true;
+
+
+    document.getElementById(
+        "semana8Loading"
+    ).hidden = false;
+
+
+    document.getElementById(
+        "semana8Error"
+    ).hidden = true;
+
+
+    document.getElementById(
+        "semana8Results"
+    ).hidden = true;
+
+
+    try {
+
+        const formData =
+            new FormData();
+
+
+        formData.append(
+            "imagen",
+            semana8SelectedFile
+        );
+
+
+        const response =
+            await fetch(
+                "/api/semana8",
+                {
+                    method: "POST",
+                    body: formData
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            throw new Error(
+                data.error ||
+                "No fue posible realizar el análisis."
+            );
+        }
+
+
+        renderSemana8Result(
+            data
+        );
+
+    }
+
+    catch (error) {
+
+        showSemana8Error(
+            error.message
+        );
+
+    }
+
+    finally {
+
+        document.getElementById(
+            "semana8Loading"
+        ).hidden = true;
+
+
+        button.disabled = false;
+
+        button.textContent =
+            "Analizar imagen";
+    }
+}
+
+
+// ============================================================
+// RENDERIZAR RESULTADO
+// ============================================================
+
+function renderSemana8Result(data) {
+
+    const prediction =
+        data.prediction || {};
+
+
+    const evidence =
+        data.evidence || {};
+
+
+    const ontology =
+        data.ontology || {};
+
+
+    // ========================================================
+    // PREDICCIÓN
+    // ========================================================
+
+    document.getElementById(
+        "semana8Prediction"
+    ).textContent =
+        prediction.class || "-";
+
+
+    const confidence =
+        Number(
+            prediction.confidence || 0
+        );
+
+
+    document.getElementById(
+        "semana8ConfidenceValue"
+    ).textContent =
+        `${confidence.toFixed(2)}%`;
+
+
+    document.getElementById(
+        "semana8ConfidenceText"
+    ).textContent =
+        `El modelo asignó una confianza de ${confidence.toFixed(2)}%.`;
+
+
+    document.getElementById(
+        "semana8ConfidenceBar"
+    ).style.width =
+        `${Math.min(confidence, 100)}%`;
+
+
+    // ========================================================
+    // NIVEL DE CONFIANZA
+    // ========================================================
+
+    const level =
+        prediction.confidence_level ||
+        "-";
+
+
+    const badge =
+        document.getElementById(
+            "semana8ConfidenceBadge"
+        );
+
+
+    badge.textContent =
+        level;
+
+
+    badge.className =
+        "semana8-confidence-badge";
+
+
+    const normalized =
+        level
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(
+                /[\u0300-\u036f]/g,
+                ""
+            )
+            .replace(
+                /\s+/g,
+                "-"
+            );
+
+
+    if (
+        normalized === "confiable"
+    ) {
+
+        badge.classList.add(
+            "confiable"
+        );
+
+    }
+
+    else if (
+        normalized === "moderada"
+    ) {
+
+        badge.classList.add(
+            "moderada"
+        );
+
+    }
+
+    else {
+
+        badge.classList.add(
+            "no-concluyente"
+        );
+    }
+
+
+    // ========================================================
+    // PROBABILIDADES
+    // ========================================================
+
+    renderSemana8Probabilities(
+        prediction.probabilities || {}
+    );
+
+
+    // ========================================================
+    // SQLITE
+    // ========================================================
+
+    document.getElementById(
+        "semana8EvidenceId"
+    ).textContent =
+        evidence.id ?? "-";
+
+
+    document.getElementById(
+        "semana8EvidenceDate"
+    ).textContent =
+        evidence.date || "-";
+
+
+    document.getElementById(
+        "semana8EvidenceDatabase"
+    ).textContent =
+        evidence.database ||
+        "artifacts/imagenes.db";
+
+
+    // ========================================================
+    // ONTOLOGÍA
+    // ========================================================
+
+    document.getElementById(
+        "semana8OntologyConcept"
+    ).textContent =
+        ontology.concept || "-";
+
+
+    document.getElementById(
+        "semana8OntologyType"
+    ).textContent =
+        ontology.type || "-";
+
+
+    document.getElementById(
+        "semana8Interpretation"
+    ).textContent =
+        ontology.interpretation || "-";
+
+
+    document.getElementById(
+        "semana8OntologyGraph"
+    ).textContent =
+        ontology.graph ||
+        "artifacts/ontologia.graphml";
+
+
+    renderSemana8Metrics(
+        ontology.affected_metrics || []
+    );
+
+
+    // ========================================================
+    // MOSTRAR RESULTADOS
+    // ========================================================
+
+    document.getElementById(
+        "semana8InitialState"
+    ).hidden = true;
+
+
+    document.getElementById(
+        "semana8Error"
+    ).hidden = true;
+
+
+    document.getElementById(
+        "semana8Results"
+    ).hidden = false;
+}
+
+
+// ============================================================
+// PROBABILIDADES
+// ============================================================
+
+function renderSemana8Probabilities(
+    probabilities
+) {
+
+    const container =
+        document.getElementById(
+            "semana8Probabilities"
+        );
+
+
+    container.innerHTML = "";
+
+
+    const ordered =
+        Object.entries(
+            probabilities
+        )
+        .sort(
+            (
+                [, valueA],
+                [, valueB]
+            ) => valueB - valueA
+        );
+
+
+    ordered.forEach(
+        (
+            [
+                className,
+                probability
+            ]
+        ) => {
+
+            const value =
+                Number(
+                    probability
+                );
+
+
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+
+            row.className =
+                "semana8-probability-row";
+
+
+            const name =
+                document.createElement(
+                    "span"
+                );
+
+
+            name.className =
+                "semana8-probability-name";
+
+            name.textContent =
+                className;
+
+
+            const track =
+                document.createElement(
+                    "div"
+                );
+
+
+            track.className =
+                "semana8-probability-track";
+
+
+            const fill =
+                document.createElement(
+                    "div"
+                );
+
+
+            fill.className =
+                "semana8-probability-fill";
+
+            fill.style.width =
+                `${Math.min(value, 100)}%`;
+
+
+            track.appendChild(
+                fill
+            );
+
+
+            const percentage =
+                document.createElement(
+                    "strong"
+                );
+
+
+            percentage.className =
+                "semana8-probability-value";
+
+            percentage.textContent =
+                `${value.toFixed(2)}%`;
+
+
+            row.appendChild(
+                name
+            );
+
+            row.appendChild(
+                track
+            );
+
+            row.appendChild(
+                percentage
+            );
+
+
+            container.appendChild(
+                row
+            );
+        }
+    );
+}
+
+
+// ============================================================
+// MÉTRICAS AFECTADAS
+// ============================================================
+
+function renderSemana8Metrics(
+    metrics
+) {
+
+    const container =
+        document.getElementById(
+            "semana8AffectedMetrics"
+        );
+
+
+    container.innerHTML = "";
+
+
+    if (!metrics.length) {
+
+        const chip =
+            document.createElement(
+                "span"
+            );
+
+
+        chip.className =
+            "semana8-metric-chip";
+
+        chip.textContent =
+            "Ninguna";
+
+
+        container.appendChild(
+            chip
+        );
+
+        return;
+    }
+
+
+    metrics.forEach(
+        metric => {
+
+            const chip =
+                document.createElement(
+                    "span"
+                );
+
+
+            chip.className =
+                "semana8-metric-chip";
+
+            chip.textContent =
+                metric;
+
+
+            container.appendChild(
+                chip
+            );
+        }
+    );
+}
+
+
+// ============================================================
+// ERROR
+// ============================================================
+
+function showSemana8Error(
+    message
+) {
+
+    document.getElementById(
+        "semana8InitialState"
+    ).hidden = true;
+
+
+    document.getElementById(
+        "semana8Loading"
+    ).hidden = true;
+
+
+    document.getElementById(
+        "semana8Results"
+    ).hidden = true;
+
+
+    document.getElementById(
+        "semana8Error"
+    ).hidden = false;
+
+
+    document.getElementById(
+        "semana8ErrorText"
+    ).textContent =
+        message;
+}
+
+
+// ============================================================
+// RESTABLECER ESTADO
+// ============================================================
+
+function resetSemana8Status() {
+
+    document.getElementById(
+        "semana8InitialState"
+    ).hidden = false;
+
+
+    document.getElementById(
+        "semana8Loading"
+    ).hidden = true;
+
+
+    document.getElementById(
+        "semana8Error"
+    ).hidden = true;
+}

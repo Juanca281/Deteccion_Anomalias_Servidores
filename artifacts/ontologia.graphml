@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d2" for="edge" attr.name="relacion" attr.type="string" />
+  <key id="d1" for="node" attr.name="descripcion" attr.type="string" />
+  <key id="d0" for="node" attr.name="tipo" attr.type="string" />
+  <graph edgedefault="directed">
+    <node id="Servidor">
+      <data key="d0">Infraestructura</data>
+      <data key="d1">Equipo o sistema que presta servicios tecnológicos.</data>
+    </node>
+    <node id="GraficaMonitoreo">
+      <data key="d0">EvidenciaVisual</data>
+      <data key="d1">Representación gráfica de las métricas del servidor.</data>
+    </node>
+    <node id="Metrica">
+      <data key="d0">Concepto</data>
+      <data key="d1">Variable utilizada para medir el comportamiento del servidor.</data>
+    </node>
+    <node id="Anomalia">
+      <data key="d0">Concepto</data>
+      <data key="d1">Comportamiento fuera de los rangos esperados.</data>
+    </node>
+    <node id="Estado">
+      <data key="d0">Concepto</data>
+      <data key="d1">Condición general identificada en el servidor.</data>
+    </node>
+    <node id="Prediccion">
+      <data key="d0">ResultadoIA</data>
+      <data key="d1">Resultado obtenido mediante la red neuronal.</data>
+    </node>
+    <node id="Evidencia">
+      <data key="d0">Registro</data>
+      <data key="d1">Registro almacenado en SQLite como soporte de una predicción.</data>
+    </node>
+    <node id="CPU">
+      <data key="d0">Metrica</data>
+      <data key="d1">Uso del procesador.</data>
+    </node>
+    <node id="RAM">
+      <data key="d0">Metrica</data>
+      <data key="d1">Uso de memoria RAM.</data>
+    </node>
+    <node id="Disco">
+      <data key="d0">Metrica</data>
+      <data key="d1">Uso del almacenamiento.</data>
+    </node>
+    <node id="Latencia">
+      <data key="d0">Metrica</data>
+      <data key="d1">Tiempo de respuesta del sistema.</data>
+    </node>
+    <node id="EstadoNormal">
+      <data key="d0">Estado</data>
+      <data key="d1">Funcionamiento estable del servidor.</data>
+    </node>
+    <node id="SobrecargaCPURAM">
+      <data key="d0">Anomalia</data>
+      <data key="d1">Consumo elevado de CPU y RAM.</data>
+    </node>
+    <node id="LatenciaAlta">
+      <data key="d0">Anomalia</data>
+      <data key="d1">Tiempo de respuesta superior a los valores esperados.</data>
+    </node>
+    <node id="SaturacionDisco">
+      <data key="d0">Anomalia</data>
+      <data key="d1">Utilización elevada del almacenamiento.</data>
+    </node>
+    <node id="EstadoCritico">
+      <data key="d0">AnomaliaCritica</data>
+      <data key="d1">Combinación de múltiples métricas en estado crítico.</data>
+    </node>
+    <edge source="Servidor" target="GraficaMonitoreo">
+      <data key="d2">genera</data>
+    </edge>
+    <edge source="GraficaMonitoreo" target="Metrica">
+      <data key="d2">representa</data>
+    </edge>
+    <edge source="GraficaMonitoreo" target="Prediccion">
+      <data key="d2">es_analizada_para_generar</data>
+    </edge>
+    <edge source="Prediccion" target="Evidencia">
+      <data key="d2">se_registra_como</data>
+    </edge>
+    <edge source="Evidencia" target="GraficaMonitoreo">
+      <data key="d2">proviene_de</data>
+    </edge>
+    <edge source="CPU" target="Metrica">
+      <data key="d2">es_tipo_de</data>
+    </edge>
+    <edge source="RAM" target="Metrica">
+      <data key="d2">es_tipo_de</data>
+    </edge>
+    <edge source="Disco" target="Metrica">
+      <data key="d2">es_tipo_de</data>
+    </edge>
+    <edge source="Latencia" target="Metrica">
+      <data key="d2">es_tipo_de</data>
+    </edge>
+    <edge source="EstadoNormal" target="Estado">
+      <data key="d2">es_tipo_de</data>
+    </edge>
+    <edge source="SobrecargaCPURAM" target="Anomalia">
+      <data key="d2">es_tipo_de</data>
+    </edge>
+    <edge source="SobrecargaCPURAM" target="CPU">
+      <data key="d2">afecta</data>
+    </edge>
+    <edge source="SobrecargaCPURAM" target="RAM">
+      <data key="d2">afecta</data>
+    </edge>
+    <edge source="LatenciaAlta" target="Anomalia">
+      <data key="d2">es_tipo_de</data>
+    </edge>
+    <edge source="LatenciaAlta" target="Latencia">
+      <data key="d2">afecta</data>
+    </edge>
+    <edge source="SaturacionDisco" target="Anomalia">
+      <data key="d2">es_tipo_de</data>
+    </edge>
+    <edge source="SaturacionDisco" target="Disco">
+      <data key="d2">afecta</data>
+    </edge>
+    <edge source="EstadoCritico" target="Anomalia">
+      <data key="d2">es_tipo_de</data>
+    </edge>
+    <edge source="EstadoCritico" target="CPU">
+      <data key="d2">puede_afectar</data>
+    </edge>
+    <edge source="EstadoCritico" target="RAM">
+      <data key="d2">puede_afectar</data>
+    </edge>
+    <edge source="EstadoCritico" target="Disco">
+      <data key="d2">puede_afectar</data>
+    </edge>
+    <edge source="EstadoCritico" target="Latencia">
+      <data key="d2">puede_afectar</data>
+    </edge>
+  </graph>
+</graphml>
