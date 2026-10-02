@@ -1,4 +1,5 @@
 import json
+import os
 import subprocess
 import sys
 import uuid
@@ -10,7 +11,6 @@ from flask import (
     request,
     jsonify,
     send_from_directory,
-    render_template,
 )
 from werkzeug.utils import secure_filename
 
@@ -28,8 +28,6 @@ app = Flask(__name__)
 # ============================================================
 # SEMANA 8 - CONFIGURACIÓN
 # ============================================================
-
-ROOT = Path(__file__).resolve().parent
 
 SEMANA8_UPLOADS = (
     ROOT
@@ -56,7 +54,18 @@ app.config[
 
 app.json.ensure_ascii = False
 
-def allowed_semana8_image(
+
+@app.errorhandler(413)
+def image_too_large(_error):
+    return jsonify(
+        {
+            "success": False,
+            "error": "La imagen supera el tamaño máximo permitido de 10 MB.",
+        }
+    ), 413
+
+
+def allowed_image_file(
     filename,
 ):
 
@@ -73,6 +82,22 @@ def allowed_semana8_image(
 
         in ALLOWED_IMAGE_EXTENSIONS
     )
+
+# ============================================================
+# SEMANA 9 - CONFIGURACIÓN
+# ============================================================
+
+SEMANA9_UPLOADS = (
+    ROOT
+    / "data"
+    / "semana09"
+    / "cargas"
+)
+
+SEMANA9_UPLOADS.mkdir(
+    parents=True,
+    exist_ok=True,
+)
 
 # ============================================================
 # SCRIPTS AUTORIZADOS
@@ -668,457 +693,6 @@ def run_semana7():
             "error": str(error)
         }), 500
 
-    # ========================================================
-    # RECIBIR JSON
-    # ========================================================
-
-    data = (
-        request.get_json(
-            silent=True
-        )
-        or {}
-    )
-
-
-    # ========================================================
-    # CONVERTIR DATOS
-    # ========================================================
-
-    try:
-
-        cpu = float(
-            data.get(
-                "cpu",
-                50
-            )
-        )
-
-
-        ram = float(
-            data.get(
-                "ram",
-                55
-            )
-        )
-
-
-        disk = float(
-            data.get(
-                "disco",
-                60
-            )
-        )
-
-
-        latency = float(
-            data.get(
-                "latencia",
-                50
-            )
-        )
-
-
-        requests_per_minute = float(
-            data.get(
-                "solicitudes",
-                500
-            )
-        )
-
-
-        errors = int(
-            data.get(
-                "errores",
-                0
-            )
-        )
-
-
-        status = str(
-            data.get(
-                "estado",
-                "Activo"
-            )
-        ).strip()
-
-
-        sequence = str(
-            data.get(
-                "secuencia",
-                "N"
-            )
-        ).upper().replace(
-            " ",
-            ""
-        ).strip()
-
-
-    except (
-        TypeError,
-        ValueError
-    ):
-
-        return jsonify(
-            {
-                "success": False,
-
-                "error":
-                    "Los datos ingresados "
-                    "no son válidos."
-            }
-        ), 400
-
-
-    # ========================================================
-    # VALIDAR CPU
-    # ========================================================
-
-    if not 0 <= cpu <= 100:
-
-        return jsonify(
-            {
-                "success": False,
-
-                "error":
-                    "CPU debe estar entre "
-                    "0 y 100."
-            }
-        ), 400
-
-
-    # ========================================================
-    # VALIDAR RAM
-    # ========================================================
-
-    if not 0 <= ram <= 100:
-
-        return jsonify(
-            {
-                "success": False,
-
-                "error":
-                    "RAM debe estar entre "
-                    "0 y 100."
-            }
-        ), 400
-
-
-    # ========================================================
-    # VALIDAR DISCO
-    # ========================================================
-
-    if not 0 <= disk <= 100:
-
-        return jsonify(
-            {
-                "success": False,
-
-                "error":
-                    "El uso de disco debe "
-                    "estar entre 0 y 100."
-            }
-        ), 400
-
-
-    # ========================================================
-    # VALIDAR LATENCIA
-    # ========================================================
-
-    if latency < 0:
-
-        return jsonify(
-            {
-                "success": False,
-
-                "error":
-                    "La latencia no puede "
-                    "ser negativa."
-            }
-        ), 400
-
-
-    # ========================================================
-    # VALIDAR SOLICITUDES
-    # ========================================================
-
-    if requests_per_minute < 0:
-
-        return jsonify(
-            {
-                "success": False,
-
-                "error":
-                    "Las solicitudes por minuto "
-                    "no pueden ser negativas."
-            }
-        ), 400
-
-
-    # ========================================================
-    # VALIDAR ERRORES
-    # ========================================================
-
-    if errors < 0:
-
-        return jsonify(
-            {
-                "success": False,
-
-                "error":
-                    "La cantidad de errores "
-                    "no puede ser negativa."
-            }
-        ), 400
-
-
-    # ========================================================
-    # VALIDAR ESTADO
-    # ========================================================
-
-    valid_statuses = {
-        "activo",
-        "inactivo",
-        "mantenimiento"
-    }
-
-
-    if status.lower() not in valid_statuses:
-
-        return jsonify(
-            {
-                "success": False,
-
-                "error":
-                    "El estado del servidor "
-                    "no es válido."
-            }
-        ), 400
-
-
-    # ========================================================
-    # VALIDAR SECUENCIA
-    # ========================================================
-
-    valid_symbols = {
-        "N",
-        "A",
-        "C",
-        "R"
-    }
-
-
-    if not sequence:
-
-        return jsonify(
-            {
-                "success": False,
-
-                "error":
-                    "La secuencia no puede "
-                    "estar vacía."
-            }
-        ), 400
-
-
-    for symbol in sequence:
-
-        if symbol not in valid_symbols:
-
-            return jsonify(
-                {
-                    "success": False,
-
-                    "error":
-                        "La secuencia solo puede "
-                        "contener N, A, C y R."
-                }
-            ), 400
-
-
-    # ========================================================
-    # SCRIPT SEMANA 7
-    # ========================================================
-
-    script_path = SCRIPTS[
-        "semana7"
-    ]
-
-
-    if not script_path.exists():
-
-        return jsonify(
-            {
-                "success": False,
-
-                "error":
-                    "No existe el script "
-                    "de Semana 7."
-            }
-        ), 404
-
-
-    # ========================================================
-    # CONFIGURACIÓN UTF-8
-    # ========================================================
-
-    env = os.environ.copy()
-
-    env["PYTHONUTF8"] = "1"
-
-    env["PYTHONIOENCODING"] = (
-        "utf-8"
-    )
-
-
-    try:
-
-        # ====================================================
-        # EJECUTAR SEMANA 7
-        # ====================================================
-
-        process = subprocess.run(
-            [
-                sys.executable,
-
-                "-X",
-                "utf8",
-
-                str(script_path),
-
-                "--cpu",
-                str(cpu),
-
-                "--ram",
-                str(ram),
-
-                "--disco",
-                str(disk),
-
-                "--latencia",
-                str(latency),
-
-                "--solicitudes",
-                str(
-                    requests_per_minute
-                ),
-
-                "--errores",
-                str(errors),
-
-                "--estado",
-                status,
-
-                "--secuencia",
-                sequence
-            ],
-
-            cwd=ROOT,
-
-            capture_output=True,
-
-            text=True,
-
-            encoding="utf-8",
-
-            errors="replace",
-
-            timeout=60,
-
-            env=env
-        )
-
-
-        stdout = (
-            process.stdout.strip()
-            if process.stdout
-            else ""
-        )
-
-
-        stderr = (
-            process.stderr.strip()
-            if process.stderr
-            else ""
-        )
-
-
-        success = (
-            process.returncode == 0
-        )
-
-
-        return jsonify(
-            {
-                "success":
-                    success,
-
-                "script":
-                    script_path.name,
-
-                "returncode":
-                    process.returncode,
-
-                "stdout":
-                    stdout,
-
-                "stderr":
-                    stderr,
-
-                "input": {
-
-                    "cpu":
-                        cpu,
-
-                    "ram":
-                        ram,
-
-                    "disco":
-                        disk,
-
-                    "latencia":
-                        latency,
-
-                    "solicitudes":
-                        requests_per_minute,
-
-                    "errores":
-                        errors,
-
-                    "estado":
-                        status,
-
-                    "secuencia":
-                        sequence
-                }
-            }
-        )
-
-
-    except subprocess.TimeoutExpired:
-
-        return jsonify(
-            {
-                "success": False,
-
-                "error":
-                    "La ejecución de Semana 7 "
-                    "superó el tiempo máximo "
-                    "permitido."
-            }
-        ), 408
-
-
-    except Exception as error:
-
-        return jsonify(
-            {
-                "success": False,
-
-                "error":
-                    str(error)
-            }
-        ), 500
-
 # ============================================================
 # API - SEMANA 8
 # Reconocimiento de imágenes + SQLite + Ontología
@@ -1176,7 +750,7 @@ def api_semana8():
         # VALIDAR EXTENSIÓN
         # ====================================================
 
-        if not allowed_semana8_image(
+        if not allowed_image_file(
             image.filename
         ):
 
@@ -1378,6 +952,349 @@ def api_semana8():
             }
         ), 500
 
+
+# ============================================================
+# API - SEMANA 9
+# Canny + Otsu + Regiones conectadas
+# ============================================================
+
+@app.route(
+    "/api/semana9",
+    methods=["POST"],
+)
+def api_semana9():
+
+    try:
+
+        # ====================================================
+        # VALIDAR IMAGEN
+        # ====================================================
+
+        if "imagen" not in request.files:
+
+            return jsonify(
+                {
+                    "success": False,
+                    "error": (
+                        "No se recibió ninguna imagen."
+                    ),
+                }
+            ), 400
+
+
+        image = request.files[
+            "imagen"
+        ]
+
+
+        if not image.filename:
+
+            return jsonify(
+                {
+                    "success": False,
+                    "error": (
+                        "La imagen no tiene nombre."
+                    ),
+                }
+            ), 400
+
+
+        # ====================================================
+        # VALIDAR EXTENSIÓN
+        # ====================================================
+
+        if not allowed_image_file(
+            image.filename
+        ):
+
+            return jsonify(
+                {
+                    "success": False,
+                    "error": (
+                        "Formato no permitido. "
+                        "Utiliza PNG, JPG o JPEG."
+                    ),
+                }
+            ), 400
+
+
+        # ====================================================
+        # PARÁMETROS
+        # ====================================================
+
+        try:
+
+            sigma = float(
+                request.form.get(
+                    "sigma",
+                    2.0,
+                )
+            )
+
+        except ValueError:
+
+            return jsonify(
+                {
+                    "success": False,
+                    "error": (
+                        "El valor de sigma "
+                        "no es válido."
+                    ),
+                }
+            ), 400
+
+
+        try:
+
+            min_area = int(
+                request.form.get(
+                    "min_area",
+                    50,
+                )
+            )
+
+        except ValueError:
+
+            return jsonify(
+                {
+                    "success": False,
+                    "error": (
+                        "El área mínima "
+                        "no es válida."
+                    ),
+                }
+            ), 400
+
+
+        # ====================================================
+        # VALIDACIONES
+        # ====================================================
+
+        if sigma <= 0:
+
+            return jsonify(
+                {
+                    "success": False,
+                    "error": (
+                        "Sigma debe ser "
+                        "mayor que 0."
+                    ),
+                }
+            ), 400
+
+
+        if min_area < 1:
+
+            return jsonify(
+                {
+                    "success": False,
+                    "error": (
+                        "El área mínima debe "
+                        "ser mayor que 0."
+                    ),
+                }
+            ), 400
+
+
+        # ====================================================
+        # NOMBRE SEGURO
+        # ====================================================
+
+        original_name = secure_filename(
+            image.filename
+        )
+
+
+        unique_id = (
+            uuid.uuid4()
+            .hex[:12]
+        )
+
+
+        stored_name = (
+            f"{unique_id}_"
+            f"{original_name}"
+        )
+
+
+        image_path = (
+            SEMANA9_UPLOADS
+            / stored_name
+        )
+
+
+        # ====================================================
+        # GUARDAR IMAGEN
+        # ====================================================
+
+        image.save(
+            image_path
+        )
+
+
+        # ====================================================
+        # SCRIPT SEMANA 9
+        # ====================================================
+
+        script_path = (
+            ROOT
+            / "src"
+            / "semana09_analisis.py"
+        )
+
+
+        process = subprocess.run(
+            [
+                sys.executable,
+                "-X",
+                "utf8",
+                str(script_path),
+                str(image_path),
+
+                "--sigma",
+                str(sigma),
+
+                "--min-area",
+                str(min_area),
+
+                "--json",
+            ],
+            cwd=str(ROOT),
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=120,
+        )
+
+
+        stdout = (
+            process.stdout.strip()
+        )
+
+
+        stderr = (
+            process.stderr.strip()
+        )
+
+
+        # ====================================================
+        # VALIDAR RESPUESTA
+        # ====================================================
+
+        if not stdout:
+
+            return jsonify(
+                {
+                    "success": False,
+                    "error": (
+                        "Semana 9 no devolvió "
+                        "información."
+                    ),
+                    "detail": stderr,
+                }
+            ), 500
+
+
+        # ====================================================
+        # CONVERTIR JSON
+        # ====================================================
+
+        try:
+
+            analysis = json.loads(
+                stdout
+            )
+
+        except json.JSONDecodeError:
+
+            return jsonify(
+                {
+                    "success": False,
+                    "error": (
+                        "Semana 9 devolvió una "
+                        "respuesta inválida."
+                    ),
+                    "stdout": stdout,
+                    "stderr": stderr,
+                }
+            ), 500
+
+
+        # ====================================================
+        # ERROR DEL SCRIPT
+        # ====================================================
+
+        if not analysis.get(
+            "success",
+            False,
+        ):
+
+            return jsonify(
+                analysis
+            ), 400
+
+
+        # ====================================================
+        # INFORMACIÓN DE CARGA
+        # ====================================================
+
+        analysis[
+            "upload"
+        ] = {
+
+            "original_name": (
+                image.filename
+            ),
+
+            "stored_name": (
+                stored_name
+            ),
+        }
+
+
+        return jsonify(
+            analysis
+        )
+
+
+    except subprocess.TimeoutExpired:
+
+        return jsonify(
+            {
+                "success": False,
+                "error": (
+                    "El procesamiento superó "
+                    "el tiempo máximo permitido."
+                ),
+            }
+        ), 504
+
+
+    except Exception as error:
+
+        return jsonify(
+            {
+                "success": False,
+                "error": str(error),
+            }
+        ), 500
+
+
+    # ============================================================
+    # ARCHIVOS GENERADOS
+    # ============================================================
+
+@app.route(
+    "/artifacts/<path:filename>"
+)
+def serve_artifact(filename):
+
+    return send_from_directory(
+        ROOT / "artifacts",
+        filename
+    )
+
 # ============================================================
 # ESTADO DEL BACKEND
 # ============================================================
@@ -1388,34 +1305,27 @@ def api_semana8():
 def status():
 
     available_scripts = {
-
-        name:
-            path.exists()
-
-        for name, path
-        in SCRIPTS.items()
+        name: path.exists()
+        for name, path in SCRIPTS.items()
     }
 
-
-    return jsonify(
+    available_scripts.update(
         {
-            "status":
-                "ok",
-
-            "python":
-                sys.version,
-
-            "python_executable":
-                sys.executable,
-
-            "encoding":
-                "utf-8",
-
-            "scripts":
-                available_scripts
+            "semana8": (ROOT / "src" / "semana08_analisis.py").exists(),
+            "semana9": (ROOT / "src" / "semana09_analisis.py").exists(),
         }
     )
 
+    return jsonify(
+        {
+            "status": "ok",
+            "python": sys.version,
+            "python_executable": sys.executable,
+            "encoding": "utf-8",
+            "current_week": 9,
+            "scripts": available_scripts,
+        }
+    )
 
 # ============================================================
 # INICIAR SERVIDOR

@@ -156,7 +156,7 @@
             </button>
 
 
-            <button class="nav-item active" data-section="semana8" type="button">
+            <button class="nav-item" data-section="semana8" type="button">
                 <span class="nav-index">
                     08
                 </span>
@@ -164,12 +164,22 @@
                 <span class="nav-name">
                     Semana 8
                 </span>
+            </button>
+
+
+            <button class="nav-item active" data-section="semana9" type="button">
+                <span class="nav-index">
+                    09
+                </span>
+
+                <span class="nav-name">
+                    Semana 9
+                </span>
 
                 <span class="nav-badge">
                     Actual
                 </span>
             </button>
-
 
             <div class="nav-separator"></div>
 
@@ -206,7 +216,7 @@
                     </strong>
 
                     <small>
-                        Semana 7
+                        Semana 9
                     </small>
 
                 </div>
@@ -264,7 +274,7 @@
                 </span>
 
                 <h1 id="pageTitle">
-                    Semana 7
+                    Semana 9 - Reconocimiento y procesamiento de imágenes
                 </h1>
 
             </div>
@@ -344,12 +354,12 @@
                     </span>
 
                     <strong>
-                        07
+                        09
                     </strong>
 
                     <p>
-                        Representaciones
-                        del reconocimiento
+                        Reconocimiento y
+                        procesamiento de imágenes
                     </p>
 
                 </div>
@@ -481,7 +491,7 @@
                     <div class="timeline-connector"></div>
 
 
-                    <div class="timeline-item current">
+                    <div class="timeline-item completed">
 
                         <span class="timeline-number">
                             07
@@ -496,6 +506,56 @@
                             <p>
                                 Representaciones y
                                 autómatas.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="timeline-connector"></div>
+
+
+                    <div class="timeline-item completed">
+
+                        <span class="timeline-number">
+                            08
+                        </span>
+
+                        <div>
+
+                            <strong>
+                                Red neuronal
+                            </strong>
+
+                            <p>
+                                Clasificación visual y
+                                ontología.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="timeline-connector"></div>
+
+
+                    <div class="timeline-item current">
+
+                        <span class="timeline-number">
+                            09
+                        </span>
+
+                        <div>
+
+                            <strong>
+                                Visión por computador
+                            </strong>
+
+                            <p>
+                                Canny, Otsu y regiones
+                                conectadas.
                             </p>
 
                         </div>
@@ -520,7 +580,7 @@
                     </span>
 
                     <strong>
-                        5
+                        7
                     </strong>
 
                     <small>
@@ -1155,7 +1215,7 @@
              SEMANA 7
         ================================================== -->
 
-        <section id="semana7" class="content-section active-section">
+        <section id="semana7" class="content-section">
 
 
             <!-- =================================================
@@ -1164,7 +1224,7 @@
 
             <div class="section-title">
 
-                <div class="week-marker current">
+                <div class="week-marker">
                     07
                 </div>
 
@@ -1172,7 +1232,7 @@
                 <div>
 
                     <span class="section-kicker">
-                        SEMANA ACTUAL
+                        SEMANA 7
                     </span>
 
                     <h2>
@@ -2103,7 +2163,7 @@
                     </div>
 
 
-                    <div id="semana8UploadArea" class="semana8-upload-area" onclick="openSemana8File()">
+                    <div id="semana8UploadArea" class="semana8-upload-area" role="button" tabindex="0" aria-label="Seleccionar o arrastrar una gráfica para Semana 8" onclick="openSemana8File()">
 
                         <input id="semana8ImageInput" type="file" accept=".png,.jpg,.jpeg,image/png,image/jpeg" hidden>
 
@@ -2115,11 +2175,11 @@
                             </div>
 
                             <strong>
-                                Seleccionar gráfica
+                                Seleccionar o arrastrar gráfica
                             </strong>
 
                             <span>
-                                PNG, JPG o JPEG
+                                PNG, JPG o JPEG · máximo 10 MB
                             </span>
 
                         </div>
@@ -2463,6 +2523,634 @@
 
         </section>
 
+
+        <!-- =========================================================
+     SEMANA 9
+========================================================= -->
+
+        <section id="semana9" class="content-section active-section">
+
+            <div class="section-header">
+
+                <div>
+                    <span class="section-kicker">
+                        SEMANA 9
+                    </span>
+
+                    <h1>
+                        Reconocimiento y procesamiento de imágenes
+                    </h1>
+
+                    <p>
+                        Análisis de gráficas de monitoreo mediante
+                        detección de contornos, segmentación por umbral
+                        y regiones conectadas.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <!-- =====================================================
+         FLUJO
+    ====================================================== -->
+
+            <div class="semana9-flow">
+
+                <div class="semana9-flow-item">
+                    <span>01</span>
+
+                    <div>
+                        <strong>Imagen</strong>
+                        <small>Gráfica de monitoreo</small>
+                    </div>
+                </div>
+
+                <div class="semana9-flow-arrow">
+                    →
+                </div>
+
+
+                <div class="semana9-flow-item">
+                    <span>02</span>
+
+                    <div>
+                        <strong>Canny</strong>
+                        <small>Detección de bordes</small>
+                    </div>
+                </div>
+
+                <div class="semana9-flow-arrow">
+                    →
+                </div>
+
+
+                <div class="semana9-flow-item">
+                    <span>03</span>
+
+                    <div>
+                        <strong>Otsu</strong>
+                        <small>Segmentación</small>
+                    </div>
+                </div>
+
+                <div class="semana9-flow-arrow">
+                    →
+                </div>
+
+
+                <div class="semana9-flow-item">
+                    <span>04</span>
+
+                    <div>
+                        <strong>Regiones</strong>
+                        <small>Análisis conectado</small>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- =====================================================
+         ENTRADA
+    ====================================================== -->
+
+            <div class="semana9-main-grid">
+
+
+                <div class="semana9-card">
+
+                    <span class="semana9-card-label">
+                        ENTRADA
+                    </span>
+
+                    <h2>
+                        Gráfica a procesar
+                    </h2>
+
+
+                    <div id="semana9UploadArea" class="semana9-upload-area" role="button" tabindex="0" aria-label="Seleccionar o arrastrar una gráfica para Semana 9" onclick="openSemana9File()">
+
+                        <input id="semana9ImageInput" type="file" accept=".png,.jpg,.jpeg,image/png,image/jpeg" hidden>
+
+
+                        <div id="semana9UploadEmpty" class="semana9-upload-empty">
+
+                            <div class="semana9-upload-icon">
+                                ↑
+                            </div>
+
+                            <strong>
+                                Seleccionar gráfica
+                            </strong>
+
+                            <span>
+                                PNG, JPG o JPEG
+                            </span>
+
+                        </div>
+
+
+                        <img id="semana9Preview" class="semana9-preview" alt="Vista previa" hidden>
+
+                    </div>
+
+
+                    <div id="semana9FileInfo" class="semana9-file-info" hidden>
+
+                        <div>
+                            <span>
+                                Archivo
+                            </span>
+
+                            <strong id="semana9FileName">
+                                -
+                            </strong>
+                        </div>
+
+                        <button type="button" onclick="clearSemana9Image()">
+                            Quitar
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+             PARÁMETROS
+        ================================================== -->
+
+                <div class="semana9-card">
+
+                    <span class="semana9-card-label">
+                        PARÁMETROS
+                    </span>
+
+                    <h2>
+                        Configuración del análisis
+                    </h2>
+
+
+                    <div class="semana9-field">
+
+                        <label for="semana9Sigma">
+                            Sigma principal de Canny
+                        </label>
+
+                        <input id="semana9Sigma" type="number" value="2.0" min="0.1" step="0.1">
+
+                        <small>
+                            Un valor menor conserva más detalle.
+                            Un valor mayor aplica más suavizado.
+                        </small>
+
+                    </div>
+
+
+                    <div class="semana9-field">
+
+                        <label for="semana9MinArea">
+                            Área mínima de región
+                        </label>
+
+                        <input id="semana9MinArea" type="number" value="50" min="1" step="1">
+
+                        <small>
+                            Regiones menores a este tamaño se consideran
+                            poco relevantes para el análisis.
+                        </small>
+
+                    </div>
+
+
+                    <button id="semana9AnalyzeButton" class="primary-action" onclick="runSemana9()" disabled>
+                        Procesar imagen
+                    </button>
+
+
+                    <div id="semana9Loading" class="semana9-loading" hidden>
+                        <div class="semana9-spinner"></div>
+
+                        <strong>
+                            Procesando imagen...
+                        </strong>
+
+                        <span>
+                            Canny → Otsu → Regiones
+                        </span>
+                    </div>
+
+
+                    <div id="semana9Error" class="semana9-error" hidden>
+                        <strong>
+                            No se pudo completar el análisis
+                        </strong>
+
+                        <span id="semana9ErrorText"></span>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =====================================================
+         RESULTADOS
+    ====================================================== -->
+
+            <div id="semana9Results" class="semana9-results" hidden>
+
+
+                <!-- CANNY -->
+
+                <div class="semana9-card">
+
+                    <span class="semana9-card-label">
+                        CANNY
+                    </span>
+
+                    <h2>
+                        Comparación de sigma
+                    </h2>
+
+
+                    <div id="semana9SigmaResults" class="semana9-sigma-results"></div>
+
+                </div>
+
+
+                <!-- OTSU -->
+
+                <div class="semana9-card">
+
+                    <span class="semana9-card-label">
+                        OTSU
+                    </span>
+
+                    <h2>
+                        Segmentación automática
+                    </h2>
+
+
+                    <div class="semana9-data-grid">
+
+                        <div class="semana9-data-box">
+
+                            <span>
+                                Umbral 0 - 1
+                            </span>
+
+                            <strong id="semana9Threshold01">
+                                -
+                            </strong>
+
+                        </div>
+
+
+                        <div class="semana9-data-box">
+
+                            <span>
+                                Umbral 0 - 255
+                            </span>
+
+                            <strong id="semana9Threshold255">
+                                -
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- REGIONES -->
+
+                <div class="semana9-card">
+
+                    <span class="semana9-card-label">
+                        REGIONES
+                    </span>
+
+                    <h2>
+                        Regiones conectadas
+                    </h2>
+
+
+                    <div class="semana9-data-grid">
+
+                        <div class="semana9-data-box">
+
+                            <span>
+                                Regiones totales
+                            </span>
+
+                            <strong id="semana9TotalRegions">
+                                -
+                            </strong>
+
+                        </div>
+
+
+                        <div class="semana9-data-box">
+
+                            <span>
+                                Regiones relevantes
+                            </span>
+
+                            <strong id="semana9RelevantRegions">
+                                -
+                            </strong>
+
+                        </div>
+
+
+                        <div class="semana9-data-box">
+
+                            <span>
+                                Área mínima
+                            </span>
+
+                            <strong id="semana9MinimumArea">
+                                -
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- REGIONES GRANDES -->
+
+                <div class="semana9-card">
+
+                    <span class="semana9-card-label">
+                        ANÁLISIS
+                    </span>
+
+                    <h2>
+                        Regiones de mayor tamaño
+                    </h2>
+
+
+                    <div class="semana9-table-wrapper">
+
+                        <table class="semana9-table">
+
+                            <thead>
+                                <tr>
+                                    <th>Región</th>
+                                    <th>Área</th>
+                                    <th>Alto</th>
+                                    <th>Ancho</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="semana9RegionsTable">
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+                <!-- =====================================================
+     RESULTADOS VISUALES
+====================================================== -->
+
+<div class="semana9-visual-section">
+
+    <div class="semana9-visual-header">
+
+        <span class="semana9-card-label">
+            RESULTADOS VISUALES
+        </span>
+
+        <h2>
+            Análisis gráfico de la imagen
+        </h2>
+
+        <p>
+            Cada imagen representa una etapa diferente
+            del procesamiento realizado sobre la gráfica
+            de monitoreo del servidor.
+        </p>
+
+    </div>
+
+
+    <div class="semana9-evidence-grid">
+
+
+        <!-- ================================================
+             PROCESAMIENTO GENERAL
+        ================================================= -->
+
+        <div class="semana9-card semana9-evidence-card">
+
+            <span class="semana9-card-label">
+                PROCESAMIENTO
+            </span>
+
+            <h2>
+                Original, Canny y Otsu
+            </h2>
+
+            <p class="semana9-evidence-description">
+                Permite comparar la gráfica original con
+                los bordes encontrados por Canny y la
+                segmentación automática realizada por Otsu.
+            </p>
+
+
+            <div class="semana9-evidence-image">
+
+                <img
+                    id="semana9EvidenceVision"
+                    alt="Original, Canny y segmentación Otsu"
+                >
+
+            </div>
+
+
+            <div class="semana9-evidence-help">
+
+                <strong>
+                    ¿Qué muestra?
+                </strong>
+
+                <span>
+                    Cómo cambia la gráfica durante las
+                    primeras etapas del procesamiento visual.
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================
+             COMPARACIÓN SIGMA
+        ================================================= -->
+
+        <div class="semana9-card semana9-evidence-card">
+
+            <span class="semana9-card-label">
+                CANNY
+            </span>
+
+            <h2>
+                Comparación de sigma
+            </h2>
+
+            <p class="semana9-evidence-description">
+                Compara la cantidad de detalle detectado
+                utilizando diferentes niveles de suavizado.
+            </p>
+
+
+            <div class="semana9-evidence-image">
+
+                <img
+                    id="semana9EvidenceSigma"
+                    alt="Comparación de valores sigma"
+                >
+
+            </div>
+
+
+            <div class="semana9-evidence-help">
+
+                <strong>
+                    ¿Qué muestra?
+                </strong>
+
+                <span>
+                    Un sigma bajo conserva más bordes y un
+                    sigma alto reduce detalles y ruido.
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================
+             REGIONES
+        ================================================= -->
+
+        <div class="semana9-card semana9-evidence-card">
+
+            <span class="semana9-card-label">
+                SEGMENTACIÓN
+            </span>
+
+            <h2>
+                Regiones conectadas
+            </h2>
+
+            <p class="semana9-evidence-description">
+                Muestra las regiones identificadas después
+                de aplicar Otsu y cuáles permanecen después
+                del filtro por área.
+            </p>
+
+
+            <div class="semana9-evidence-image">
+
+                <img
+                    id="semana9EvidenceRegions"
+                    alt="Análisis de regiones conectadas"
+                >
+
+            </div>
+
+
+            <div class="semana9-evidence-help">
+
+                <strong>
+                    ¿Qué muestra?
+                </strong>
+
+                <span>
+                    Qué estructuras visuales permanecen
+                    conectadas dentro de la gráfica.
+                </span>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+                <!-- INTERPRETACIÓN -->
+
+                <div class="semana9-card semana9-analysis-card">
+
+                    <span class="semana9-card-label">
+                        INTERPRETACIÓN
+                    </span>
+
+                    <h2>
+                        Lectura del procesamiento
+                    </h2>
+
+                    <p>
+                        Canny resalta cambios fuertes dentro de la gráfica, como picos,
+                        caídas y transiciones visuales. Un sigma bajo conserva más detalle;
+                        un sigma alto suaviza la imagen y reduce bordes pequeños.
+                    </p>
+
+                    <p>
+                        Otsu separa zonas claras y oscuras y las regiones conectadas agrupan
+                        píxeles vecinos. Estas regiones son evidencia visual del procesamiento,
+                        no un conteo directo de anomalías del servidor.
+                    </p>
+
+                </div>
+
+
+                <div class="semana9-card semana9-analysis-card semana9-project-card">
+
+                    <span class="semana9-card-label">
+                        APLICACIÓN AL PROYECTO
+                    </span>
+
+                    <h2>
+                        ¿Cómo ayuda a detectar anomalías?
+                    </h2>
+
+                    <div class="semana9-project-grid">
+
+                        <div>
+                            <strong>1. Detectar cambios</strong>
+                            <span>Canny permite resaltar variaciones bruscas en curvas de CPU, RAM, disco o latencia.</span>
+                        </div>
+
+                        <div>
+                            <strong>2. Aislar estructuras</strong>
+                            <span>Otsu y las regiones conectadas ayudan a separar formas relevantes de elementos visuales secundarios.</span>
+                        </div>
+
+                        <div>
+                            <strong>3. Generar evidencia</strong>
+                            <span>La visión complementa el análisis numérico y la clasificación neuronal mostrando qué zonas de la gráfica llamaron la atención.</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
 
         <!-- =================================================
              ARQUITECTURA

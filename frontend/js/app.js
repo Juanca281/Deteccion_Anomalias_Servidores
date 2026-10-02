@@ -40,8 +40,78 @@ const sectionTitles = {
     semana5: "Semana 5",
     semana7: "Semana 7",
     semana8: "Semana 8 - Reconocimiento neuronal y ontología",
+    semana9: "Semana 9 - Reconocimiento y procesamiento de imágenes",
     arquitectura: "Arquitectura"
 };
+
+
+// ============================================================
+// UTILIDADES DE IMÁGENES
+// ============================================================
+
+const MAX_IMAGE_SIZE_BYTES = 10 * 1024 * 1024;
+
+function validateImageFile(file) {
+    if (!file) {
+        return "No se recibió ningún archivo.";
+    }
+
+    const extension = file.name
+        .split(".")
+        .pop()
+        .toLowerCase();
+
+    const validExtension = ["png", "jpg", "jpeg"].includes(extension);
+    const validType = !file.type || ["image/png", "image/jpeg"].includes(file.type);
+
+    if (!validExtension || !validType) {
+        return "Solo se permiten imágenes PNG, JPG o JPEG.";
+    }
+
+    if (file.size > MAX_IMAGE_SIZE_BYTES) {
+        return "La imagen supera el tamaño máximo de 10 MB.";
+    }
+
+    return null;
+}
+
+function setupImageDropArea(areaId, inputId, onFile) {
+    const area = document.getElementById(areaId);
+    const input = document.getElementById(inputId);
+
+    if (!area || !input) {
+        return;
+    }
+
+    area.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            input.click();
+        }
+    });
+
+    ["dragenter", "dragover"].forEach(eventName => {
+        area.addEventListener(eventName, event => {
+            event.preventDefault();
+            area.classList.add("is-dragging");
+        });
+    });
+
+    ["dragleave", "drop"].forEach(eventName => {
+        area.addEventListener(eventName, event => {
+            event.preventDefault();
+            area.classList.remove("is-dragging");
+        });
+    });
+
+    area.addEventListener("drop", event => {
+        const file = event.dataTransfer?.files?.[0];
+
+        if (file) {
+            onFile(file);
+        }
+    });
+}
 
 
 // ============================================================
@@ -235,7 +305,7 @@ function loadInitialSection() {
 
 
     showSection(
-        "semana7"
+        "semana9"
     );
 
 }
@@ -2991,7 +3061,7 @@ async function checkBackend() {
                     </strong>
 
                     <small>
-                        Semana 7
+                        Semana 9
                     </small>
 
                 </div>
@@ -3151,6 +3221,12 @@ document.addEventListener(
             }
         );
 
+        setupImageDropArea(
+            "semana8UploadArea",
+            "semana8ImageInput",
+            selectSemana8Image
+        );
+
     }
 );
 
@@ -3161,22 +3237,11 @@ document.addEventListener(
 
 function selectSemana8Image(file) {
 
-    const allowedTypes = [
-        "image/png",
-        "image/jpeg"
-    ];
+    const validationError =
+        validateImageFile(file);
 
-
-    if (
-        !allowedTypes.includes(
-            file.type
-        )
-    ) {
-
-        showSemana8Error(
-            "Solo se permiten imágenes PNG, JPG o JPEG."
-        );
-
+    if (validationError) {
+        showSemana8Error(validationError);
         return;
     }
 
@@ -3630,9 +3695,15 @@ function renderSemana8Result(data) {
     ).hidden = true;
 
 
-    document.getElementById(
+    const results = document.getElementById(
         "semana8Results"
-    ).hidden = false;
+    );
+
+    results.hidden = false;
+    results.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
 }
 
 
@@ -3882,4 +3953,866 @@ function resetSemana8Status() {
     document.getElementById(
         "semana8Error"
     ).hidden = true;
+}
+    // ============================================================
+// SEMANA 9
+// Canny + Otsu + Regiones conectadas
+// ============================================================
+
+let semana9SelectedFile = null;
+let semana9PreviewUrl = null;
+
+
+// ============================================================
+// ABRIR SELECTOR
+// ============================================================
+
+function openSemana9File() {
+
+    document
+        .getElementById(
+            "semana9ImageInput"
+        )
+        .click();
+}
+
+
+// ============================================================
+// INICIALIZAR INPUT
+// ============================================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        const input =
+            document.getElementById(
+                "semana9ImageInput"
+            );
+
+
+        if (!input) {
+            return;
+        }
+
+
+        input.addEventListener(
+            "change",
+            event => {
+
+                const file =
+                    event.target.files[0];
+
+
+                if (!file) {
+                    return;
+                }
+
+
+                selectSemana9Image(
+                    file
+                );
+            }
+        );
+
+        setupImageDropArea(
+            "semana9UploadArea",
+            "semana9ImageInput",
+            selectSemana9Image
+        );
+
+    }
+);
+
+
+// ============================================================
+// SELECCIONAR IMAGEN
+// ============================================================
+
+function selectSemana9Image(file) {
+
+    const validationError =
+        validateImageFile(file);
+
+    if (validationError) {
+        showSemana9Error(validationError);
+        return;
+    }
+
+
+    semana9SelectedFile =
+        file;
+
+
+    if (semana9PreviewUrl) {
+
+        URL.revokeObjectURL(
+            semana9PreviewUrl
+        );
+    }
+
+
+    semana9PreviewUrl =
+        URL.createObjectURL(
+            file
+        );
+
+
+    const preview =
+        document.getElementById(
+            "semana9Preview"
+        );
+
+
+    preview.src =
+        semana9PreviewUrl;
+
+    preview.hidden =
+        false;
+
+
+    document.getElementById(
+        "semana9UploadEmpty"
+    ).hidden =
+        true;
+
+
+    document.getElementById(
+        "semana9FileInfo"
+    ).hidden =
+        false;
+
+
+    document.getElementById(
+        "semana9FileName"
+    ).textContent =
+        file.name;
+
+
+    document.getElementById(
+        "semana9AnalyzeButton"
+    ).disabled =
+        false;
+
+
+    document.getElementById(
+        "semana9Results"
+    ).hidden =
+        true;
+
+
+    document.getElementById(
+        "semana9Error"
+    ).hidden =
+        true;
+}
+
+
+// ============================================================
+// QUITAR IMAGEN
+// ============================================================
+
+function clearSemana9Image() {
+
+    semana9SelectedFile =
+        null;
+
+
+    const input =
+        document.getElementById(
+            "semana9ImageInput"
+        );
+
+
+    input.value = "";
+
+
+    if (semana9PreviewUrl) {
+
+        URL.revokeObjectURL(
+            semana9PreviewUrl
+        );
+
+        semana9PreviewUrl =
+            null;
+    }
+
+
+    const preview =
+        document.getElementById(
+            "semana9Preview"
+        );
+
+
+    preview.src = "";
+    preview.hidden = true;
+
+
+    document.getElementById(
+        "semana9UploadEmpty"
+    ).hidden =
+        false;
+
+
+    document.getElementById(
+        "semana9FileInfo"
+    ).hidden =
+        true;
+
+
+    document.getElementById(
+        "semana9AnalyzeButton"
+    ).disabled =
+        true;
+
+
+    document.getElementById(
+        "semana9Results"
+    ).hidden =
+        true;
+
+
+    document.getElementById(
+        "semana9Loading"
+    ).hidden =
+        true;
+
+
+    document.getElementById(
+        "semana9Error"
+    ).hidden =
+        true;
+}
+
+
+// ============================================================
+// EJECUTAR SEMANA 9
+// ============================================================
+
+async function runSemana9() {
+
+    if (!semana9SelectedFile) {
+
+        showSemana9Error(
+            "Selecciona una imagen antes de procesarla."
+        );
+
+        return;
+    }
+
+
+    const sigma =
+        Number(
+            document
+                .getElementById(
+                    "semana9Sigma"
+                )
+                .value
+        );
+
+
+    const minArea =
+        Number(
+            document
+                .getElementById(
+                    "semana9MinArea"
+                )
+                .value
+        );
+
+
+    // ========================================================
+    // VALIDACIONES
+    // ========================================================
+
+    if (
+        !Number.isFinite(sigma)
+        ||
+        sigma <= 0
+    ) {
+
+        showSemana9Error(
+            "Sigma debe ser mayor que 0."
+        );
+
+        return;
+    }
+
+
+    if (
+        !Number.isInteger(minArea)
+        ||
+        minArea < 1
+    ) {
+
+        showSemana9Error(
+            "El área mínima debe ser un entero mayor que 0."
+        );
+
+        return;
+    }
+
+
+    const button =
+        document.getElementById(
+            "semana9AnalyzeButton"
+        );
+
+
+    button.disabled =
+        true;
+
+    button.textContent =
+        "Procesando...";
+
+
+    document.getElementById(
+        "semana9Loading"
+    ).hidden =
+        false;
+
+
+    document.getElementById(
+        "semana9Error"
+    ).hidden =
+        true;
+
+
+    document.getElementById(
+        "semana9Results"
+    ).hidden =
+        true;
+
+
+    try {
+
+        // ====================================================
+        // FORMULARIO
+        // ====================================================
+
+        const formData =
+            new FormData();
+
+
+        formData.append(
+            "imagen",
+            semana9SelectedFile
+        );
+
+
+        formData.append(
+            "sigma",
+            sigma
+        );
+
+
+        formData.append(
+            "min_area",
+            minArea
+        );
+
+
+        // ====================================================
+        // API
+        // ====================================================
+
+        const response =
+            await fetch(
+                "/api/semana9",
+                {
+                    method: "POST",
+                    body: formData
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok
+            ||
+            !data.success
+        ) {
+
+            throw new Error(
+                data.error
+                ||
+                "No se pudo completar el procesamiento."
+            );
+        }
+
+
+        renderSemana9Result(
+            data
+        );
+
+    }
+
+    catch (error) {
+
+        showSemana9Error(
+            error.message
+        );
+
+    }
+
+    finally {
+
+        document.getElementById(
+            "semana9Loading"
+        ).hidden =
+            true;
+
+
+        button.disabled =
+            false;
+
+
+        button.textContent =
+            "Procesar imagen";
+    }
+}
+
+
+// ============================================================
+// MOSTRAR RESULTADOS
+// ============================================================
+
+function renderSemana9Result(data) {
+
+    const canny =
+        data.canny || {};
+
+
+    const otsu =
+        data.otsu || {};
+
+
+    const regions =
+        data.regions || {};
+
+
+    // ========================================================
+    // CANNY
+    // ========================================================
+
+    renderSemana9Sigma(
+        canny.comparison || []
+    );
+
+
+    // ========================================================
+    // OTSU
+    // ========================================================
+
+    document.getElementById(
+        "semana9Threshold01"
+    ).textContent =
+        Number(
+            otsu.threshold_01 || 0
+        ).toFixed(4);
+
+
+    document.getElementById(
+        "semana9Threshold255"
+    ).textContent =
+        Number(
+            otsu.threshold_255 || 0
+        ).toFixed(2);
+
+
+    // ========================================================
+    // REGIONES
+    // ========================================================
+
+    document.getElementById(
+        "semana9TotalRegions"
+    ).textContent =
+        regions.total ?? "-";
+
+
+    document.getElementById(
+        "semana9RelevantRegions"
+    ).textContent =
+        regions.relevant ?? "-";
+
+
+    document.getElementById(
+        "semana9MinimumArea"
+    ).textContent =
+        `${regions.minimum_area ?? "-"} px`;
+
+
+    // ========================================================
+    // TABLA
+    // ========================================================
+
+    renderSemana9Regions(
+        regions.largest || []
+    );
+
+    // ========================================================
+    // EVIDENCIAS VISUALES
+    // ========================================================
+
+    renderSemana9Evidence(
+    data.artifacts || {}
+    );
+
+    // ========================================================
+    // RESULTADOS
+    // ========================================================
+
+    document.getElementById(
+        "semana9Error"
+    ).hidden =
+        true;
+
+
+    const results = document.getElementById(
+        "semana9Results"
+    );
+
+    results.hidden = false;
+    results.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+}
+
+
+// ============================================================
+// COMPARACIÓN SIGMA
+// ============================================================
+
+function renderSemana9Sigma(
+    comparison
+) {
+
+    const container =
+        document.getElementById(
+            "semana9SigmaResults"
+        );
+
+
+    container.innerHTML = "";
+
+
+    if (!comparison.length) {
+
+        container.textContent =
+            "No existen resultados.";
+
+        return;
+    }
+
+
+    const maximum =
+        Math.max(
+            ...comparison.map(
+                item =>
+                    Number(
+                        item.edge_pixels
+                    )
+            )
+        );
+
+
+    comparison.forEach(
+        item => {
+
+            const sigma =
+                Number(
+                    item.sigma
+                );
+
+
+            const pixels =
+                Number(
+                    item.edge_pixels
+                );
+
+
+            const percentage =
+                Number(
+                    item.edge_percentage
+                );
+
+
+            const relativeWidth =
+                maximum > 0
+                    ? pixels / maximum * 100
+                    : 0;
+
+
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+
+            row.className =
+                "semana9-sigma-row";
+
+
+            const label =
+                document.createElement(
+                    "span"
+                );
+
+
+            label.className =
+                "semana9-sigma-label";
+
+
+            label.textContent =
+                `σ ${sigma.toFixed(1)}`;
+
+
+            const track =
+                document.createElement(
+                    "div"
+                );
+
+
+            track.className =
+                "semana9-sigma-track";
+
+
+            const fill =
+                document.createElement(
+                    "div"
+                );
+
+
+            fill.className =
+                "semana9-sigma-fill";
+
+
+            fill.style.width =
+                `${relativeWidth}%`;
+
+
+            track.appendChild(
+                fill
+            );
+
+
+            const value =
+                document.createElement(
+                    "span"
+                );
+
+
+            value.className =
+                "semana9-sigma-value";
+
+
+            value.textContent =
+                `${pixels.toLocaleString()} px · ${percentage.toFixed(2)}%`;
+
+
+            row.appendChild(
+                label
+            );
+
+
+            row.appendChild(
+                track
+            );
+
+
+            row.appendChild(
+                value
+            );
+
+
+            container.appendChild(
+                row
+            );
+        }
+    );
+}
+
+
+// ============================================================
+// TABLA REGIONES
+// ============================================================
+
+function renderSemana9Regions(
+    regions
+) {
+
+    const tbody =
+        document.getElementById(
+            "semana9RegionsTable"
+        );
+
+
+    tbody.innerHTML = "";
+
+
+    regions.forEach(
+        region => {
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            const values = [
+                region.label,
+                region.area,
+                region.height,
+                region.width
+            ];
+
+
+            values.forEach(
+                value => {
+
+                    const cell =
+                        document.createElement(
+                            "td"
+                        );
+
+
+                    cell.textContent =
+                        value;
+
+
+                    row.appendChild(
+                        cell
+                    );
+                }
+            );
+
+
+            tbody.appendChild(
+                row
+            );
+        }
+    );
+}
+
+
+// ============================================================
+// ERROR
+// ============================================================
+
+function showSemana9Error(
+    message
+) {
+
+    document.getElementById(
+        "semana9Loading"
+    ).hidden =
+        true;
+
+
+    document.getElementById(
+        "semana9Results"
+    ).hidden =
+        true;
+
+
+    document.getElementById(
+        "semana9Error"
+    ).hidden =
+        false;
+
+
+    document.getElementById(
+        "semana9ErrorText"
+    ).textContent =
+        message;
+}
+
+
+// ============================================================
+// EVIDENCIAS VISUALES - SEMANA 9
+// ============================================================
+
+function renderSemana9Evidence(artifacts) {
+
+    // Evita que el navegador reutilice
+    // imágenes antiguas almacenadas en caché.
+
+    const timestamp = Date.now();
+
+
+    const vision =
+        document.getElementById(
+            "semana9EvidenceVision"
+        );
+
+
+    const sigma =
+        document.getElementById(
+            "semana9EvidenceSigma"
+        );
+
+
+    const regions =
+        document.getElementById(
+            "semana9EvidenceRegions"
+        );
+
+
+    // ========================================================
+    // PROCESAMIENTO PRINCIPAL
+    // Original + Canny + Otsu
+    // ========================================================
+
+    if (
+        artifacts.vision
+        &&
+        vision
+    ) {
+
+        vision.src =
+            "/" +
+            artifacts.vision +
+            "?v=" +
+            timestamp;
+    }
+
+
+    // ========================================================
+    // COMPARACIÓN DE SIGMA
+    // ========================================================
+
+    if (
+        artifacts.sigma_comparison
+        &&
+        sigma
+    ) {
+
+        sigma.src =
+            "/" +
+            artifacts.sigma_comparison +
+            "?v=" +
+            timestamp;
+    }
+
+
+    // ========================================================
+    // REGIONES CONECTADAS
+    // ========================================================
+
+    if (
+        artifacts.regions
+        &&
+        regions
+    ) {
+
+        regions.src =
+            "/" +
+            artifacts.regions +
+            "?v=" +
+            timestamp;
+    }
 }
