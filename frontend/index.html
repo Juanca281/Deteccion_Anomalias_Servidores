@@ -167,13 +167,24 @@
             </button>
 
 
-            <button class="nav-item active" data-section="semana9" type="button">
+            <button class="nav-item" data-section="semana9" type="button">
                 <span class="nav-index">
                     09
                 </span>
 
                 <span class="nav-name">
                     Semana 9
+                </span>
+            </button>
+
+
+            <button class="nav-item active" data-section="semana10" type="button">
+                <span class="nav-index">
+                    10
+                </span>
+
+                <span class="nav-name">
+                    Semana 10
                 </span>
 
                 <span class="nav-badge">
@@ -216,7 +227,7 @@
                     </strong>
 
                     <small>
-                        Semana 9
+                        Semana 10
                     </small>
 
                 </div>
@@ -274,7 +285,7 @@
                 </span>
 
                 <h1 id="pageTitle">
-                    Semana 9 - Reconocimiento y procesamiento de imágenes
+                    Semana 10 - Análisis físico mediante visión artificial
                 </h1>
 
             </div>
@@ -354,12 +365,12 @@
                     </span>
 
                     <strong>
-                        09
+                        10
                     </strong>
 
                     <p>
-                        Reconocimiento y
-                        procesamiento de imágenes
+                        Análisis físico mediante
+                        visión artificial
                     </p>
 
                 </div>
@@ -541,7 +552,7 @@
                     <div class="timeline-connector"></div>
 
 
-                    <div class="timeline-item current">
+                    <div class="timeline-item completed">
 
                         <span class="timeline-number">
                             09
@@ -556,6 +567,31 @@
                             <p>
                                 Canny, Otsu y regiones
                                 conectadas.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="timeline-connector"></div>
+
+
+                    <div class="timeline-item current">
+
+                        <span class="timeline-number">
+                            10
+                        </span>
+
+                        <div>
+
+                            <strong>
+                                Inspección física
+                            </strong>
+
+                            <p>
+                                Histogramas, Otsu,
+                                regiones y textura LBP.
                             </p>
 
                         </div>
@@ -580,7 +616,7 @@
                     </span>
 
                     <strong>
-                        7
+                        8
                     </strong>
 
                     <small>
@@ -2163,7 +2199,8 @@
                     </div>
 
 
-                    <div id="semana8UploadArea" class="semana8-upload-area" role="button" tabindex="0" aria-label="Seleccionar o arrastrar una gráfica para Semana 8" onclick="openSemana8File()">
+                    <div id="semana8UploadArea" class="semana8-upload-area" role="button" tabindex="0"
+                        aria-label="Seleccionar o arrastrar una gráfica para Semana 8" onclick="openSemana8File()">
 
                         <input id="semana8ImageInput" type="file" accept=".png,.jpg,.jpeg,image/png,image/jpeg" hidden>
 
@@ -2528,7 +2565,7 @@
      SEMANA 9
 ========================================================= -->
 
-        <section id="semana9" class="content-section active-section">
+        <section id="semana9" class="content-section">
 
             <div class="section-header">
 
@@ -2629,7 +2666,8 @@
                     </h2>
 
 
-                    <div id="semana9UploadArea" class="semana9-upload-area" role="button" tabindex="0" aria-label="Seleccionar o arrastrar una gráfica para Semana 9" onclick="openSemana9File()">
+                    <div id="semana9UploadArea" class="semana9-upload-area" role="button" tabindex="0"
+                        aria-label="Seleccionar o arrastrar una gráfica para Semana 9" onclick="openSemana9File()">
 
                         <input id="semana9ImageInput" type="file" accept=".png,.jpg,.jpeg,image/png,image/jpeg" hidden>
 
@@ -2922,173 +2960,164 @@
      RESULTADOS VISUALES
 ====================================================== -->
 
-<div class="semana9-visual-section">
+                <div class="semana9-visual-section">
 
-    <div class="semana9-visual-header">
+                    <div class="semana9-visual-header">
 
-        <span class="semana9-card-label">
-            RESULTADOS VISUALES
-        </span>
+                        <span class="semana9-card-label">
+                            RESULTADOS VISUALES
+                        </span>
 
-        <h2>
-            Análisis gráfico de la imagen
-        </h2>
+                        <h2>
+                            Análisis gráfico de la imagen
+                        </h2>
 
-        <p>
-            Cada imagen representa una etapa diferente
-            del procesamiento realizado sobre la gráfica
-            de monitoreo del servidor.
-        </p>
+                        <p>
+                            Cada imagen representa una etapa diferente
+                            del procesamiento realizado sobre la gráfica
+                            de monitoreo del servidor.
+                        </p>
 
-    </div>
-
-
-    <div class="semana9-evidence-grid">
+                    </div>
 
 
-        <!-- ================================================
+                    <div class="semana9-evidence-grid">
+
+
+                        <!-- ================================================
              PROCESAMIENTO GENERAL
         ================================================= -->
 
-        <div class="semana9-card semana9-evidence-card">
+                        <div class="semana9-card semana9-evidence-card">
 
-            <span class="semana9-card-label">
-                PROCESAMIENTO
-            </span>
+                            <span class="semana9-card-label">
+                                PROCESAMIENTO
+                            </span>
 
-            <h2>
-                Original, Canny y Otsu
-            </h2>
+                            <h2>
+                                Original, Canny y Otsu
+                            </h2>
 
-            <p class="semana9-evidence-description">
-                Permite comparar la gráfica original con
-                los bordes encontrados por Canny y la
-                segmentación automática realizada por Otsu.
-            </p>
-
-
-            <div class="semana9-evidence-image">
-
-                <img
-                    id="semana9EvidenceVision"
-                    alt="Original, Canny y segmentación Otsu"
-                >
-
-            </div>
+                            <p class="semana9-evidence-description">
+                                Permite comparar la gráfica original con
+                                los bordes encontrados por Canny y la
+                                segmentación automática realizada por Otsu.
+                            </p>
 
 
-            <div class="semana9-evidence-help">
+                            <div class="semana9-evidence-image">
 
-                <strong>
-                    ¿Qué muestra?
-                </strong>
+                                <img id="semana9EvidenceVision" alt="Original, Canny y segmentación Otsu">
 
-                <span>
-                    Cómo cambia la gráfica durante las
-                    primeras etapas del procesamiento visual.
-                </span>
-
-            </div>
-
-        </div>
+                            </div>
 
 
-        <!-- ================================================
+                            <div class="semana9-evidence-help">
+
+                                <strong>
+                                    ¿Qué muestra?
+                                </strong>
+
+                                <span>
+                                    Cómo cambia la gráfica durante las
+                                    primeras etapas del procesamiento visual.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- ================================================
              COMPARACIÓN SIGMA
         ================================================= -->
 
-        <div class="semana9-card semana9-evidence-card">
+                        <div class="semana9-card semana9-evidence-card">
 
-            <span class="semana9-card-label">
-                CANNY
-            </span>
+                            <span class="semana9-card-label">
+                                CANNY
+                            </span>
 
-            <h2>
-                Comparación de sigma
-            </h2>
+                            <h2>
+                                Comparación de sigma
+                            </h2>
 
-            <p class="semana9-evidence-description">
-                Compara la cantidad de detalle detectado
-                utilizando diferentes niveles de suavizado.
-            </p>
-
-
-            <div class="semana9-evidence-image">
-
-                <img
-                    id="semana9EvidenceSigma"
-                    alt="Comparación de valores sigma"
-                >
-
-            </div>
+                            <p class="semana9-evidence-description">
+                                Compara la cantidad de detalle detectado
+                                utilizando diferentes niveles de suavizado.
+                            </p>
 
 
-            <div class="semana9-evidence-help">
+                            <div class="semana9-evidence-image">
 
-                <strong>
-                    ¿Qué muestra?
-                </strong>
+                                <img id="semana9EvidenceSigma" alt="Comparación de valores sigma">
 
-                <span>
-                    Un sigma bajo conserva más bordes y un
-                    sigma alto reduce detalles y ruido.
-                </span>
-
-            </div>
-
-        </div>
+                            </div>
 
 
-        <!-- ================================================
+                            <div class="semana9-evidence-help">
+
+                                <strong>
+                                    ¿Qué muestra?
+                                </strong>
+
+                                <span>
+                                    Un sigma bajo conserva más bordes y un
+                                    sigma alto reduce detalles y ruido.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- ================================================
              REGIONES
         ================================================= -->
 
-        <div class="semana9-card semana9-evidence-card">
+                        <div class="semana9-card semana9-evidence-card">
 
-            <span class="semana9-card-label">
-                SEGMENTACIÓN
-            </span>
+                            <span class="semana9-card-label">
+                                SEGMENTACIÓN
+                            </span>
 
-            <h2>
-                Regiones conectadas
-            </h2>
+                            <h2>
+                                Regiones conectadas
+                            </h2>
 
-            <p class="semana9-evidence-description">
-                Muestra las regiones identificadas después
-                de aplicar Otsu y cuáles permanecen después
-                del filtro por área.
-            </p>
-
-
-            <div class="semana9-evidence-image">
-
-                <img
-                    id="semana9EvidenceRegions"
-                    alt="Análisis de regiones conectadas"
-                >
-
-            </div>
+                            <p class="semana9-evidence-description">
+                                Muestra las regiones identificadas después
+                                de aplicar Otsu y cuáles permanecen después
+                                del filtro por área.
+                            </p>
 
 
-            <div class="semana9-evidence-help">
+                            <div class="semana9-evidence-image">
 
-                <strong>
-                    ¿Qué muestra?
-                </strong>
+                                <img id="semana9EvidenceRegions" alt="Análisis de regiones conectadas">
 
-                <span>
-                    Qué estructuras visuales permanecen
-                    conectadas dentro de la gráfica.
-                </span>
-
-            </div>
-
-        </div>
+                            </div>
 
 
-    </div>
+                            <div class="semana9-evidence-help">
 
-</div>
+                                <strong>
+                                    ¿Qué muestra?
+                                </strong>
+
+                                <span>
+                                    Qué estructuras visuales permanecen
+                                    conectadas dentro de la gráfica.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
 
                 <!-- INTERPRETACIÓN -->
 
@@ -3131,17 +3160,20 @@
 
                         <div>
                             <strong>1. Detectar cambios</strong>
-                            <span>Canny permite resaltar variaciones bruscas en curvas de CPU, RAM, disco o latencia.</span>
+                            <span>Canny permite resaltar variaciones bruscas en curvas de CPU, RAM, disco o
+                                latencia.</span>
                         </div>
 
                         <div>
                             <strong>2. Aislar estructuras</strong>
-                            <span>Otsu y las regiones conectadas ayudan a separar formas relevantes de elementos visuales secundarios.</span>
+                            <span>Otsu y las regiones conectadas ayudan a separar formas relevantes de elementos
+                                visuales secundarios.</span>
                         </div>
 
                         <div>
                             <strong>3. Generar evidencia</strong>
-                            <span>La visión complementa el análisis numérico y la clasificación neuronal mostrando qué zonas de la gráfica llamaron la atención.</span>
+                            <span>La visión complementa el análisis numérico y la clasificación neuronal mostrando qué
+                                zonas de la gráfica llamaron la atención.</span>
                         </div>
 
                     </div>
@@ -3151,6 +3183,665 @@
             </div>
 
         </section>
+
+        <!-- =========================================================
+             SEMANA 10
+        ========================================================= -->
+
+        <section id="semana10" class="content-section active-section">
+
+            <div class="section-header">
+
+                <div>
+                    <span class="section-kicker">
+                        SEMANA 10
+                    </span>
+
+                    <h1>
+                        Análisis físico del equipo
+                    </h1>
+
+                    <p>
+                        Inspección visual de componentes de ventilación mediante
+                        histogramas de intensidad, segmentación automática Otsu,
+                        regiones conectadas y patrones de textura LBP.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <!-- FLUJO -->
+
+            <div class="semana10-flow">
+
+                <div class="semana10-flow-item">
+                    <span>01</span>
+
+                    <div>
+                        <strong>Fotografía</strong>
+                        <small>Estado actual del equipo</small>
+                    </div>
+                </div>
+
+                <span class="semana10-flow-arrow">→</span>
+
+                <div class="semana10-flow-item">
+                    <span>02</span>
+
+                    <div>
+                        <strong>Segmentación</strong>
+                        <small>Intensidad y Otsu</small>
+                    </div>
+                </div>
+
+                <span class="semana10-flow-arrow">→</span>
+
+                <div class="semana10-flow-item">
+                    <span>03</span>
+
+                    <div>
+                        <strong>Características</strong>
+                        <small>Regiones y textura LBP</small>
+                    </div>
+                </div>
+
+                <span class="semana10-flow-arrow">→</span>
+
+                <div class="semana10-flow-item">
+                    <span>04</span>
+
+                    <div>
+                        <strong>Comparación</strong>
+                        <small>Referencias limpia y sucia</small>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- ENTRADA Y PROCESAMIENTO -->
+
+            <div class="semana10-main-grid">
+
+                <article class="semana10-card semana10-input-card">
+
+                    <div class="semana10-card-header">
+                        <div>
+                            <span class="semana10-card-label">
+                                ENTRADA
+                            </span>
+
+                            <h2>
+                                Fotografía actual del equipo
+                            </h2>
+                        </div>
+
+                        <span class="semana10-file-chip">
+                            PNG · JPG · JPEG
+                        </span>
+                    </div>
+
+
+                    <div
+                        id="semana10UploadArea"
+                        class="semana10-upload-area"
+                        role="button"
+                        tabindex="0"
+                        aria-label="Seleccionar o arrastrar una fotografía para Semana 10"
+                        onclick="openSemana10File()"
+                    >
+
+                        <input
+                            id="semana10ImageInput"
+                            type="file"
+                            accept=".png,.jpg,.jpeg,image/png,image/jpeg"
+                            hidden
+                        >
+
+
+                        <div
+                            id="semana10UploadEmpty"
+                            class="semana10-upload-empty"
+                        >
+                            <div class="semana10-upload-icon">
+                                +
+                            </div>
+
+                            <strong>
+                                Seleccionar o arrastrar fotografía
+                            </strong>
+
+                            <span>
+                                Imagen del sistema de ventilación · máximo 10 MB
+                            </span>
+                        </div>
+
+
+                        <img
+                            id="semana10Preview"
+                            class="semana10-preview"
+                            alt="Vista previa de la fotografía seleccionada"
+                            hidden
+                        >
+
+                    </div>
+
+
+                    <div
+                        id="semana10FileInfo"
+                        class="semana10-file-info"
+                        hidden
+                    >
+                        <div>
+                            <span>
+                                Archivo seleccionado
+                            </span>
+
+                            <strong id="semana10FileName">
+                                -
+                            </strong>
+                        </div>
+
+                        <button
+                            type="button"
+                            onclick="event.stopPropagation(); clearSemana10Image();"
+                        >
+                            Quitar
+                        </button>
+                    </div>
+
+
+                    <button
+                        id="semana10AnalyzeButton"
+                        class="semana10-analyze-button"
+                        type="button"
+                        onclick="runSemana10()"
+                        disabled
+                    >
+                        <span class="semana10-analyze-icon">
+                            ◉
+                        </span>
+
+                        <span class="semana10-analyze-content">
+                            <strong id="semana10AnalyzeText">
+                                Analizar estado físico
+                            </strong>
+
+                            <small>
+                                Otsu · Regiones · LBP · Comparación
+                            </small>
+                        </span>
+
+                        <span class="semana10-analyze-arrow">
+                            →
+                        </span>
+                    </button>
+
+
+                    <div
+                        id="semana10Loading"
+                        class="semana10-loading"
+                        hidden
+                    >
+                        <div class="semana10-spinner"></div>
+
+                        <div>
+                            <strong>
+                                Analizando fotografía
+                            </strong>
+
+                            <span>
+                                Extrayendo intensidad, regiones y textura...
+                            </span>
+                        </div>
+                    </div>
+
+
+                    <div
+                        id="semana10Error"
+                        class="semana10-error"
+                        hidden
+                    >
+                        <strong>
+                            No se pudo completar el análisis
+                        </strong>
+
+                        <span id="semana10ErrorText"></span>
+                    </div>
+
+                </article>
+
+
+                <article class="semana10-card semana10-process-card">
+
+                    <div class="semana10-card-header">
+                        <div>
+                            <span class="semana10-card-label">
+                                PROCESAMIENTO VISUAL
+                            </span>
+
+                            <h2>
+                                Vista del análisis
+                            </h2>
+                        </div>
+
+                        <span class="semana10-process-badge">
+                            VISIÓN
+                        </span>
+                    </div>
+
+
+                    <div
+                        class="semana10-process-tabs"
+                        role="tablist"
+                        aria-label="Etapas de procesamiento visual"
+                    >
+                        <button
+                            id="semana10TabOriginal"
+                            class="semana10-process-tab active"
+                            type="button"
+                            role="tab"
+                            aria-selected="true"
+                            onclick="showSemana10Process('original')"
+                        >
+                            Original
+                        </button>
+
+                        <button
+                            id="semana10TabGray"
+                            class="semana10-process-tab"
+                            type="button"
+                            role="tab"
+                            aria-selected="false"
+                            onclick="showSemana10Process('gris')"
+                        >
+                            Grises
+                        </button>
+
+                        <button
+                            id="semana10TabOtsu"
+                            class="semana10-process-tab"
+                            type="button"
+                            role="tab"
+                            aria-selected="false"
+                            onclick="showSemana10Process('otsu')"
+                        >
+                            Otsu
+                        </button>
+
+                        <button
+                            id="semana10TabLbp"
+                            class="semana10-process-tab"
+                            type="button"
+                            role="tab"
+                            aria-selected="false"
+                            onclick="showSemana10Process('lbp')"
+                        >
+                            LBP
+                        </button>
+                    </div>
+
+
+                    <div class="semana10-process-viewer">
+
+                        <div
+                            id="semana10ProcessEmpty"
+                            class="semana10-process-empty"
+                        >
+                            <div class="semana10-process-empty-icon">
+                                ◫
+                            </div>
+
+                            <strong>
+                                Esperando una fotografía
+                            </strong>
+
+                            <span>
+                                Carga una imagen para visualizar el procesamiento.
+                            </span>
+                        </div>
+
+
+                        <img
+                            id="semana10ProcessImage"
+                            alt="Vista del procesamiento de Semana 10"
+                            hidden
+                        >
+
+                    </div>
+
+
+                    <div class="semana10-process-footer">
+
+                        <div>
+                            <strong id="semana10ProcessTitle">
+                                Fotografía original
+                            </strong>
+
+                            <span id="semana10ProcessStage">
+                                Entrada
+                            </span>
+                        </div>
+
+                        <p id="semana10ProcessDescription">
+                            La imagen seleccionada aparecerá aquí antes del análisis.
+                        </p>
+
+                    </div>
+
+                </article>
+
+            </div>
+
+
+            <!-- RESULTADOS -->
+
+            <div
+                id="semana10Results"
+                class="semana10-results"
+                hidden
+            >
+
+                <div
+                    id="semana10Hero"
+                    class="semana10-hero"
+                >
+
+                    <div class="semana10-hero-icon">
+                        <span id="semana10StatusIcon">
+                            ✓
+                        </span>
+                    </div>
+
+
+                    <div class="semana10-hero-content">
+                        <span class="semana10-eyebrow">
+                            RESULTADO DEL ANÁLISIS
+                        </span>
+
+                        <h2 id="semana10Estado">
+                            -
+                        </h2>
+
+                        <p id="semana10EstadoDescripcion">
+                            El sistema comparará la fotografía
+                            con las referencias disponibles.
+                        </p>
+                    </div>
+
+
+                    <div
+                        id="semana10StatusBadge"
+                        class="semana10-status-badge"
+                    >
+                        ANALIZADO
+                    </div>
+
+                </div>
+
+
+                <div class="semana10-results-grid">
+
+                    <article class="semana10-card semana10-similarity-card">
+
+                        <div class="semana10-card-header">
+                            <div>
+                                <span class="semana10-card-label">
+                                    COMPARACIÓN VISUAL
+                                </span>
+
+                                <h2>
+                                    Similitud con las referencias
+                                </h2>
+                            </div>
+
+                            <span class="semana10-info-chip">
+                                Comparación relativa
+                            </span>
+                        </div>
+
+
+                        <div class="semana10-similarity-row">
+
+                            <div class="semana10-similarity-header">
+                                <div>
+                                    <strong>
+                                        Referencia limpia
+                                    </strong>
+
+                                    <span>
+                                        Ventilación sin acumulación visible
+                                    </span>
+                                </div>
+
+                                <strong
+                                    id="semana10SimilarityClean"
+                                    class="semana10-percentage clean"
+                                >
+                                    0%
+                                </strong>
+                            </div>
+
+
+                            <div
+                                class="semana10-progress"
+                                role="progressbar"
+                                aria-label="Similitud relativa con referencia limpia"
+                                aria-valuemin="0"
+                                aria-valuemax="100"
+                            >
+                                <div
+                                    id="semana10BarClean"
+                                    class="semana10-progress-fill clean"
+                                ></div>
+                            </div>
+
+
+                            <div class="semana10-distance">
+                                Distancia:
+                                <strong id="semana10DistanciaLimpio">
+                                    -
+                                </strong>
+                            </div>
+
+                        </div>
+
+
+                        <div class="semana10-similarity-row">
+
+                            <div class="semana10-similarity-header">
+                                <div>
+                                    <strong>
+                                        Referencia con suciedad
+                                    </strong>
+
+                                    <span>
+                                        Ventilación con acumulación visible
+                                    </span>
+                                </div>
+
+                                <strong
+                                    id="semana10SimilarityDirty"
+                                    class="semana10-percentage dirty"
+                                >
+                                    0%
+                                </strong>
+                            </div>
+
+
+                            <div
+                                class="semana10-progress"
+                                role="progressbar"
+                                aria-label="Similitud relativa con referencia sucia"
+                                aria-valuemin="0"
+                                aria-valuemax="100"
+                            >
+                                <div
+                                    id="semana10BarDirty"
+                                    class="semana10-progress-fill dirty"
+                                ></div>
+                            </div>
+
+
+                            <div class="semana10-distance">
+                                Distancia:
+                                <strong id="semana10DistanciaSucio">
+                                    -
+                                </strong>
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            id="semana10SimilarityWinner"
+                            class="semana10-similarity-summary"
+                        >
+                            -
+                        </div>
+
+                        <p class="semana10-similarity-note">
+                            Un porcentaje mayor indica mayor cercanía relativa entre
+                            las dos referencias disponibles. No representa una
+                            probabilidad de suciedad.
+                        </p>
+
+                    </article>
+
+
+                    <article class="semana10-card">
+
+                        <div class="semana10-card-header">
+                            <div>
+                                <span class="semana10-card-label">
+                                    CARACTERÍSTICAS
+                                </span>
+
+                                <h2>
+                                    Métricas de la imagen
+                                </h2>
+                            </div>
+                        </div>
+
+
+                        <div class="semana10-metrics-grid">
+
+                            <div class="semana10-metric">
+                                <span class="semana10-metric-icon">
+                                    O
+                                </span>
+
+                                <div>
+                                    <span>
+                                        Umbral Otsu
+                                    </span>
+
+                                    <strong id="semana10Otsu">
+                                        -
+                                    </strong>
+                                </div>
+                            </div>
+
+
+                            <div class="semana10-metric">
+                                <span class="semana10-metric-icon">
+                                    R
+                                </span>
+
+                                <div>
+                                    <span>
+                                        Regiones detectadas
+                                    </span>
+
+                                    <strong id="semana10Regiones">
+                                        -
+                                    </strong>
+                                </div>
+                            </div>
+
+
+                            <div class="semana10-metric">
+                                <span class="semana10-metric-icon">
+                                    A
+                                </span>
+
+                                <div>
+                                    <span>
+                                        Área promedio
+                                    </span>
+
+                                    <strong id="semana10Area">
+                                        -
+                                    </strong>
+                                </div>
+                            </div>
+
+
+                            <div class="semana10-metric">
+                                <span class="semana10-metric-icon">
+                                    σ
+                                </span>
+
+                                <div>
+                                    <span>
+                                        Desviación del área
+                                    </span>
+
+                                    <strong id="semana10Desviacion">
+                                        -
+                                    </strong>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+
+                <div
+                    id="semana10RecommendationCard"
+                    class="semana10-recommendation"
+                >
+                    <div class="semana10-recommendation-icon">
+                        !
+                    </div>
+
+                    <div>
+                        <span class="semana10-card-label">
+                            RECOMENDACIÓN
+                        </span>
+
+                        <h2>
+                            Acción sugerida
+                        </h2>
+
+                        <p id="semana10Recomendacion">
+                            -
+                        </p>
+                    </div>
+                </div>
+
+
+                <div class="semana10-note">
+                    <strong>
+                        Alcance del resultado
+                    </strong>
+
+                    <p>
+                        El sistema compara descriptores visuales de la fotografía
+                        con dos referencias conocidas. El resultado funciona como
+                        apoyo para inspección preventiva y no como diagnóstico
+                        físico definitivo del equipo.
+                    </p>
+                </div>
+
+            </div>
+
+        </section>
+
 
         <!-- =================================================
              ARQUITECTURA
@@ -3159,207 +3850,207 @@
         <section id="arquitectura" class="content-section">
 
 
-            <div class="section-title">
+                <div class="section-title">
 
-                <div class="week-marker">
-                    A
-                </div>
+                    <div class="week-marker">
+                        A
+                    </div>
 
-
-                <div>
-
-                    <span class="section-kicker">
-                        ARQUITECTURA
-                    </span>
-
-                    <h2>
-                        Estructura del proyecto
-                    </h2>
-
-                    <p>
-                        Organización de la aplicación,
-                        scripts, datos y reportes.
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div class="architecture-flow">
-
-
-                <div class="architecture-node">
-
-                    <span>
-                        01
-                    </span>
-
-                    <strong>
-                        Frontend
-                    </strong>
-
-                    <small>
-                        HTML · CSS · JS
-                    </small>
-
-                </div>
-
-
-                <div class="architecture-arrow">
-                    →
-                </div>
-
-
-                <div class="architecture-node highlight">
-
-                    <span>
-                        02
-                    </span>
-
-                    <strong>
-                        Flask
-                    </strong>
-
-                    <small>
-                        API local
-                    </small>
-
-                </div>
-
-
-                <div class="architecture-arrow">
-                    →
-                </div>
-
-
-                <div class="architecture-node">
-
-                    <span>
-                        03
-                    </span>
-
-                    <strong>
-                        Python
-                    </strong>
-
-                    <small>
-                        Algoritmos IA
-                    </small>
-
-                </div>
-
-
-                <div class="architecture-arrow">
-                    →
-                </div>
-
-
-                <div class="architecture-node">
-
-                    <span>
-                        04
-                    </span>
-
-                    <strong>
-                        Datos
-                    </strong>
-
-                    <small>
-                        CSV · TXT
-                    </small>
-
-                </div>
-
-
-                <div class="architecture-arrow">
-                    →
-                </div>
-
-
-                <div class="architecture-node">
-
-                    <span>
-                        05
-                    </span>
-
-                    <strong>
-                        Reportes
-                    </strong>
-
-                    <small>
-                        Markdown
-                    </small>
-
-                </div>
-
-
-            </div>
-
-
-            <div class="section-block">
-
-                <div class="block-heading">
 
                     <div>
 
                         <span class="section-kicker">
-                            ESTRUCTURA
+                            ARQUITECTURA
                         </span>
 
-                        <h3>
-                            Flujo de ejecución
-                        </h3>
+                        <h2>
+                            Estructura del proyecto
+                        </h2>
+
+                        <p>
+                            Organización de la aplicación,
+                            scripts, datos y reportes.
+                        </p>
 
                     </div>
 
                 </div>
 
 
-                <div class="execution-flow">
+                <div class="architecture-flow">
 
-                    <div>
-                        Usuario
+
+                    <div class="architecture-node">
+
+                        <span>
+                            01
+                        </span>
+
+                        <strong>
+                            Frontend
+                        </strong>
+
+                        <small>
+                            HTML · CSS · JS
+                        </small>
+
                     </div>
 
-                    <span>
-                        →
-                    </span>
 
-                    <div>
-                        Frontend
+                    <div class="architecture-arrow">
+                        →
                     </div>
 
-                    <span>
-                        →
-                    </span>
 
-                    <div>
-                        Flask
+                    <div class="architecture-node highlight">
+
+                        <span>
+                            02
+                        </span>
+
+                        <strong>
+                            Flask
+                        </strong>
+
+                        <small>
+                            API local
+                        </small>
+
                     </div>
 
-                    <span>
-                        →
-                    </span>
 
-                    <div>
-                        Python
+                    <div class="architecture-arrow">
+                        →
                     </div>
 
-                    <span>
-                        →
-                    </span>
 
-                    <div>
-                        Resultado
+                    <div class="architecture-node">
+
+                        <span>
+                            03
+                        </span>
+
+                        <strong>
+                            Python
+                        </strong>
+
+                        <small>
+                            Algoritmos IA
+                        </small>
+
+                    </div>
+
+
+                    <div class="architecture-arrow">
+                        →
+                    </div>
+
+
+                    <div class="architecture-node">
+
+                        <span>
+                            04
+                        </span>
+
+                        <strong>
+                            Datos
+                        </strong>
+
+                        <small>
+                            CSV · TXT
+                        </small>
+
+                    </div>
+
+
+                    <div class="architecture-arrow">
+                        →
+                    </div>
+
+
+                    <div class="architecture-node">
+
+                        <span>
+                            05
+                        </span>
+
+                        <strong>
+                            Reportes
+                        </strong>
+
+                        <small>
+                            Markdown
+                        </small>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="section-block">
+
+                    <div class="block-heading">
+
+                        <div>
+
+                            <span class="section-kicker">
+                                ESTRUCTURA
+                            </span>
+
+                            <h3>
+                                Flujo de ejecución
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="execution-flow">
+
+                        <div>
+                            Usuario
+                        </div>
+
+                        <span>
+                            →
+                        </span>
+
+                        <div>
+                            Frontend
+                        </div>
+
+                        <span>
+                            →
+                        </span>
+
+                        <div>
+                            Flask
+                        </div>
+
+                        <span>
+                            →
+                        </span>
+
+                        <div>
+                            Python
+                        </div>
+
+                        <span>
+                            →
+                        </span>
+
+                        <div>
+                            Resultado
+                        </div>
+
                     </div>
 
                 </div>
 
-            </div>
 
-
-        </section>
+            </section>
 
 
     </main>

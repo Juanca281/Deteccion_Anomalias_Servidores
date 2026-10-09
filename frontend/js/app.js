@@ -41,6 +41,7 @@ const sectionTitles = {
     semana7: "Semana 7",
     semana8: "Semana 8 - Reconocimiento neuronal y ontología",
     semana9: "Semana 9 - Reconocimiento y procesamiento de imágenes",
+    semana10: "Semana 10 - Análisis físico mediante visión artificial",
     arquitectura: "Arquitectura"
 };
 
@@ -305,7 +306,7 @@ function loadInitialSection() {
 
 
     showSection(
-        "semana9"
+        "semana10"
     );
 
 }
@@ -3061,7 +3062,7 @@ async function checkBackend() {
                     </strong>
 
                     <small>
-                        Semana 9
+                        Semana 10
                     </small>
 
                 </div>
@@ -4815,4 +4816,2111 @@ function renderSemana9Evidence(artifacts) {
             "?v=" +
             timestamp;
     }
+}
+
+// ============================================================
+// SEMANA 10
+// Histogramas + Otsu + Regiones + LBP
+// ============================================================
+
+let semana10SelectedFile = null;
+let semana10PreviewUrl = null;
+
+let semana10Visuals = {
+    original: null,
+    gris: null,
+    otsu: null,
+    lbp: null
+};
+
+
+let semana10LocalVisualData = null;
+
+
+// ============================================================
+// INICIALIZACIÓN
+// ============================================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        const input =
+            document.getElementById(
+                "semana10ImageInput"
+            );
+
+        if (!input) {
+            return;
+        }
+
+        input.addEventListener(
+            "change",
+            event => {
+
+                const file =
+                    event.target.files?.[0];
+
+                if (file) {
+                    selectSemana10Image(
+                        file
+                    );
+                }
+
+            }
+        );
+
+        setupImageDropArea(
+            "semana10UploadArea",
+            "semana10ImageInput",
+            selectSemana10Image
+        );
+
+        resetSemana10ProcessViewer();
+
+    }
+);
+
+
+// ============================================================
+// ABRIR SELECTOR
+// ============================================================
+
+function openSemana10File() {
+
+    const input =
+        document.getElementById(
+            "semana10ImageInput"
+        );
+
+    input?.click();
+
+}
+
+
+// ============================================================
+// SELECCIONAR IMAGEN
+// ============================================================
+
+async function selectSemana10Image(file) {
+
+    const validationError =
+        validateImageFile(
+            file
+        );
+
+    if (validationError) {
+
+        showSemana10Error(
+            validationError
+        );
+
+        return;
+    }
+
+
+    semana10SelectedFile =
+        file;
+
+
+    if (semana10PreviewUrl) {
+
+        URL.revokeObjectURL(
+            semana10PreviewUrl
+        );
+
+    }
+
+
+    semana10PreviewUrl =
+        URL.createObjectURL(
+            file
+        );
+
+
+    semana10Visuals = {
+        original:
+            semana10PreviewUrl,
+
+        gris:
+            null,
+
+        otsu:
+            null,
+
+        lbp:
+            null
+    };
+
+
+    const preview =
+        document.getElementById(
+            "semana10Preview"
+        );
+
+
+    if (preview) {
+
+        preview.src =
+            semana10PreviewUrl;
+
+        preview.hidden =
+            false;
+
+    }
+
+
+    setHidden(
+        "semana10UploadEmpty",
+        true
+    );
+
+    setHidden(
+        "semana10FileInfo",
+        false
+    );
+
+    setHidden(
+        "semana10Results",
+        true
+    );
+
+    setHidden(
+        "semana10Error",
+        true
+    );
+
+
+    setText(
+        "semana10FileName",
+        file.name
+    );
+
+
+    const button =
+        document.getElementById(
+            "semana10AnalyzeButton"
+        );
+
+
+    if (button) {
+
+        button.disabled =
+            false;
+
+    }
+
+
+    showSemana10Process(
+        "original"
+    );
+
+
+    try {
+
+        const localVisuals =
+            await buildSemana10LocalVisuals(
+                file
+            );
+
+
+        if (
+            semana10SelectedFile
+            !== file
+        ) {
+
+            return;
+        }
+
+
+        semana10Visuals.gris =
+            localVisuals.gris;
+
+        semana10Visuals.otsu =
+            localVisuals.otsu;
+
+        semana10Visuals.lbp =
+            localVisuals.lbp;
+
+        semana10LocalVisualData =
+            localVisuals.source;
+
+
+    } catch {
+
+        // La vista original continúa disponible
+        // aunque falle la previsualización local.
+
+    }
+
+}
+
+
+// ============================================================
+// QUITAR IMAGEN
+// ============================================================
+
+function clearSemana10Image() {
+
+    semana10SelectedFile =
+        null;
+
+
+    const input =
+        document.getElementById(
+            "semana10ImageInput"
+        );
+
+
+    if (input) {
+        input.value = "";
+    }
+
+
+    if (semana10PreviewUrl) {
+
+        URL.revokeObjectURL(
+            semana10PreviewUrl
+        );
+
+        semana10PreviewUrl =
+            null;
+
+    }
+
+
+    semana10Visuals = {
+        original: null,
+        gris: null,
+        otsu: null,
+        lbp: null
+    };
+
+
+    semana10LocalVisualData =
+        null;
+
+
+    const preview =
+        document.getElementById(
+            "semana10Preview"
+        );
+
+
+    if (preview) {
+
+        preview.src = "";
+        preview.hidden = true;
+
+    }
+
+
+    setHidden(
+        "semana10UploadEmpty",
+        false
+    );
+
+    setHidden(
+        "semana10FileInfo",
+        true
+    );
+
+    setHidden(
+        "semana10Results",
+        true
+    );
+
+    setHidden(
+        "semana10Error",
+        true
+    );
+
+
+    const button =
+        document.getElementById(
+            "semana10AnalyzeButton"
+        );
+
+
+    if (button) {
+
+        button.disabled =
+            true;
+
+    }
+
+
+    resetSemana10ProcessViewer();
+
+}
+
+
+// ============================================================
+// VISOR DE PROCESAMIENTO
+// ============================================================
+
+function resetSemana10ProcessViewer() {
+
+    const image =
+        document.getElementById(
+            "semana10ProcessImage"
+        );
+
+    const empty =
+        document.getElementById(
+            "semana10ProcessEmpty"
+        );
+
+
+    if (image) {
+
+        image.src = "";
+        image.hidden = true;
+
+    }
+
+
+    if (empty) {
+
+        empty.hidden = false;
+
+        empty.innerHTML = `
+            <div class="semana10-process-empty-icon">
+                ◫
+            </div>
+
+            <strong>
+                Esperando una fotografía
+            </strong>
+
+            <span>
+                Carga una imagen para visualizar el procesamiento.
+            </span>
+        `;
+
+    }
+
+
+    updateSemana10ProcessTabs(
+        "original"
+    );
+
+
+    setText(
+        "semana10ProcessTitle",
+        "Fotografía original"
+    );
+
+    setText(
+        "semana10ProcessStage",
+        "Entrada"
+    );
+
+    setText(
+        "semana10ProcessDescription",
+        "La imagen seleccionada aparecerá aquí antes del análisis."
+    );
+
+}
+
+
+function normalizeSemana10ArtifactUrl(
+    value
+) {
+
+    if (!value) {
+        return null;
+    }
+
+
+    const url =
+        String(value);
+
+
+    if (
+        url.startsWith("http://")
+        || url.startsWith("https://")
+        || url.startsWith("/")
+        || url.startsWith("blob:")
+        || url.startsWith("data:")
+    ) {
+
+        return url;
+
+    }
+
+
+    return "/" + url;
+
+}
+
+
+function updateSemana10ProcessTabs(
+    activeType
+) {
+
+    const tabMap = {
+        original:
+            "semana10TabOriginal",
+
+        gris:
+            "semana10TabGray",
+
+        otsu:
+            "semana10TabOtsu",
+
+        lbp:
+            "semana10TabLbp"
+    };
+
+
+    Object.entries(
+        tabMap
+    ).forEach(
+        ([type, id]) => {
+
+            const tab =
+                document.getElementById(
+                    id
+                );
+
+
+            if (!tab) {
+                return;
+            }
+
+
+            const isActive =
+                type === activeType;
+
+
+            tab.classList.toggle(
+                "active",
+                isActive
+            );
+
+
+            tab.setAttribute(
+                "aria-selected",
+                String(
+                    isActive
+                )
+            );
+
+        }
+    );
+
+}
+
+
+function showSemana10Process(
+    type
+) {
+
+    const descriptions = {
+
+        original: {
+            title:
+                "Fotografía original",
+
+            stage:
+                "Entrada",
+
+            text:
+                "Imagen seleccionada por el usuario antes del procesamiento."
+        },
+
+        gris: {
+            title:
+                "Escala de grises",
+
+            stage:
+                "Intensidad",
+
+            text:
+                "Reduce la imagen a niveles de intensidad para facilitar el análisis numérico."
+        },
+
+        otsu: {
+            title:
+                "Segmentación Otsu",
+
+            stage:
+                "Segmentación",
+
+            text:
+                "Separa automáticamente grupos de píxeles según el umbral de intensidad calculado."
+        },
+
+        lbp: {
+            title:
+                "Textura LBP",
+
+            stage:
+                "Textura",
+
+            text:
+                "Representa patrones locales de textura utilizados para comparar la superficie con las referencias."
+        }
+
+    };
+
+
+    const information =
+        descriptions[type]
+        || descriptions.original;
+
+
+    updateSemana10ProcessTabs(
+        type
+    );
+
+
+    setText(
+        "semana10ProcessTitle",
+        information.title
+    );
+
+    setText(
+        "semana10ProcessStage",
+        information.stage
+    );
+
+    setText(
+        "semana10ProcessDescription",
+        information.text
+    );
+
+
+    const image =
+        document.getElementById(
+            "semana10ProcessImage"
+        );
+
+    const empty =
+        document.getElementById(
+            "semana10ProcessEmpty"
+        );
+
+
+    if (
+        !image
+        || !empty
+    ) {
+
+        return;
+    }
+
+
+    const url =
+        semana10Visuals[type];
+
+
+    if (!url) {
+
+        image.hidden =
+            true;
+
+        empty.hidden =
+            false;
+
+
+        empty.innerHTML = `
+            <div class="semana10-process-empty-icon">
+                ◫
+            </div>
+
+            <strong>
+                Vista aún no disponible
+            </strong>
+
+            <span>
+                Ejecuta el análisis para generar esta etapa visual.
+            </span>
+        `;
+
+
+        return;
+    }
+
+
+    const cacheSeparator =
+        url.includes("?")
+            ? "&"
+            : "?";
+
+
+    const isLocalImage =
+        url.startsWith("blob:")
+        || url.startsWith("data:");
+
+
+    image.onload = () => {
+
+        image.hidden =
+            false;
+
+        empty.hidden =
+            true;
+
+    };
+
+
+    image.onerror = () => {
+
+        image.hidden =
+            true;
+
+        empty.hidden =
+            false;
+
+        empty.innerHTML = `
+            <div class="semana10-process-empty-icon">
+                !
+            </div>
+
+            <strong>
+                No fue posible mostrar esta vista
+            </strong>
+
+            <span>
+                Vuelve a seleccionar la fotografía o ejecuta nuevamente el análisis.
+            </span>
+        `;
+
+    };
+
+
+    image.src =
+        isLocalImage
+            ? url
+            : `${url}${cacheSeparator}v=${Date.now()}`;
+
+}
+
+
+// ============================================================
+// PREVISUALIZACIONES LOCALES
+// Solo se usan para mostrar el procesamiento en el frontend.
+// El análisis y las métricas finales siguen viniendo de Python.
+// ============================================================
+
+async function loadSemana10ImageSource(file) {
+
+    if ("createImageBitmap" in window) {
+        return await createImageBitmap(file);
+    }
+
+    return await new Promise((resolve, reject) => {
+
+        const url =
+            URL.createObjectURL(file);
+
+        const image =
+            new Image();
+
+        image.onload = () => {
+
+            URL.revokeObjectURL(url);
+            resolve(image);
+
+        };
+
+        image.onerror = () => {
+
+            URL.revokeObjectURL(url);
+
+            reject(
+                new Error(
+                    "No fue posible leer la imagen."
+                )
+            );
+
+        };
+
+        image.src = url;
+
+    });
+
+}
+
+
+function createSemana10Canvas(width, height) {
+
+    const canvas =
+        document.createElement(
+            "canvas"
+        );
+
+    canvas.width = width;
+    canvas.height = height;
+
+    return canvas;
+
+}
+
+
+function createSemana10GrayValues(imageData) {
+
+    const source =
+        imageData.data;
+
+    const totalPixels =
+        imageData.width
+        * imageData.height;
+
+    const gray =
+        new Uint8ClampedArray(
+            totalPixels
+        );
+
+    for (
+        let pixel = 0;
+        pixel < totalPixels;
+        pixel++
+    ) {
+
+        const offset =
+            pixel * 4;
+
+        gray[pixel] =
+            Math.round(
+                source[offset] * 0.2125
+                + source[offset + 1] * 0.7154
+                + source[offset + 2] * 0.0721
+            );
+
+    }
+
+    return gray;
+
+}
+
+
+function semana10GrayToDataUrl(
+    gray,
+    width,
+    height
+) {
+
+    const canvas =
+        createSemana10Canvas(
+            width,
+            height
+        );
+
+    const context =
+        canvas.getContext(
+            "2d"
+        );
+
+    const output =
+        context.createImageData(
+            width,
+            height
+        );
+
+    for (
+        let pixel = 0;
+        pixel < gray.length;
+        pixel++
+    ) {
+
+        const offset =
+            pixel * 4;
+
+        const value =
+            gray[pixel];
+
+        output.data[offset] = value;
+        output.data[offset + 1] = value;
+        output.data[offset + 2] = value;
+        output.data[offset + 3] = 255;
+
+    }
+
+    context.putImageData(
+        output,
+        0,
+        0
+    );
+
+    return canvas.toDataURL(
+        "image/png"
+    );
+
+}
+
+
+function calculateSemana10OtsuThreshold(gray) {
+
+    const histogram =
+        new Uint32Array(
+            256
+        );
+
+    for (
+        let i = 0;
+        i < gray.length;
+        i++
+    ) {
+
+        histogram[gray[i]]++;
+
+    }
+
+    const total =
+        gray.length;
+
+    let weightedTotal = 0;
+
+    for (
+        let value = 0;
+        value < 256;
+        value++
+    ) {
+
+        weightedTotal +=
+            value
+            * histogram[value];
+
+    }
+
+    let backgroundWeight = 0;
+    let backgroundSum = 0;
+    let maximumVariance = -1;
+    let threshold = 0;
+
+    for (
+        let value = 0;
+        value < 256;
+        value++
+    ) {
+
+        backgroundWeight +=
+            histogram[value];
+
+        if (backgroundWeight === 0) {
+            continue;
+        }
+
+        const foregroundWeight =
+            total
+            - backgroundWeight;
+
+        if (foregroundWeight === 0) {
+            break;
+        }
+
+        backgroundSum +=
+            value
+            * histogram[value];
+
+        const backgroundMean =
+            backgroundSum
+            / backgroundWeight;
+
+        const foregroundMean =
+            (
+                weightedTotal
+                - backgroundSum
+            )
+            / foregroundWeight;
+
+        const difference =
+            backgroundMean
+            - foregroundMean;
+
+        const variance =
+            backgroundWeight
+            * foregroundWeight
+            * difference
+            * difference;
+
+        if (
+            variance
+            > maximumVariance
+        ) {
+
+            maximumVariance =
+                variance;
+
+            threshold =
+                value;
+
+        }
+
+    }
+
+    return threshold;
+
+}
+
+
+function semana10MaskToDataUrl(
+    gray,
+    width,
+    height,
+    threshold
+) {
+
+    const canvas =
+        createSemana10Canvas(
+            width,
+            height
+        );
+
+    const context =
+        canvas.getContext(
+            "2d"
+        );
+
+    const output =
+        context.createImageData(
+            width,
+            height
+        );
+
+    for (
+        let pixel = 0;
+        pixel < gray.length;
+        pixel++
+    ) {
+
+        const offset =
+            pixel * 4;
+
+        const value =
+            gray[pixel]
+            > threshold
+                ? 255
+                : 0;
+
+        output.data[offset] = value;
+        output.data[offset + 1] = value;
+        output.data[offset + 2] = value;
+        output.data[offset + 3] = 255;
+
+    }
+
+    context.putImageData(
+        output,
+        0,
+        0
+    );
+
+    return canvas.toDataURL(
+        "image/png"
+    );
+
+}
+
+
+function sampleSemana10Gray(
+    gray,
+    width,
+    height,
+    x,
+    y
+) {
+
+    const x0 =
+        Math.floor(x);
+
+    const y0 =
+        Math.floor(y);
+
+    const x1 =
+        Math.min(
+            x0 + 1,
+            width - 1
+        );
+
+    const y1 =
+        Math.min(
+            y0 + 1,
+            height - 1
+        );
+
+    const dx = x - x0;
+    const dy = y - y0;
+
+    const top =
+        gray[y0 * width + x0]
+        * (1 - dx)
+        + gray[y0 * width + x1]
+        * dx;
+
+    const bottom =
+        gray[y1 * width + x0]
+        * (1 - dx)
+        + gray[y1 * width + x1]
+        * dx;
+
+    return (
+        top * (1 - dy)
+        + bottom * dy
+    );
+
+}
+
+
+function semana10LbpToDataUrl(
+    gray,
+    width,
+    height
+) {
+
+    const points = 16;
+    const radius = 2;
+
+    const canvas =
+        createSemana10Canvas(
+            width,
+            height
+        );
+
+    const context =
+        canvas.getContext(
+            "2d"
+        );
+
+    const output =
+        context.createImageData(
+            width,
+            height
+        );
+
+    for (
+        let y = 0;
+        y < height;
+        y++
+    ) {
+
+        for (
+            let x = 0;
+            x < width;
+            x++
+        ) {
+
+            const pixel =
+                y * width + x;
+
+            let lbpValue = 0;
+
+            if (
+                x >= radius
+                && x < width - radius
+                && y >= radius
+                && y < height - radius
+            ) {
+
+                const center =
+                    gray[pixel];
+
+                const bits =
+                    new Uint8Array(
+                        points
+                    );
+
+                let ones = 0;
+
+                for (
+                    let point = 0;
+                    point < points;
+                    point++
+                ) {
+
+                    const angle =
+                        2
+                        * Math.PI
+                        * point
+                        / points;
+
+                    const sampleX =
+                        x
+                        + radius
+                        * Math.cos(angle);
+
+                    const sampleY =
+                        y
+                        - radius
+                        * Math.sin(angle);
+
+                    const neighbor =
+                        sampleSemana10Gray(
+                            gray,
+                            width,
+                            height,
+                            sampleX,
+                            sampleY
+                        );
+
+                    bits[point] =
+                        neighbor >= center
+                            ? 1
+                            : 0;
+
+                    ones +=
+                        bits[point];
+
+                }
+
+                let transitions = 0;
+
+                for (
+                    let point = 0;
+                    point < points;
+                    point++
+                ) {
+
+                    const next =
+                        (point + 1)
+                        % points;
+
+                    if (
+                        bits[point]
+                        !== bits[next]
+                    ) {
+
+                        transitions++;
+
+                    }
+
+                }
+
+                const uniformValue =
+                    transitions <= 2
+                        ? ones
+                        : points + 1;
+
+                lbpValue =
+                    Math.round(
+                        uniformValue
+                        / (points + 1)
+                        * 255
+                    );
+
+            }
+
+            const offset =
+                pixel * 4;
+
+            output.data[offset] =
+                lbpValue;
+
+            output.data[offset + 1] =
+                lbpValue;
+
+            output.data[offset + 2] =
+                lbpValue;
+
+            output.data[offset + 3] =
+                255;
+
+        }
+
+    }
+
+    context.putImageData(
+        output,
+        0,
+        0
+    );
+
+    return canvas.toDataURL(
+        "image/png"
+    );
+
+}
+
+
+async function buildSemana10LocalVisuals(file) {
+
+    const image =
+        await loadSemana10ImageSource(
+            file
+        );
+
+    const sourceWidth =
+        image.width;
+
+    const sourceHeight =
+        image.height;
+
+    const maximumSide =
+        900;
+
+    const scale =
+        Math.min(
+            1,
+            maximumSide
+            / Math.max(
+                sourceWidth,
+                sourceHeight
+            )
+        );
+
+    const width =
+        Math.max(
+            1,
+            Math.round(
+                sourceWidth
+                * scale
+            )
+        );
+
+    const height =
+        Math.max(
+            1,
+            Math.round(
+                sourceHeight
+                * scale
+            )
+        );
+
+    const canvas =
+        createSemana10Canvas(
+            width,
+            height
+        );
+
+    const context =
+        canvas.getContext(
+            "2d",
+            {
+                willReadFrequently:
+                    true
+            }
+        );
+
+    context.drawImage(
+        image,
+        0,
+        0,
+        width,
+        height
+    );
+
+    if (
+        typeof image.close
+        === "function"
+    ) {
+
+        image.close();
+
+    }
+
+    const imageData =
+        context.getImageData(
+            0,
+            0,
+            width,
+            height
+        );
+
+    const gray =
+        createSemana10GrayValues(
+            imageData
+        );
+
+    const localOtsu =
+        calculateSemana10OtsuThreshold(
+            gray
+        );
+
+    return {
+        gris:
+            semana10GrayToDataUrl(
+                gray,
+                width,
+                height
+            ),
+
+        otsu:
+            semana10MaskToDataUrl(
+                gray,
+                width,
+                height,
+                localOtsu
+            ),
+
+        lbp:
+            semana10LbpToDataUrl(
+                gray,
+                width,
+                height
+            ),
+
+        source: {
+            gray,
+            width,
+            height,
+            localOtsu
+        }
+    };
+
+}
+
+
+function updateSemana10OtsuPreviewFromBackend(
+    normalizedThreshold
+) {
+
+    if (!semana10LocalVisualData) {
+        return;
+    }
+
+    const threshold =
+        Number(
+            normalizedThreshold
+        );
+
+    if (
+        !Number.isFinite(
+            threshold
+        )
+    ) {
+
+        return;
+    }
+
+    const threshold255 =
+        Math.max(
+            0,
+            Math.min(
+                255,
+                threshold * 255
+            )
+        );
+
+    semana10Visuals.otsu =
+        semana10MaskToDataUrl(
+            semana10LocalVisualData.gray,
+            semana10LocalVisualData.width,
+            semana10LocalVisualData.height,
+            threshold255
+        );
+
+}
+
+
+// ============================================================
+// MOSTRAR ERROR
+// ============================================================
+
+function showSemana10Error(
+    message
+) {
+
+    setText(
+        "semana10ErrorText",
+        message
+    );
+
+
+    setHidden(
+        "semana10Loading",
+        true
+    );
+
+    setHidden(
+        "semana10Results",
+        true
+    );
+
+    setHidden(
+        "semana10Error",
+        false
+    );
+
+}
+
+
+// ============================================================
+// ESTADO DEL BOTÓN
+// ============================================================
+
+function setSemana10Loading(
+    loading
+) {
+
+    const button =
+        document.getElementById(
+            "semana10AnalyzeButton"
+        );
+
+    const textElement =
+        document.getElementById(
+            "semana10AnalyzeText"
+        );
+
+
+    if (!button) {
+        return;
+    }
+
+
+    button.disabled =
+        loading;
+
+
+    button.classList.toggle(
+        "is-loading",
+        loading
+    );
+
+
+    if (textElement) {
+
+        textElement.textContent =
+            loading
+                ? "Analizando fotografía..."
+                : "Analizar estado físico";
+
+    }
+
+
+    setHidden(
+        "semana10Loading",
+        !loading
+    );
+
+}
+
+
+// ============================================================
+// EJECUTAR ANÁLISIS
+// ============================================================
+
+async function runSemana10() {
+
+    if (!semana10SelectedFile) {
+
+        showSemana10Error(
+            "Selecciona una fotografía antes de analizar."
+        );
+
+        return;
+    }
+
+
+    setSemana10Loading(
+        true
+    );
+
+
+    setHidden(
+        "semana10Error",
+        true
+    );
+
+    setHidden(
+        "semana10Results",
+        true
+    );
+
+
+    try {
+
+        const formData =
+            new FormData();
+
+
+        formData.append(
+            "imagen",
+            semana10SelectedFile
+        );
+
+
+        const response =
+            await fetch(
+                "/api/semana10",
+                {
+                    method:
+                        "POST",
+
+                    body:
+                        formData
+                }
+            );
+
+
+        let data = null;
+
+
+        try {
+
+            data =
+                await response.json();
+
+        } catch {
+
+            throw new Error(
+                "El backend devolvió una respuesta no válida."
+            );
+
+        }
+
+
+        if (
+            !response.ok
+            || !data.success
+        ) {
+
+            throw new Error(
+                data.error
+                || "No fue posible analizar la fotografía."
+            );
+
+        }
+
+
+        renderSemana10Result(
+            data
+        );
+
+
+    } catch (error) {
+
+        showSemana10Error(
+            error.message
+        );
+
+
+    } finally {
+
+        setSemana10Loading(
+            false
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// SIMILITUD RELATIVA
+// ============================================================
+
+function calculateSemana10Similarity(
+    cleanDistance,
+    dirtyDistance
+) {
+
+    const clean =
+        Number.isFinite(
+            cleanDistance
+        )
+            ? Math.max(
+                cleanDistance,
+                0
+            )
+            : 0;
+
+
+    const dirty =
+        Number.isFinite(
+            dirtyDistance
+        )
+            ? Math.max(
+                dirtyDistance,
+                0
+            )
+            : 0;
+
+
+    const cleanCloseness =
+        1 / (
+            1 + clean
+        );
+
+
+    const dirtyCloseness =
+        1 / (
+            1 + dirty
+        );
+
+
+    const total =
+        cleanCloseness
+        + dirtyCloseness;
+
+
+    if (total <= 0) {
+
+        return {
+            clean: 50,
+            dirty: 50
+        };
+
+    }
+
+
+    return {
+        clean:
+            cleanCloseness
+            / total
+            * 100,
+
+        dirty:
+            dirtyCloseness
+            / total
+            * 100
+    };
+
+}
+
+
+// ============================================================
+// MOSTRAR RESULTADO
+// ============================================================
+
+function renderSemana10Result(
+    data
+) {
+
+    const cleanDistance =
+        Number(
+            data.distancia_limpio
+        );
+
+
+    const dirtyDistance =
+        Number(
+            data.distancia_sucio
+        );
+
+
+    const state =
+        data.estado
+        || "";
+
+
+    const similarity =
+        calculateSemana10Similarity(
+            cleanDistance,
+            dirtyDistance
+        );
+
+
+    // --------------------------------------------------------
+    // Artefactos visuales
+    // --------------------------------------------------------
+
+    const artifacts =
+        data.artifacts
+        || {};
+
+
+    semana10Visuals = {
+        original:
+            semana10PreviewUrl,
+
+        gris:
+            normalizeSemana10ArtifactUrl(
+                artifacts.gris
+                || artifacts.gray
+            )
+            || semana10Visuals.gris,
+
+        otsu:
+            normalizeSemana10ArtifactUrl(
+                artifacts.otsu
+                || artifacts.mask
+            )
+            || semana10Visuals.otsu,
+
+        lbp:
+            normalizeSemana10ArtifactUrl(
+                artifacts.lbp
+            )
+            || semana10Visuals.lbp
+    };
+
+
+    if (
+        !artifacts.otsu
+        && !artifacts.mask
+    ) {
+
+        updateSemana10OtsuPreviewFromBackend(
+            data.umbral_otsu
+        );
+
+    }
+
+
+    const hero =
+        document.getElementById(
+            "semana10Hero"
+        );
+
+    const badge =
+        document.getElementById(
+            "semana10StatusBadge"
+        );
+
+    const statusIcon =
+        document.getElementById(
+            "semana10StatusIcon"
+        );
+
+    const recommendation =
+        document.getElementById(
+            "semana10RecommendationCard"
+        );
+
+
+    [
+        hero,
+        badge,
+        recommendation
+    ].forEach(
+        element => {
+
+            element?.classList.remove(
+                "clean",
+                "dirty"
+            );
+
+        }
+    );
+
+
+    const isDirty =
+        state
+        ===
+        "SIMILAR_A_REFERENCIA_SUCIA";
+
+
+    if (isDirty) {
+
+        hero?.classList.add(
+            "dirty"
+        );
+
+        badge?.classList.add(
+            "dirty"
+        );
+
+        recommendation?.classList.add(
+            "dirty"
+        );
+
+
+        setText(
+            "semana10StatusIcon",
+            "!"
+        );
+
+        setText(
+            "semana10Estado",
+            "Posible acumulación de suciedad"
+        );
+
+        setText(
+            "semana10EstadoDescripcion",
+            "La fotografía presenta características visuales más cercanas a la referencia con acumulación de suciedad."
+        );
+
+        setText(
+            "semana10StatusBadge",
+            "REVISIÓN RECOMENDADA"
+        );
+
+    } else {
+
+        hero?.classList.add(
+            "clean"
+        );
+
+        badge?.classList.add(
+            "clean"
+        );
+
+        recommendation?.classList.add(
+            "clean"
+        );
+
+
+        setText(
+            "semana10StatusIcon",
+            "✓"
+        );
+
+        setText(
+            "semana10Estado",
+            "Condición visual favorable"
+        );
+
+        setText(
+            "semana10EstadoDescripcion",
+            "La fotografía presenta características visuales más cercanas a la referencia del sistema de ventilación limpio."
+        );
+
+        setText(
+            "semana10StatusBadge",
+            "ESTADO FAVORABLE"
+        );
+
+    }
+
+
+    // --------------------------------------------------------
+    // Barras de similitud
+    // --------------------------------------------------------
+
+    setText(
+        "semana10SimilarityClean",
+        `${similarity.clean.toFixed(1)}%`
+    );
+
+    setText(
+        "semana10SimilarityDirty",
+        `${similarity.dirty.toFixed(1)}%`
+    );
+
+
+    const cleanBar =
+        document.getElementById(
+            "semana10BarClean"
+        );
+
+    const dirtyBar =
+        document.getElementById(
+            "semana10BarDirty"
+        );
+
+
+    if (cleanBar) {
+
+        cleanBar.style.width =
+            "0%";
+
+        cleanBar.parentElement?.setAttribute(
+            "aria-valuenow",
+            similarity.clean.toFixed(1)
+        );
+
+    }
+
+
+    if (dirtyBar) {
+
+        dirtyBar.style.width =
+            "0%";
+
+        dirtyBar.parentElement?.setAttribute(
+            "aria-valuenow",
+            similarity.dirty.toFixed(1)
+        );
+
+    }
+
+
+    requestAnimationFrame(
+        () => {
+
+            if (cleanBar) {
+
+                cleanBar.style.width =
+                    `${similarity.clean}%`;
+
+            }
+
+
+            if (dirtyBar) {
+
+                dirtyBar.style.width =
+                    `${similarity.dirty}%`;
+
+            }
+
+        }
+    );
+
+
+    // --------------------------------------------------------
+    // Distancias
+    // --------------------------------------------------------
+
+    setText(
+        "semana10DistanciaLimpio",
+        Number.isFinite(
+            cleanDistance
+        )
+            ? cleanDistance.toFixed(4)
+            : "-"
+    );
+
+    setText(
+        "semana10DistanciaSucio",
+        Number.isFinite(
+            dirtyDistance
+        )
+            ? dirtyDistance.toFixed(4)
+            : "-"
+    );
+
+
+    const winner =
+        document.getElementById(
+            "semana10SimilarityWinner"
+        );
+
+
+    if (winner) {
+
+        const dirtyWins =
+            Number.isFinite(
+                dirtyDistance
+            )
+            && Number.isFinite(
+                cleanDistance
+            )
+            && dirtyDistance
+            < cleanDistance;
+
+
+        winner.textContent =
+            dirtyWins
+                ? "Mayor similitud visual: referencia con suciedad"
+                : "Mayor similitud visual: referencia limpia";
+
+
+        winner.className =
+            dirtyWins
+                ? "semana10-similarity-summary dirty"
+                : "semana10-similarity-summary clean";
+
+    }
+
+
+    // --------------------------------------------------------
+    // Métricas
+    // --------------------------------------------------------
+
+    setText(
+        "semana10Otsu",
+        formatSemana10Number(
+            data.umbral_otsu,
+            4
+        )
+    );
+
+    setText(
+        "semana10Regiones",
+        data.regiones
+        ?? "-"
+    );
+
+    setText(
+        "semana10Area",
+        formatSemana10Number(
+            data.area_promedio,
+            2
+        )
+    );
+
+    setText(
+        "semana10Desviacion",
+        formatSemana10Number(
+            data.desviacion_area,
+            2
+        )
+    );
+
+
+    setText(
+        "semana10Recomendacion",
+        data.recomendacion
+        || "-"
+    );
+
+
+    setHidden(
+        "semana10Error",
+        true
+    );
+
+    setHidden(
+        "semana10Results",
+        false
+    );
+
+
+    const preferredVisual =
+        semana10Visuals.gris
+            ? "gris"
+            : "original";
+
+
+    showSemana10Process(
+        preferredVisual
+    );
+
+
+    document.getElementById(
+        "semana10Results"
+    )?.scrollIntoView({
+        behavior:
+            "smooth",
+
+        block:
+            "start"
+    });
+
+}
+
+
+// ============================================================
+// FORMATEAR DATOS DE SEMANA 10
+// ============================================================
+
+function formatSemana10Number(
+    value,
+    decimals
+) {
+
+    const number =
+        Number(
+            value
+        );
+
+
+    if (!Number.isFinite(number)) {
+        return "-";
+    }
+
+
+    return number.toFixed(
+        decimals
+    );
+
+}
+
+
+// ============================================================
+// UTILIDAD DE VISIBILIDAD
+// ============================================================
+
+function setHidden(
+    id,
+    hidden
+) {
+
+    const element =
+        document.getElementById(
+            id
+        );
+
+
+    if (element) {
+
+        element.hidden =
+            hidden;
+
+    }
+
 }
