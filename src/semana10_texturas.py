@@ -33,11 +33,11 @@ ARTIFACTS.mkdir(
 
 
 IMAGEN_SUCIA = (
-    DATA_DIR / "ventilador_sucio.jpeg"
+    DATA_DIR / "ventilador_sucio.png"
 )
 
 IMAGEN_LIMPIA = (
-    DATA_DIR / "ventilador_limpio.jpeg"
+    DATA_DIR / "ventilador_limpio.png"
 )
 
 
@@ -73,6 +73,11 @@ def analizar_imagen(ruta):
     # --------------------------------------------------------
 
     if imagen.ndim == 3:
+
+        # Si es PNG RGBA, quitar canal alfa
+        if imagen.shape[2] == 4:
+            imagen = imagen[:, :, :3]
+
         gris = color.rgb2gray(
             imagen
         )
