@@ -178,13 +178,24 @@
             </button>
 
 
-            <button class="nav-item active" data-section="semana10" type="button">
+            <button class="nav-item" data-section="semana10" type="button">
                 <span class="nav-index">
                     10
                 </span>
 
                 <span class="nav-name">
                     Semana 10
+                </span>
+            </button>
+
+
+            <button class="nav-item active" data-section="semana11" type="button">
+                <span class="nav-index">
+                    11
+                </span>
+
+                <span class="nav-name">
+                    Semana 11
                 </span>
 
                 <span class="nav-badge">
@@ -227,7 +238,7 @@
                     </strong>
 
                     <small>
-                        Semana 10
+                        Semana 11
                     </small>
 
                 </div>
@@ -285,7 +296,7 @@
                 </span>
 
                 <h1 id="pageTitle">
-                    Semana 10 - Análisis físico mediante visión artificial
+                    Semana 11 - Benchmark y selección de modelo
                 </h1>
 
             </div>
@@ -365,12 +376,12 @@
                     </span>
 
                     <strong>
-                        10
+                        11
                     </strong>
 
                     <p>
-                        Análisis físico mediante
-                        visión artificial
+                        Benchmark y selección
+                        técnica de modelo
                     </p>
 
                 </div>
@@ -577,7 +588,7 @@
                     <div class="timeline-connector"></div>
 
 
-                    <div class="timeline-item current">
+                    <div class="timeline-item completed">
 
                         <span class="timeline-number">
                             10
@@ -592,6 +603,31 @@
                             <p>
                                 Histogramas, Otsu,
                                 regiones y textura LBP.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="timeline-connector"></div>
+
+
+                    <div class="timeline-item current">
+
+                        <span class="timeline-number">
+                            11
+                        </span>
+
+                        <div>
+
+                            <strong>
+                                Benchmark
+                            </strong>
+
+                            <p>
+                                Comparación de modelos
+                                y decisión con evidencia.
                             </p>
 
                         </div>
@@ -616,7 +652,7 @@
                     </span>
 
                     <strong>
-                        8
+                        9
                     </strong>
 
                     <small>
@@ -3188,7 +3224,7 @@
              SEMANA 10
         ========================================================= -->
 
-        <section id="semana10" class="content-section active-section">
+        <section id="semana10" class="content-section">
 
             <div class="section-header">
 
@@ -3835,6 +3871,512 @@
                         con dos referencias conocidas. El resultado funciona como
                         apoyo para inspección preventiva y no como diagnóstico
                         físico definitivo del equipo.
+                    </p>
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             SEMANA 11
+        ================================================== -->
+
+        <section id="semana11" class="content-section active-section">
+
+            <div class="section-header semana11-header">
+                <div>
+                    <span class="section-kicker">
+                        SEMANA 11
+                    </span>
+
+                    <h1>
+                        Benchmark y selección de modelo
+                    </h1>
+
+                    <p>
+                        Comparación reproducible de Logistic Regression,
+                        Random Forest y MLPClassifier sobre el mismo dataset,
+                        el mismo split y tres ejecuciones consecutivas.
+                    </p>
+                </div>
+
+                <div class="semana11-header-badge">
+                    <span>DECISIÓN TÉCNICA</span>
+                    <strong>3 modelos · 3 muestras</strong>
+                </div>
+            </div>
+
+
+            <!-- FLUJO -->
+
+            <div class="semana11-flow">
+
+                <div class="semana11-flow-step">
+                    <span>01</span>
+                    <div>
+                        <strong>Dataset</strong>
+                        <small>1000 imágenes · 5 clases</small>
+                    </div>
+                </div>
+
+                <div class="semana11-flow-arrow">→</div>
+
+                <div class="semana11-flow-step">
+                    <span>02</span>
+                    <div>
+                        <strong>Mismo split</strong>
+                        <small>75 % entrenamiento · 25 % prueba</small>
+                    </div>
+                </div>
+
+                <div class="semana11-flow-arrow">→</div>
+
+                <div class="semana11-flow-step">
+                    <span>03</span>
+                    <div>
+                        <strong>3 modelos</strong>
+                        <small>Logistic · Forest · MLP</small>
+                    </div>
+                </div>
+
+                <div class="semana11-flow-arrow">→</div>
+
+                <div class="semana11-flow-step current">
+                    <span>04</span>
+                    <div>
+                        <strong>3 ejecuciones</strong>
+                        <small>Accuracy + tiempo</small>
+                    </div>
+                </div>
+
+                <div class="semana11-flow-arrow">→</div>
+
+                <div class="semana11-flow-step">
+                    <span>05</span>
+                    <div>
+                        <strong>Decisión</strong>
+                        <small>Benchmark + ADR</small>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- PANEL DE EJECUCIÓN -->
+
+            <div class="semana11-control-grid">
+
+                <article class="semana11-panel semana11-run-panel">
+
+                    <div class="semana11-panel-heading">
+                        <div>
+                            <span class="semana11-label">
+                                EXPERIMENTO
+                            </span>
+
+                            <h2>
+                                Ejecutar benchmark
+                            </h2>
+
+                            <p>
+                                El sistema entrena los tres modelos tres veces
+                                utilizando exactamente la misma partición de datos.
+                            </p>
+                        </div>
+
+                        <span class="semana11-chip">
+                            random_state = 42
+                        </span>
+                    </div>
+
+
+                    <div class="semana11-dataset-grid">
+
+                        <div>
+                            <span>Dataset</span>
+                            <strong id="semana11DatasetImages">1000</strong>
+                            <small>imágenes</small>
+                        </div>
+
+                        <div>
+                            <span>Características</span>
+                            <strong id="semana11DatasetFeatures">4096</strong>
+                            <small>por imagen</small>
+                        </div>
+
+                        <div>
+                            <span>Clases</span>
+                            <strong id="semana11DatasetClasses">5</strong>
+                            <small>estados</small>
+                        </div>
+
+                        <div>
+                            <span>Split</span>
+                            <strong>75 / 25</strong>
+                            <small>train / test</small>
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        id="semana11RunButton"
+                        class="semana11-run-button"
+                        type="button"
+                        onclick="runSemana11()"
+                    >
+                        <span class="semana11-run-icon">▶</span>
+
+                        <span>
+                            <strong id="semana11RunText">
+                                Ejecutar 3 muestras
+                            </strong>
+
+                            <small>
+                                Logistic Regression · Random Forest · MLP
+                            </small>
+                        </span>
+
+                        <span class="semana11-run-arrow">→</span>
+                    </button>
+
+
+                    <div
+                        id="semana11Loading"
+                        class="semana11-loading"
+                        hidden
+                    >
+                        <div class="semana11-spinner"></div>
+
+                        <div>
+                            <strong>
+                                Ejecutando benchmark
+                            </strong>
+
+                            <span>
+                                Entrenando 3 modelos durante 3 ejecuciones...
+                            </span>
+                        </div>
+                    </div>
+
+
+                    <div
+                        id="semana11Error"
+                        class="semana11-error"
+                        hidden
+                    >
+                        <strong>
+                            No se pudo completar el benchmark
+                        </strong>
+
+                        <span id="semana11ErrorText"></span>
+                    </div>
+
+                </article>
+
+
+                <article class="semana11-panel semana11-decision-preview">
+
+                    <span class="semana11-label">
+                        CRITERIO DE DECISIÓN
+                    </span>
+
+                    <h2>
+                        ¿Qué compara el sistema?
+                    </h2>
+
+                    <div class="semana11-criteria-list">
+
+                        <div>
+                            <span>01</span>
+                            <div>
+                                <strong>Accuracy</strong>
+                                <small>Proporción de predicciones correctas.</small>
+                            </div>
+                        </div>
+
+                        <div>
+                            <span>02</span>
+                            <div>
+                                <strong>Tiempo de entrenamiento</strong>
+                                <small>Costo medido con perf_counter().</small>
+                            </div>
+                        </div>
+
+                        <div>
+                            <span>03</span>
+                            <div>
+                                <strong>Reproducibilidad</strong>
+                                <small>Mismo dataset, split y semilla.</small>
+                            </div>
+                        </div>
+
+                        <div>
+                            <span>04</span>
+                            <div>
+                                <strong>Trade-off</strong>
+                                <small>Precisión, costo, complejidad y mantenimiento.</small>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="semana11-preview-note">
+                        <strong>
+                            La tabla no decide sola.
+                        </strong>
+
+                        <p>
+                            El modelo seleccionado debe poder justificarse
+                            técnicamente con la evidencia generada.
+                        </p>
+                    </div>
+
+                </article>
+
+            </div>
+
+
+            <!-- RESULTADOS -->
+
+            <div
+                id="semana11Results"
+                class="semana11-results"
+                hidden
+            >
+
+                <div class="semana11-winner">
+
+                    <div class="semana11-winner-icon">
+                        ✓
+                    </div>
+
+                    <div>
+                        <span>
+                            MODELO SELECCIONADO
+                        </span>
+
+                        <h2 id="semana11WinnerName">
+                            -
+                        </h2>
+
+                        <p id="semana11WinnerDescription">
+                            Resultado promedio de tres ejecuciones.
+                        </p>
+                    </div>
+
+                    <div class="semana11-winner-metrics">
+                        <div>
+                            <span>Accuracy</span>
+                            <strong id="semana11WinnerAccuracy">-</strong>
+                        </div>
+
+                        <div>
+                            <span>Tiempo promedio</span>
+                            <strong id="semana11WinnerTime">-</strong>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="semana11ModelCards"
+                    class="semana11-model-grid"
+                ></div>
+
+
+                <div class="semana11-chart-grid">
+
+                    <article class="semana11-panel semana11-chart-card">
+
+                        <div class="semana11-panel-heading">
+                            <div>
+                                <span class="semana11-label">
+                                    PRECISIÓN
+                                </span>
+
+                                <h2>
+                                    Accuracy promedio
+                                </h2>
+
+                                <p>
+                                    Promedio obtenido por cada modelo durante las tres ejecuciones.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div
+                            id="semana11AccuracyChart"
+                            class="semana11-accuracy-chart"
+                        ></div>
+
+                    </article>
+
+
+                    <article class="semana11-panel semana11-chart-card">
+
+                        <div class="semana11-panel-heading">
+                            <div>
+                                <span class="semana11-label">
+                                    RENDIMIENTO
+                                </span>
+
+                                <h2>
+                                    Tiempo en las 3 muestras
+                                </h2>
+
+                                <p>
+                                    Cada barra representa el tiempo real de entrenamiento de una ejecución.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div
+                            id="semana11TimesChart"
+                            class="semana11-times-chart"
+                        ></div>
+
+                    </article>
+
+                </div>
+
+
+                <article class="semana11-panel semana11-table-panel">
+
+                    <div class="semana11-panel-heading">
+                        <div>
+                            <span class="semana11-label">
+                                EVIDENCIA COMPLETA
+                            </span>
+
+                            <h2>
+                                Resultados por ejecución
+                            </h2>
+
+                            <p>
+                                Nueve mediciones: tres modelos evaluados en tres ejecuciones.
+                            </p>
+                        </div>
+
+                        <span
+                            id="semana11ReproBadge"
+                            class="semana11-repro-badge"
+                        >
+                            REPRODUCIBLE
+                        </span>
+                    </div>
+
+
+                    <div class="semana11-table-wrap">
+
+                        <table class="semana11-table">
+                            <thead>
+                                <tr>
+                                    <th>Ejecución</th>
+                                    <th>Modelo</th>
+                                    <th>Accuracy</th>
+                                    <th>Tiempo</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="semana11TableBody"></tbody>
+                        </table>
+
+                    </div>
+
+                </article>
+
+
+                <div class="semana11-evidence">
+
+                    <div>
+                        <span class="semana11-label">
+                            ARCHIVOS GENERADOS
+                        </span>
+
+                        <h2>
+                            Evidencia del benchmark
+                        </h2>
+
+                        <p>
+                            CSV, gráficas, código fuente y ADR quedan disponibles para sustentación.
+                        </p>
+                    </div>
+
+                    <div class="semana11-evidence-actions">
+
+                        <button
+                            class="button button-secondary"
+                            type="button"
+                            onclick="openSemana11Artifact('benchmark_csv')"
+                        >
+                            benchmark.csv
+                        </button>
+
+                        <button
+                            class="button button-secondary"
+                            type="button"
+                            onclick="openSemana11Artifact('repeticiones_csv')"
+                        >
+                            3 ejecuciones CSV
+                        </button>
+
+                        <button
+                            class="button button-secondary"
+                            type="button"
+                            onclick="openSemana11Artifact('accuracy')"
+                        >
+                            Gráfica accuracy
+                        </button>
+
+                        <button
+                            class="button button-secondary"
+                            type="button"
+                            onclick="openSemana11Artifact('tiempos')"
+                        >
+                            Gráfica tiempos
+                        </button>
+
+                        <button
+                            class="button button-secondary"
+                            type="button"
+                            onclick="loadFile('src/semana11_benchmark.py', 'viewer-semana11')"
+                        >
+                            Ver código
+                        </button>
+
+                        <button
+                            class="button button-secondary"
+                            type="button"
+                            onclick="loadFile('reports/semana11_adr.md', 'viewer-semana11')"
+                        >
+                            Ver ADR
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <pre
+                    id="viewer-semana11"
+                    class="file-viewer hidden"
+                ></pre>
+
+
+                <div class="semana11-note">
+                    <strong>
+                        Alcance del resultado
+                    </strong>
+
+                    <p>
+                        El accuracy corresponde al conjunto de prueba del dataset
+                        actual del proyecto. Un 100 % en este benchmark no significa
+                        que el modelo vaya a clasificar perfectamente cualquier caso real.
                     </p>
                 </div>
 

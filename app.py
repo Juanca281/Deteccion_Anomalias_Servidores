@@ -65,6 +65,7 @@ SCRIPTS = {
 SEMANA8_SCRIPT = SRC_DIR / "semana08_analisis.py"
 SEMANA9_SCRIPT = SRC_DIR / "semana09_analisis.py"
 SEMANA10_SCRIPT = SRC_DIR / "semana10_texturas.py"
+SEMANA11_SCRIPT = SRC_DIR / "semana11_benchmark.py"
 
 
 # ============================================================
@@ -1004,6 +1005,135 @@ def api_semana10():
         ), 500
 
 
+
+# ============================================================
+# SEMANA 11
+# BENCHMARK DE MODELOS - 3 EJECUCIONES
+# ============================================================
+
+@app.route(
+    "/api/semana11",
+    methods=["POST"],
+)
+def api_semana11():
+
+    try:
+
+        if not SEMANA11_SCRIPT.exists():
+            return jsonify(
+                {
+                    "success": False,
+                    "error":
+                        "No existe el script de Semana 11.",
+                }
+            ), 404
+
+        process = run_python_script(
+            [
+                SEMANA11_SCRIPT,
+                "--repeticiones",
+                "3",
+                "--json",
+            ],
+            timeout=300,
+        )
+
+        if process.returncode != 0:
+
+            stderr = (
+                process.stderr.strip()
+                if process.stderr
+                else ""
+            )
+
+            stdout = (
+                process.stdout.strip()
+                if process.stdout
+                else ""
+            )
+
+            error_message = stderr
+
+            if stdout:
+                try:
+                    error_data = json.loads(
+                        stdout
+                    )
+
+                    error_message = (
+                        error_data.get(
+                            "error"
+                        )
+                        or error_message
+                    )
+
+                except json.JSONDecodeError:
+                    pass
+
+            return jsonify(
+                {
+                    "success": False,
+                    "error":
+                        error_message
+                        or (
+                            "No fue posible ejecutar "
+                            "el benchmark de Semana 11."
+                        ),
+                }
+            ), 500
+
+        analysis, error_response = (
+            parse_json_output(
+                process,
+                (
+                    "Semana 11 no devolvió "
+                    "información."
+                ),
+                (
+                    "Semana 11 devolvió una "
+                    "respuesta inválida."
+                ),
+            )
+        )
+
+        if error_response:
+            return error_response
+
+        if not analysis.get(
+            "success",
+            False,
+        ):
+            return jsonify(
+                analysis
+            ), 400
+
+        return jsonify(
+            analysis
+        )
+
+    except subprocess.TimeoutExpired:
+
+        return jsonify(
+            {
+                "success": False,
+                "error":
+                    "El benchmark de Semana 11 "
+                    "superó el tiempo máximo permitido.",
+            }
+        ), 504
+
+    except Exception as error:
+
+        return jsonify(
+            {
+                "success": False,
+                "error": str(
+                    error
+                ),
+            }
+        ), 500
+
+
 # ============================================================
 # ARTIFACTOS GENERADOS
 # ============================================================
@@ -1040,6 +1170,8 @@ def status():
                 SEMANA9_SCRIPT.exists(),
             "semana10":
                 SEMANA10_SCRIPT.exists(),
+            "semana11":
+                SEMANA11_SCRIPT.exists(),
         }
     )
 
@@ -1050,7 +1182,7 @@ def status():
             "python_executable":
                 sys.executable,
             "encoding": "utf-8",
-            "current_week": 10,
+            "current_week": 11,
             "scripts":
                 available_scripts,
         }
@@ -1097,6 +1229,7 @@ if __name__ == "__main__":
         "semana8": SEMANA8_SCRIPT,
         "semana9": SEMANA9_SCRIPT,
         "semana10": SEMANA10_SCRIPT,
+        "semana11": SEMANA11_SCRIPT,
     }
 
     for name, path in status_scripts.items():

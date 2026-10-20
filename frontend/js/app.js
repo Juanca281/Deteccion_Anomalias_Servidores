@@ -42,6 +42,7 @@ const sectionTitles = {
     semana8: "Semana 8 - Reconocimiento neuronal y ontología",
     semana9: "Semana 9 - Reconocimiento y procesamiento de imágenes",
     semana10: "Semana 10 - Análisis físico mediante visión artificial",
+    semana11: "Semana 11 - Benchmark y selección de modelo",
     arquitectura: "Arquitectura"
 };
 
@@ -306,7 +307,7 @@ function loadInitialSection() {
 
 
     showSection(
-        "semana10"
+        "semana11"
     );
 
 }
@@ -3033,6 +3034,15 @@ async function checkBackend() {
         }
 
 
+        const data =
+            await response.json();
+
+
+        const currentWeek =
+            data.current_week
+            || 11;
+
+
         if (topbarStatus) {
 
             topbarStatus.innerHTML = `
@@ -3062,7 +3072,7 @@ async function checkBackend() {
                     </strong>
 
                     <small>
-                        Semana 10
+                        Semana ${currentWeek}
                     </small>
 
                 </div>
@@ -6922,5 +6932,872 @@ function setHidden(
             hidden;
 
     }
+
+}
+
+
+// ============================================================
+// SEMANA 11
+// Benchmark de modelos - 3 ejecuciones
+// ============================================================
+
+let semana11Artifacts = {};
+
+
+function setSemana11Loading(
+    loading
+) {
+
+    const button =
+        document.getElementById(
+            "semana11RunButton"
+        );
+
+    const textElement =
+        document.getElementById(
+            "semana11RunText"
+        );
+
+
+    if (button) {
+
+        button.disabled =
+            loading;
+
+        button.classList.toggle(
+            "is-loading",
+            loading
+        );
+
+    }
+
+
+    if (textElement) {
+
+        textElement.textContent =
+            loading
+                ? "Ejecutando 3 muestras..."
+                : "Ejecutar 3 muestras";
+
+    }
+
+
+    setHidden(
+        "semana11Loading",
+        !loading
+    );
+
+}
+
+
+function showSemana11Error(
+    message
+) {
+
+    setText(
+        "semana11ErrorText",
+        message
+        || "Ocurrió un error inesperado."
+    );
+
+
+    setHidden(
+        "semana11Error",
+        false
+    );
+
+}
+
+
+async function runSemana11() {
+
+    setSemana11Loading(
+        true
+    );
+
+
+    setHidden(
+        "semana11Error",
+        true
+    );
+
+
+    setHidden(
+        "semana11Results",
+        true
+    );
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/semana11",
+                {
+                    method:
+                        "POST"
+                }
+            );
+
+
+        let data = null;
+
+
+        try {
+
+            data =
+                await response.json();
+
+        } catch {
+
+            throw new Error(
+                "El backend devolvió una respuesta no válida."
+            );
+
+        }
+
+
+        if (
+            !response.ok
+            || !data.success
+        ) {
+
+            throw new Error(
+                data.error
+                || "No fue posible ejecutar el benchmark."
+            );
+
+        }
+
+
+        renderSemana11Result(
+            data
+        );
+
+
+    } catch (error) {
+
+        showSemana11Error(
+            error.message
+        );
+
+
+    } finally {
+
+        setSemana11Loading(
+            false
+        );
+
+    }
+
+}
+
+
+function renderSemana11Result(
+    data
+) {
+
+    const dataset =
+        data.dataset
+        || {};
+
+    const resumen =
+        Array.isArray(
+            data.resumen
+        )
+            ? data.resumen
+            : [];
+
+    const ejecuciones =
+        Array.isArray(
+            data.ejecuciones
+        )
+            ? data.ejecuciones
+            : [];
+
+    const ganador =
+        data.ganador
+        || {};
+
+
+    semana11Artifacts =
+        data.artifacts
+        || {};
+
+
+    // --------------------------------------------------------
+    // Dataset
+    // --------------------------------------------------------
+
+    setText(
+        "semana11DatasetImages",
+        dataset.imagenes
+        ?? "-"
+    );
+
+    setText(
+        "semana11DatasetFeatures",
+        dataset.caracteristicas
+        ?? "-"
+    );
+
+    setText(
+        "semana11DatasetClasses",
+        dataset.clases
+        ?? "-"
+    );
+
+
+    // --------------------------------------------------------
+    // Ganador
+    // --------------------------------------------------------
+
+    const ganadorAccuracy =
+        Number(
+            ganador.accuracy
+        );
+
+    const ganadorTime =
+        Number(
+            ganador.fit_seconds
+        );
+
+
+    setText(
+        "semana11WinnerName",
+        ganador.nombre
+        || ganador.modelo
+        || "-"
+    );
+
+
+    setText(
+        "semana11WinnerAccuracy",
+        Number.isFinite(
+            ganadorAccuracy
+        )
+            ? `${(
+                ganadorAccuracy
+                * 100
+            ).toFixed(2)}%`
+            : "-"
+    );
+
+
+    setText(
+        "semana11WinnerTime",
+        Number.isFinite(
+            ganadorTime
+        )
+            ? `${ganadorTime.toFixed(4)} s`
+            : "-"
+    );
+
+
+    setText(
+        "semana11WinnerDescription",
+        (
+            "Modelo con el mejor balance observado en "
+            + `${data.repeticiones || 3} ejecuciones bajo el mismo protocolo.`
+        )
+    );
+
+
+    // --------------------------------------------------------
+    // Tarjetas de modelos
+    // --------------------------------------------------------
+
+    renderSemana11ModelCards(
+        resumen,
+        ganador.modelo
+    );
+
+
+    // --------------------------------------------------------
+    // Gráficas HTML
+    // --------------------------------------------------------
+
+    renderSemana11AccuracyChart(
+        resumen
+    );
+
+
+    renderSemana11TimesChart(
+        resumen
+    );
+
+
+    // --------------------------------------------------------
+    // Tabla de las 3 ejecuciones
+    // --------------------------------------------------------
+
+    renderSemana11Table(
+        ejecuciones
+    );
+
+
+    // --------------------------------------------------------
+    // Reproducibilidad
+    // --------------------------------------------------------
+
+    const stable =
+        resumen.length > 0
+        && resumen.every(
+            item => {
+
+                const values =
+                    Array.isArray(
+                        item.accuracies
+                    )
+                        ? item.accuracies
+                        : [];
+
+
+                const unique =
+                    new Set(
+                        values.map(
+                            value =>
+                                Number(
+                                    value
+                                ).toFixed(
+                                    8
+                                )
+                        )
+                    );
+
+
+                return (
+                    values.length
+                    === Number(
+                        data.repeticiones
+                        || 3
+                    )
+                    && unique.size
+                    === 1
+                );
+
+            }
+        );
+
+
+    const reproBadge =
+        document.getElementById(
+            "semana11ReproBadge"
+        );
+
+
+    if (reproBadge) {
+
+        reproBadge.textContent =
+            stable
+                ? "ACCURACY ESTABLE"
+                : "REVISAR VARIACIÓN";
+
+        reproBadge.classList.toggle(
+            "warning",
+            !stable
+        );
+
+    }
+
+
+    setHidden(
+        "semana11Error",
+        true
+    );
+
+
+    setHidden(
+        "semana11Results",
+        false
+    );
+
+
+    document.getElementById(
+        "semana11Results"
+    )?.scrollIntoView({
+        behavior:
+            "smooth",
+
+        block:
+            "start"
+    });
+
+}
+
+
+function renderSemana11ModelCards(
+    resumen,
+    ganadorModelo
+) {
+
+    const container =
+        document.getElementById(
+            "semana11ModelCards"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    container.innerHTML =
+        "";
+
+
+    resumen.forEach(
+        (
+            item,
+            index
+        ) => {
+
+            const accuracy =
+                Number(
+                    item.accuracy
+                );
+
+            const time =
+                Number(
+                    item.fit_seconds
+                );
+
+            const isWinner =
+                item.modelo
+                === ganadorModelo;
+
+
+            const card =
+                document.createElement(
+                    "article"
+                );
+
+
+            card.className =
+                "semana11-model-card"
+                + (
+                    isWinner
+                        ? " winner"
+                        : ""
+                );
+
+
+            card.innerHTML = `
+                <div class="semana11-model-top">
+                    <span class="semana11-model-rank">
+                        ${String(index + 1).padStart(2, "0")}
+                    </span>
+
+                    <span class="semana11-model-state">
+                        ${isWinner ? "SELECCIONADO" : "COMPARADO"}
+                    </span>
+                </div>
+
+                <h3>
+                    ${escapeHtml(item.nombre || item.modelo || "-")}
+                </h3>
+
+                <div class="semana11-model-metrics">
+                    <div>
+                        <span>Accuracy promedio</span>
+                        <strong>
+                            ${Number.isFinite(accuracy)
+                                ? `${(accuracy * 100).toFixed(2)}%`
+                                : "-"
+                            }
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Tiempo promedio</span>
+                        <strong>
+                            ${Number.isFinite(time)
+                                ? `${time.toFixed(4)} s`
+                                : "-"
+                            }
+                        </strong>
+                    </div>
+                </div>
+
+                <div class="semana11-mini-runs">
+                    ${(Array.isArray(item.tiempos) ? item.tiempos : [])
+                        .map(
+                            (value, runIndex) => `
+                                <span>
+                                    M${runIndex + 1}
+                                    <strong>
+                                        ${Number(value).toFixed(3)} s
+                                    </strong>
+                                </span>
+                            `
+                        )
+                        .join("")
+                    }
+                </div>
+            `;
+
+
+            container.appendChild(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+function renderSemana11AccuracyChart(
+    resumen
+) {
+
+    const container =
+        document.getElementById(
+            "semana11AccuracyChart"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    container.innerHTML =
+        "";
+
+
+    resumen.forEach(
+        item => {
+
+            const accuracy =
+                Number(
+                    item.accuracy
+                );
+
+            const percentage =
+                Number.isFinite(
+                    accuracy
+                )
+                    ? Math.max(
+                        0,
+                        Math.min(
+                            accuracy
+                            * 100,
+                            100
+                        )
+                    )
+                    : 0;
+
+
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+
+            row.className =
+                "semana11-accuracy-row";
+
+
+            row.innerHTML = `
+                <div class="semana11-chart-row-head">
+                    <strong>
+                        ${escapeHtml(item.nombre || item.modelo || "-")}
+                    </strong>
+
+                    <span>
+                        ${percentage.toFixed(2)}%
+                    </span>
+                </div>
+
+                <div class="semana11-chart-track">
+                    <div
+                        class="semana11-chart-fill"
+                        style="width:${percentage}%"
+                    ></div>
+                </div>
+            `;
+
+
+            container.appendChild(
+                row
+            );
+
+        }
+    );
+
+}
+
+
+function renderSemana11TimesChart(
+    resumen
+) {
+
+    const container =
+        document.getElementById(
+            "semana11TimesChart"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    container.innerHTML =
+        "";
+
+
+    const allTimes =
+        resumen.flatMap(
+            item =>
+                Array.isArray(
+                    item.tiempos
+                )
+                    ? item.tiempos.map(
+                        Number
+                    )
+                    : []
+        )
+        .filter(
+            Number.isFinite
+        );
+
+
+    const maxTime =
+        allTimes.length > 0
+            ? Math.max(
+                ...allTimes
+            )
+            : 1;
+
+
+    resumen.forEach(
+        item => {
+
+            const group =
+                document.createElement(
+                    "div"
+                );
+
+
+            group.className =
+                "semana11-time-group";
+
+
+            const title =
+                document.createElement(
+                    "strong"
+                );
+
+
+            title.textContent =
+                item.nombre
+                || item.modelo
+                || "-";
+
+
+            group.appendChild(
+                title
+            );
+
+
+            (
+                Array.isArray(
+                    item.tiempos
+                )
+                    ? item.tiempos
+                    : []
+            ).forEach(
+                (
+                    value,
+                    index
+                ) => {
+
+                    const time =
+                        Number(
+                            value
+                        );
+
+
+                    const width =
+                        Number.isFinite(
+                            time
+                        )
+                            ? Math.max(
+                                4,
+                                (
+                                    time
+                                    / maxTime
+                                )
+                                * 100
+                            )
+                            : 0;
+
+
+                    const row =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    row.className =
+                        "semana11-time-row";
+
+
+                    row.innerHTML = `
+                        <span class="semana11-time-label">
+                            M${index + 1}
+                        </span>
+
+                        <div class="semana11-time-track">
+                            <div
+                                class="semana11-time-fill run-${index + 1}"
+                                style="width:${width}%"
+                            ></div>
+                        </div>
+
+                        <strong>
+                            ${Number.isFinite(time)
+                                ? `${time.toFixed(4)} s`
+                                : "-"
+                            }
+                        </strong>
+                    `;
+
+
+                    group.appendChild(
+                        row
+                    );
+
+                }
+            );
+
+
+            container.appendChild(
+                group
+            );
+
+        }
+    );
+
+}
+
+
+function renderSemana11Table(
+    ejecuciones
+) {
+
+    const tbody =
+        document.getElementById(
+            "semana11TableBody"
+        );
+
+
+    if (!tbody) {
+        return;
+    }
+
+
+    tbody.innerHTML =
+        "";
+
+
+    ejecuciones.forEach(
+        execution => {
+
+            const rows =
+                Array.isArray(
+                    execution.resultados
+                )
+                    ? execution.resultados
+                    : [];
+
+
+            rows.forEach(
+                item => {
+
+                    const accuracy =
+                        Number(
+                            item.accuracy
+                        );
+
+                    const time =
+                        Number(
+                            item.fit_seconds
+                        );
+
+
+                    const tr =
+                        document.createElement(
+                            "tr"
+                        );
+
+
+                    tr.innerHTML = `
+                        <td>
+                            Muestra ${execution.ejecucion}
+                        </td>
+
+                        <td>
+                            <strong>
+                                ${escapeHtml(item.nombre || item.modelo || "-")}
+                            </strong>
+                        </td>
+
+                        <td>
+                            ${Number.isFinite(accuracy)
+                                ? `${(accuracy * 100).toFixed(2)}%`
+                                : "-"
+                            }
+                        </td>
+
+                        <td>
+                            ${Number.isFinite(time)
+                                ? `${time.toFixed(4)} s`
+                                : "-"
+                            }
+                        </td>
+                    `;
+
+
+                    tbody.appendChild(
+                        tr
+                    );
+
+                }
+            );
+
+        }
+    );
+
+}
+
+
+function openSemana11Artifact(
+    key
+) {
+
+    const url =
+        semana11Artifacts[
+            key
+        ];
+
+
+    if (!url) {
+
+        showSemana11Error(
+            "Primero ejecuta el benchmark para generar este archivo."
+        );
+
+        return;
+    }
+
+
+    window.open(
+        `${url}?t=${Date.now()}`,
+        "_blank",
+        "noopener,noreferrer"
+    );
 
 }

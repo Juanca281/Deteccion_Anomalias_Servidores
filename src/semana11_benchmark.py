@@ -1,5 +1,7 @@
 from pathlib import Path
 from time import perf_counter
+import argparse
+import json
 import unicodedata
 
 import matplotlib
@@ -32,9 +34,7 @@ from sklearn.preprocessing import StandardScaler
 # ============================================================
 
 ROOT = Path(__file__).resolve().parent.parent
-
 DATA_DIR = ROOT / "data"
-
 ARTIFACTS_DIR = ROOT / "artifacts"
 
 ARTIFACTS_DIR.mkdir(
@@ -47,13 +47,8 @@ ARTIFACTS_DIR.mkdir(
 # CONFIGURACIÓN
 # ============================================================
 
-IMAGE_SIZE = (
-    64,
-    64,
-)
-
+IMAGE_SIZE = (64, 64)
 TEST_SIZE = 0.25
-
 RANDOM_STATE = 42
 
 EXTENSIONES_VALIDAS = {
@@ -61,11 +56,6 @@ EXTENSIONES_VALIDAS = {
     ".jpg",
     ".jpeg",
 }
-
-
-# ============================================================
-# CLASES DEL PROYECTO
-# ============================================================
 
 CLASES_ESPERADAS = (
     "normal",
@@ -75,29 +65,21 @@ CLASES_ESPERADAS = (
     "critico",
 )
 
-
-# ============================================================
-# NOMBRES PARA MOSTRAR
-# ============================================================
-
 NOMBRES_MODELOS = {
     "logistic": "Logistic Regression",
     "forest": "Random Forest",
-    "mlp": "MLP",
+    "mlp": "MLPClassifier",
 }
 
 
 # ============================================================
-# NORMALIZAR TEXTO
+# UTILIDADES DE TEXTO Y DATASET
 # ============================================================
 
 def normalizar_texto(texto):
+    texto = str(texto).lower().strip()
 
-    texto = str(
-        texto
-    ).lower().strip()
-
-    texto = "".join(
+    return "".join(
         caracter
         for caracter in unicodedata.normalize(
             "NFD",
@@ -108,17 +90,8 @@ def normalizar_texto(texto):
         ) != "Mn"
     )
 
-    return texto
 
-
-# ============================================================
-# IDENTIFICAR CLASE
-# ============================================================
-
-def identificar_clase(
-    nombre_carpeta,
-):
-
+def identificar_clase(nombre_carpeta):
     nombre = normalizar_texto(
         nombre_carpeta
     )
@@ -141,131 +114,98 @@ def identificar_clase(
     return None
 
 
-# ============================================================
-# BUSCAR DATASET
-# ============================================================
+def detectar_clases(carpeta):
+    clases = {}
+
+    try:
+        subcarpetas = [
+            item
+            for item in carpeta.iterdir()
+            if item.is_dir()
+        ]
+
+    except (
+        PermissionError,
+        OSError,
+    ):
+        return clases
+
+    for subcarpeta in subcarpetas:
+        clase = identificar_clase(
+            subcarpeta.name
+        )
+
+        if clase:
+            clases[
+                clase
+            ] = subcarpeta
+
+    return clases
+
 
 def encontrar_dataset():
-
-    # --------------------------------------------------------
-    # Primero intenta usar directamente data/semana08
-    # --------------------------------------------------------
-
     dataset_semana08 = (
         DATA_DIR
         / "semana08"
     )
 
     if dataset_semana08.exists():
-
-        clases = {}
-
-        for carpeta in (
-            dataset_semana08.iterdir()
-        ):
-
-            if not carpeta.is_dir():
-                continue
-
-            clase = identificar_clase(
-                carpeta.name
-            )
-
-            if clase:
-
-                clases[
-                    clase
-                ] = carpeta
+        clases = detectar_clases(
+            dataset_semana08
+        )
 
         if all(
             clase in clases
             for clase in CLASES_ESPERADAS
         ):
-
             return (
                 dataset_semana08,
                 clases,
             )
 
-    # --------------------------------------------------------
-    # Si cambia la ruta, busca automáticamente dentro de data
-    # --------------------------------------------------------
-
     candidatos = []
 
-    for carpeta in DATA_DIR.rglob("*"):
+    if DATA_DIR.exists():
+        for carpeta in DATA_DIR.rglob("*"):
+            if not carpeta.is_dir():
+                continue
 
-        if not carpeta.is_dir():
-            continue
-
-        clases = {}
-
-        try:
-
-            subcarpetas = [
-                item
-                for item in carpeta.iterdir()
-                if item.is_dir()
-            ]
-
-        except (
-            PermissionError,
-            OSError,
-        ):
-
-            continue
-
-        for subcarpeta in subcarpetas:
-
-            clase = identificar_clase(
-                subcarpeta.name
+            clases = detectar_clases(
+                carpeta
             )
 
-            if clase:
-
-                clases[
-                    clase
-                ] = subcarpeta
-
-        if all(
-            clase in clases
-            for clase in CLASES_ESPERADAS
-        ):
-
-            candidatos.append(
-                (
-                    carpeta,
-                    clases,
+            if all(
+                clase in clases
+                for clase in CLASES_ESPERADAS
+            ):
+                candidatos.append(
+                    (
+                        carpeta,
+                        clases,
+                    )
                 )
-            )
 
     if not candidatos:
-
         raise FileNotFoundError(
             "No se encontró un dataset válido dentro "
-            "de la carpeta data/. Se esperan las clases: "
-            "normal, sobrecarga, latencia, disco y critico."
+            "de data/. Se esperan las clases: normal, "
+            "sobrecarga, latencia, disco y critico."
         )
 
     return candidatos[0]
 
 
 # ============================================================
-# REDIMENSIONAR IMAGEN
+# PREPROCESAMIENTO
 # ============================================================
 
-def redimensionar_imagen(
-    imagen,
-):
-
+def redimensionar_imagen(imagen):
     try:
-
         metodo = (
             Image.Resampling.LANCZOS
         )
 
     except AttributeError:
-
         metodo = (
             Image.LANCZOS
         )
@@ -276,108 +216,68 @@ def redimensionar_imagen(
     )
 
 
-# ============================================================
-# CARGAR UNA IMAGEN
-# ============================================================
-
-def procesar_imagen(
-    ruta_imagen,
-):
-
+def procesar_imagen(ruta_imagen):
     with Image.open(
         ruta_imagen
     ) as imagen:
-
-        # ----------------------------------------------------
-        # Escala de grises
-        # ----------------------------------------------------
 
         imagen = imagen.convert(
             "L"
         )
 
-        # ----------------------------------------------------
-        # Redimensionar a 64 x 64
-        # ----------------------------------------------------
-
         imagen = redimensionar_imagen(
             imagen
         )
-
-        # ----------------------------------------------------
-        # Convertir a matriz NumPy
-        # ----------------------------------------------------
 
         datos = np.asarray(
             imagen,
             dtype=np.float32,
         )
 
-        # ----------------------------------------------------
-        # Normalizar entre 0 y 1
-        # ----------------------------------------------------
-
         datos = (
             datos
             / 255.0
         )
 
-        # ----------------------------------------------------
-        # 64 x 64 = 4096 características
-        # ----------------------------------------------------
-
-        vector = (
-            datos.flatten()
-        )
-
-        return vector
+        return datos.flatten()
 
 
-# ============================================================
-# CARGAR DATASET COMPLETO
-# ============================================================
-
-def cargar_dataset():
-
+def cargar_dataset(
+    verbose=True,
+):
     (
         dataset_dir,
         clases,
     ) = encontrar_dataset()
 
     X = []
-
     y = []
+    distribucion = {}
 
-    print(
-        "=" * 64
-    )
-
-    print(
-        "SEMANA 11 - BENCHMARK DE MODELOS"
-    )
-
-    print(
-        "PROYECTO: DETECCIÓN DE ANOMALÍAS EN SERVIDORES"
-    )
-
-    print(
-        "=" * 64
-    )
-
-    print(
-        "\nDataset encontrado:"
-    )
-
-    print(
-        dataset_dir
-    )
-
-    print(
-        "\nCargando imágenes...\n"
-    )
+    if verbose:
+        print(
+            "=" * 64
+        )
+        print(
+            "SEMANA 11 - BENCHMARK DE MODELOS"
+        )
+        print(
+            "PROYECTO: DETECCIÓN DE ANOMALÍAS EN SERVIDORES"
+        )
+        print(
+            "=" * 64
+        )
+        print(
+            "\nDataset encontrado:"
+        )
+        print(
+            dataset_dir
+        )
+        print(
+            "\nCargando imágenes...\n"
+        )
 
     for clase in CLASES_ESPERADAS:
-
         carpeta = clases[
             clase
         ]
@@ -394,33 +294,35 @@ def cargar_dataset():
             ]
         )
 
-        print(
-            f"{clase}: "
-            f"{len(imagenes)} imágenes"
+        distribucion[
+            clase
+        ] = len(
+            imagenes
         )
 
+        if verbose:
+            print(
+                f"{clase}: "
+                f"{len(imagenes)} imágenes"
+            )
+
         for ruta_imagen in imagenes:
-
             try:
-
-                vector = procesar_imagen(
-                    ruta_imagen
-                )
-
                 X.append(
-                    vector
+                    procesar_imagen(
+                        ruta_imagen
+                    )
                 )
-
                 y.append(
                     clase
                 )
 
             except Exception as error:
-
-                print(
-                    "Advertencia: no se pudo cargar "
-                    f"{ruta_imagen.name}: {error}"
-                )
+                if verbose:
+                    print(
+                        "Advertencia: no se pudo cargar "
+                        f"{ruta_imagen.name}: {error}"
+                    )
 
     X = np.asarray(
         X,
@@ -432,7 +334,6 @@ def cargar_dataset():
     )
 
     if len(X) == 0:
-
         raise RuntimeError(
             "No se cargaron imágenes del dataset."
         )
@@ -444,7 +345,6 @@ def cargar_dataset():
     ) != len(
         CLASES_ESPERADAS
     ):
-
         raise RuntimeError(
             "El dataset no contiene las cinco clases "
             "esperadas."
@@ -454,100 +354,67 @@ def cargar_dataset():
         X,
         y,
         dataset_dir,
+        distribucion,
     )
 
 
 # ============================================================
-# CREAR MODELOS
+# MODELOS
 # ============================================================
 
 def crear_modelos():
-
-    modelos = {
-
-        # ----------------------------------------------------
-        # MODELO 1
-        # Línea base
-        # ----------------------------------------------------
-
+    return {
         "logistic": make_pipeline(
-
             StandardScaler(),
-
             LogisticRegression(
                 max_iter=1500,
                 random_state=RANDOM_STATE,
             ),
-
         ),
 
-        # ----------------------------------------------------
-        # MODELO 2
-        # Random Forest
-        # ----------------------------------------------------
-
-        "forest":
-
-            RandomForestClassifier(
-                n_estimators=250,
-                random_state=RANDOM_STATE,
-                n_jobs=-1,
-            ),
-
-        # ----------------------------------------------------
-        # MODELO 3
-        # Red neuronal MLP
-        # ----------------------------------------------------
+        "forest": RandomForestClassifier(
+            n_estimators=250,
+            random_state=RANDOM_STATE,
+            n_jobs=-1,
+        ),
 
         "mlp": make_pipeline(
-
             StandardScaler(),
-
             MLPClassifier(
-                hidden_layer_sizes=(
-                    64,
-                ),
+                hidden_layer_sizes=(64,),
                 max_iter=350,
                 random_state=RANDOM_STATE,
             ),
-
         ),
-
     }
-
-    return modelos
 
 
 # ============================================================
-# GENERAR GRÁFICA DE ACCURACY
+# GRÁFICAS
 # ============================================================
 
 def generar_grafica_accuracy(
-    df,
+    resumen_df,
 ):
-
     nombres = [
         NOMBRES_MODELOS.get(
             modelo,
             modelo,
         )
-        for modelo in df[
+        for modelo in resumen_df[
             "modelo"
         ]
     ]
 
     valores = (
-        df[
+        resumen_df[
             "accuracy"
         ].to_numpy()
         * 100
     )
 
     figura, eje = plt.subplots(
-        figsize=(
-            9,
-            5.5,
-        )
+        figsize=(9, 5.5)
     )
 
     barras = eje.bar(
@@ -557,29 +424,33 @@ def generar_grafica_accuracy(
     )
 
     eje.set_title(
-        "Semana 11 - Accuracy por modelo",
+        "Semana 11 - Accuracy promedio por modelo",
         fontsize=14,
         fontweight="bold",
     )
-
     eje.set_xlabel(
         "Modelo"
     )
-
     eje.set_ylabel(
         "Accuracy (%)"
     )
 
-    eje.set_ylim(
+    minimo = max(
         0,
-        105,
+        float(
+            valores.min()
+        ) - 5,
+    )
+
+    eje.set_ylim(
+        minimo,
+        101.5,
     )
 
     eje.grid(
         axis="y",
         alpha=0.20,
     )
-
     eje.set_axisbelow(
         True
     )
@@ -588,20 +459,13 @@ def generar_grafica_accuracy(
         barras,
         valores,
     ):
-
         eje.text(
             barra.get_x()
-            + barra.get_width()
-            / 2,
-
-            barra.get_height()
-            + 0.8,
-
+            + barra.get_width() / 2,
+            barra.get_height() + 0.15,
             f"{valor:.2f}%",
-
             ha="center",
             va="bottom",
-
             fontsize=10,
             fontweight="bold",
         )
@@ -626,45 +490,105 @@ def generar_grafica_accuracy(
     return ruta
 
 
-# ============================================================
-# GENERAR GRÁFICA DE TIEMPOS
-# ============================================================
-
 def generar_grafica_tiempos(
-    df,
+    repeticiones_df,
 ):
-
-    nombres = [
-        NOMBRES_MODELOS.get(
-            modelo,
-            modelo,
-        )
-        for modelo in df[
-            "modelo"
-        ]
+    orden_modelos = [
+        "logistic",
+        "forest",
+        "mlp",
     ]
 
-    tiempos = (
-        df[
-            "fit_seconds"
-        ].to_numpy()
+    figura, eje = plt.subplots(
+        figsize=(10, 5.8)
     )
 
-    figura, eje = plt.subplots(
-        figsize=(
-            9,
-            5.5,
+    x = np.arange(
+        len(
+            orden_modelos
         )
     )
 
-    barras = eje.bar(
-        nombres,
-        tiempos,
-        width=0.58,
+    ejecuciones = sorted(
+        repeticiones_df[
+            "ejecucion"
+        ].unique()
     )
 
+    ancho = (
+        0.72
+        / max(
+            len(
+                ejecuciones
+            ),
+            1,
+        )
+    )
+
+    desplazamiento_inicial = (
+        -(
+            len(
+                ejecuciones
+            ) - 1
+        )
+        * ancho
+        / 2
+    )
+
+    for indice, ejecucion in enumerate(
+        ejecuciones
+    ):
+        bloque = (
+            repeticiones_df[
+                repeticiones_df[
+                    "ejecucion"
+                ]
+                == ejecucion
+            ]
+            .set_index(
+                "modelo"
+            )
+            .reindex(
+                orden_modelos
+            )
+        )
+
+        valores = (
+            bloque[
+                "fit_seconds"
+            ].to_numpy()
+        )
+
+        posiciones = (
+            x
+            + desplazamiento_inicial
+            + indice
+            * ancho
+        )
+
+        barras = eje.bar(
+            posiciones,
+            valores,
+            width=ancho * 0.90,
+            label=f"Ejecución {ejecucion}",
+        )
+
+        for barra, valor in zip(
+            barras,
+            valores,
+        ):
+            eje.text(
+                barra.get_x()
+                + barra.get_width() / 2,
+                barra.get_height(),
+                f"{valor:.3f}",
+                ha="center",
+                va="bottom",
+                fontsize=8,
+            )
+
     eje.set_title(
-        "Semana 11 - Tiempo de entrenamiento",
+        "Semana 11 - Tiempo de entrenamiento en 3 ejecuciones",
         fontsize=14,
         fontweight="bold",
     )
@@ -677,6 +601,16 @@ def generar_grafica_tiempos(
         "Tiempo (segundos)"
     )
 
+    eje.set_xticks(
+        x,
+        [
+            NOMBRES_MODELOS[
+                modelo
+            ]
+            for modelo in orden_modelos
+        ],
+    )
+
     eje.grid(
         axis="y",
         alpha=0.20,
@@ -686,44 +620,9 @@ def generar_grafica_tiempos(
         True
     )
 
-    maximo = float(
-        max(
-            tiempos
-        )
+    eje.legend(
+        frameon=False
     )
-
-    if maximo <= 0:
-
-        maximo = 1.0
-
-    eje.set_ylim(
-        0,
-        maximo * 1.20,
-    )
-
-    for barra, valor in zip(
-        barras,
-        tiempos,
-    ):
-
-        eje.text(
-            barra.get_x()
-            + barra.get_width()
-            / 2,
-
-            barra.get_height()
-            + (
-                maximo * 0.025
-            ),
-
-            f"{valor:.4f} s",
-
-            ha="center",
-            va="bottom",
-
-            fontsize=10,
-            fontweight="bold",
-        )
 
     figura.tight_layout()
 
@@ -745,103 +644,44 @@ def generar_grafica_tiempos(
     return ruta
 
 
-# ============================================================
-# GENERAR TODAS LAS GRÁFICAS
-# ============================================================
-
 def generar_graficas(
-    df,
+    resumen_df,
+    repeticiones_df,
 ):
-
-    ruta_accuracy = (
-        generar_grafica_accuracy(
-            df
-        )
-    )
-
-    ruta_tiempos = (
-        generar_grafica_tiempos(
-            df
-        )
-    )
-
     return {
         "accuracy":
-            ruta_accuracy,
+            generar_grafica_accuracy(
+                resumen_df
+            ),
 
         "tiempos":
-            ruta_tiempos,
+            generar_grafica_tiempos(
+                repeticiones_df
+            ),
     }
 
 
 # ============================================================
-# MOSTRAR DISTRIBUCIÓN
+# BENCHMARK
 # ============================================================
 
-def mostrar_distribucion(
-    y,
+def ejecutar_benchmark(
+    repeticiones=1,
+    verbose=True,
 ):
-
-    print(
-        "\nDISTRIBUCIÓN DE CLASES"
-    )
-
-    for clase in CLASES_ESPERADAS:
-
-        cantidad = int(
-            np.sum(
-                y == clase
-            )
+    if repeticiones < 1:
+        raise ValueError(
+            "El número de repeticiones debe ser mayor que 0."
         )
-
-        print(
-            f"{clase}: "
-            f"{cantidad}"
-        )
-
-
-# ============================================================
-# EJECUTAR BENCHMARK
-# ============================================================
-
-def ejecutar_benchmark():
-
-    # ========================================================
-    # CARGAR DATOS
-    # ========================================================
 
     (
         X,
         y,
         dataset_dir,
-    ) = cargar_dataset()
-
-    mostrar_distribucion(
-        y
+        distribucion,
+    ) = cargar_dataset(
+        verbose=verbose
     )
-
-    print(
-        "\nFORMA DEL DATASET"
-    )
-
-    print(
-        f"Imágenes: "
-        f"{X.shape[0]}"
-    )
-
-    print(
-        f"Características: "
-        f"{X.shape[1]}"
-    )
-
-    print(
-        f"Clases: "
-        f"{len(np.unique(y))}"
-    )
-
-    # ========================================================
-    # MISMO SPLIT PARA TODOS LOS MODELOS
-    # ========================================================
 
     (
         X_train,
@@ -849,110 +689,105 @@ def ejecutar_benchmark():
         y_train,
         y_test,
     ) = train_test_split(
-
         X,
         y,
-
-        test_size=
-            TEST_SIZE,
-
-        random_state=
-            RANDOM_STATE,
-
-        stratify=
-            y,
-
+        test_size=TEST_SIZE,
+        random_state=RANDOM_STATE,
+        stratify=y,
     )
 
-    print(
-        "\nPARTICIÓN"
-    )
-
-    print(
-        f"Entrenamiento: "
-        f"{len(X_train)}"
-    )
-
-    print(
-        f"Prueba: "
-        f"{len(X_test)}"
-    )
-
-    print(
-        f"Semilla: "
-        f"{RANDOM_STATE}"
-    )
-
-    # ========================================================
-    # CREAR MODELOS
-    # ========================================================
-
-    modelos = (
-        crear_modelos()
-    )
-
-    resultados = []
-
-    # ========================================================
-    # ENTRENAR Y EVALUAR
-    # ========================================================
-
-    for (
-        nombre,
-        modelo,
-    ) in modelos.items():
-
+    if verbose:
         print(
-            "\n"
-            + "-" * 64
+            "\nFORMA DEL DATASET"
+        )
+        print(
+            f"Imágenes: {X.shape[0]}"
+        )
+        print(
+            f"Características: {X.shape[1]}"
+        )
+        print(
+            f"Clases: {len(np.unique(y))}"
         )
 
         print(
-            "Entrenando: "
-            f"{NOMBRES_MODELOS[nombre]}"
+            "\nPARTICIÓN"
+        )
+        print(
+            f"Entrenamiento: {len(X_train)}"
+        )
+        print(
+            f"Prueba: {len(X_test)}"
+        )
+        print(
+            f"Semilla: {RANDOM_STATE}"
+        )
+        print(
+            f"Repeticiones: {repeticiones}"
         )
 
-        inicio = (
-            perf_counter()
-        )
+    filas = []
+    ejecuciones_json = []
 
-        # ----------------------------------------------------
-        # Entrenamiento
-        # ----------------------------------------------------
+    for numero_ejecucion in range(
+        1,
+        repeticiones + 1,
+    ):
+        modelos = crear_modelos()
+        resultados_ejecucion = []
 
-        modelo.fit(
-            X_train,
-            y_train,
-        )
-
-        tiempo = (
-            perf_counter()
-            - inicio
-        )
-
-        # ----------------------------------------------------
-        # Predicción
-        # ----------------------------------------------------
-
-        predicciones = (
-            modelo.predict(
-                X_test
+        if verbose:
+            print(
+                "\n"
+                + "=" * 64
             )
-        )
-
-        # ----------------------------------------------------
-        # Accuracy
-        # ----------------------------------------------------
-
-        accuracy = (
-            accuracy_score(
-                y_test,
-                predicciones,
+            print(
+                f"EJECUCIÓN {numero_ejecucion}"
             )
-        )
+            print(
+                "=" * 64
+            )
 
-        resultados.append(
-            {
+        for nombre, modelo in modelos.items():
+            if verbose:
+                print(
+                    "\n"
+                    + "-" * 64
+                )
+                print(
+                    "Entrenando: "
+                    f"{NOMBRES_MODELOS[nombre]}"
+                )
+
+            inicio = perf_counter()
+
+            modelo.fit(
+                X_train,
+                y_train,
+            )
+
+            tiempo = (
+                perf_counter()
+                - inicio
+            )
+
+            predicciones = (
+                modelo.predict(
+                    X_test
+                )
+            )
+
+            accuracy = (
+                accuracy_score(
+                    y_test,
+                    predicciones,
+                )
+            )
+
+            fila = {
+                "ejecucion":
+                    numero_ejecucion,
+
                 "modelo":
                     nombre,
 
@@ -966,242 +801,503 @@ def ejecutar_benchmark():
                         tiempo
                     ),
             }
+
+            filas.append(
+                fila
+            )
+
+            resultados_ejecucion.append(
+                {
+                    **fila,
+                    "nombre":
+                        NOMBRES_MODELOS[
+                            nombre
+                        ],
+                }
+            )
+
+            if verbose:
+                print(
+                    f"Accuracy: {accuracy:.4f}"
+                )
+                print(
+                    f"Tiempo: {tiempo:.4f} s"
+                )
+
+        ejecuciones_json.append(
+            {
+                "ejecucion":
+                    numero_ejecucion,
+
+                "resultados":
+                    resultados_ejecucion,
+            }
         )
 
-        print(
-            "Accuracy: "
-            f"{accuracy:.4f}"
+    repeticiones_df = pd.DataFrame(
+        filas
+    )
+
+    resumen_df = (
+        repeticiones_df
+        .groupby(
+            "modelo",
+            as_index=False,
         )
-
-        print(
-            "Tiempo: "
-            f"{tiempo:.4f} s"
+        .agg(
+            accuracy=(
+                "accuracy",
+                "mean",
+            ),
+            accuracy_std=(
+                "accuracy",
+                "std",
+            ),
+            fit_seconds=(
+                "fit_seconds",
+                "mean",
+            ),
+            fit_seconds_std=(
+                "fit_seconds",
+                "std",
+            ),
         )
-
-    # ========================================================
-    # CREAR DATAFRAME
-    # ========================================================
-
-    df = pd.DataFrame(
-        resultados
     )
 
-    # ========================================================
-    # ORDENAR POR ACCURACY
-    # ========================================================
-
-    df = df.sort_values(
-        by=[
-            "accuracy",
-            "fit_seconds",
-        ],
-        ascending=[
-            False,
-            True,
-        ],
+    resumen_df[
+        "accuracy_std"
+    ] = (
+        resumen_df[
+            "accuracy_std"
+        ]
+        .fillna(
+            0.0
+        )
     )
 
-    df = df.reset_index(
-        drop=True
+    resumen_df[
+        "fit_seconds_std"
+    ] = (
+        resumen_df[
+            "fit_seconds_std"
+        ]
+        .fillna(
+            0.0
+        )
     )
 
-    # ========================================================
-    # GUARDAR CSV
-    # ========================================================
+    resumen_df = (
+        resumen_df
+        .sort_values(
+            by=[
+                "accuracy",
+                "fit_seconds",
+            ],
+            ascending=[
+                False,
+                True,
+            ],
+        )
+        .reset_index(
+            drop=True
+        )
+    )
 
+    # benchmark.csv conserva la evidencia mínima solicitada:
+    # una fila por modelo con accuracy y tiempo promedio.
     ruta_csv = (
         ARTIFACTS_DIR
         / "benchmark.csv"
     )
 
-    df.to_csv(
+    resumen_df[
+        [
+            "modelo",
+            "accuracy",
+            "fit_seconds",
+        ]
+    ].to_csv(
         ruta_csv,
         index=False,
     )
 
-    # ========================================================
-    # GENERAR GRÁFICAS
-    # ========================================================
-
-    graficas = (
-        generar_graficas(
-            df
-        )
+    # Evidencia adicional con las 3 ejecuciones completas.
+    ruta_repeticiones = (
+        ARTIFACTS_DIR
+        / "semana11_repeticiones.csv"
     )
 
-    # ========================================================
-    # MOSTRAR RESULTADOS
-    # ========================================================
-
-    print(
-        "\n"
-        + "=" * 64
+    repeticiones_df.to_csv(
+        ruta_repeticiones,
+        index=False,
     )
 
-    print(
-        "RESULTADOS DEL BENCHMARK"
+    graficas = generar_graficas(
+        resumen_df,
+        repeticiones_df,
     )
 
-    print(
-        "=" * 64
+    mejor_fila = resumen_df.iloc[
+        0
+    ]
+
+    mejor_modelo = str(
+        mejor_fila[
+            "modelo"
+        ]
     )
 
-    print(
-        df.to_string(
-            index=False
-        )
-    )
+    resumen_json = []
 
-    # ========================================================
-    # MODELO GANADOR
-    # ========================================================
-
-    mejor_fila = (
-        df.iloc[0]
-    )
-
-    mejor_modelo = (
-        str(
-            mejor_fila[
+    for _, fila in resumen_df.iterrows():
+        modelo = str(
+            fila[
                 "modelo"
             ]
         )
-    )
 
-    mejor_accuracy = float(
-        mejor_fila[
-            "accuracy"
-        ]
-    )
+        tiempos = (
+            repeticiones_df[
+                repeticiones_df[
+                    "modelo"
+                ]
+                == modelo
+            ][
+                "fit_seconds"
+            ]
+            .astype(
+                float
+            )
+            .tolist()
+        )
 
-    mejor_tiempo = float(
-        mejor_fila[
-            "fit_seconds"
-        ]
-    )
+        accuracies = (
+            repeticiones_df[
+                repeticiones_df[
+                    "modelo"
+                ]
+                == modelo
+            ][
+                "accuracy"
+            ]
+            .astype(
+                float
+            )
+            .tolist()
+        )
 
-    print(
-        "\n"
-        + "=" * 64
-    )
+        resumen_json.append(
+            {
+                "modelo":
+                    modelo,
 
-    print(
-        "DECISIÓN DEL BENCHMARK"
-    )
+                "nombre":
+                    NOMBRES_MODELOS[
+                        modelo
+                    ],
 
-    print(
-        "=" * 64
-    )
+                "accuracy":
+                    float(
+                        fila[
+                            "accuracy"
+                        ]
+                    ),
 
-    print(
-        "Modelo con mayor accuracy:"
-    )
+                "accuracy_std":
+                    float(
+                        fila[
+                            "accuracy_std"
+                        ]
+                    ),
 
-    print(
-        NOMBRES_MODELOS.get(
-            mejor_modelo,
-            mejor_modelo,
+                "fit_seconds":
+                    float(
+                        fila[
+                            "fit_seconds"
+                        ]
+                    ),
+
+                "fit_seconds_std":
+                    float(
+                        fila[
+                            "fit_seconds_std"
+                        ]
+                    ),
+
+                "tiempos":
+                    tiempos,
+
+                "accuracies":
+                    accuracies,
+            }
+        )
+
+    resultado = {
+        "success":
+            True,
+
+        "repeticiones":
+            repeticiones,
+
+        "dataset": {
+            "ruta":
+                str(
+                    dataset_dir
+                ),
+
+            "imagenes":
+                int(
+                    X.shape[
+                        0
+                    ]
+                ),
+
+            "caracteristicas":
+                int(
+                    X.shape[
+                        1
+                    ]
+                ),
+
+            "clases":
+                int(
+                    len(
+                        np.unique(
+                            y
+                        )
+                    )
+                ),
+
+            "distribucion":
+                distribucion,
+
+            "entrenamiento":
+                int(
+                    len(
+                        X_train
+                    )
+                ),
+
+            "prueba":
+                int(
+                    len(
+                        X_test
+                    )
+                ),
+
+            "semilla":
+                RANDOM_STATE,
+        },
+
+        "ejecuciones":
+            ejecuciones_json,
+
+        "resumen":
+            resumen_json,
+
+        "ganador": {
+            "modelo":
+                mejor_modelo,
+
+            "nombre":
+                NOMBRES_MODELOS[
+                    mejor_modelo
+                ],
+
+            "accuracy":
+                float(
+                    mejor_fila[
+                        "accuracy"
+                    ]
+                ),
+
+            "fit_seconds":
+                float(
+                    mejor_fila[
+                        "fit_seconds"
+                    ]
+                ),
+        },
+
+        "artifacts": {
+            "benchmark_csv":
+                "/artifacts/benchmark.csv",
+
+            "repeticiones_csv":
+                "/artifacts/semana11_repeticiones.csv",
+
+            "accuracy":
+                "/artifacts/semana11_accuracy.png",
+
+            "tiempos":
+                "/artifacts/semana11_tiempos.png",
+        },
+    }
+
+    if verbose:
+        print(
+            "\n"
+            + "=" * 64
+        )
+        print(
+            "RESULTADOS PROMEDIO DEL BENCHMARK"
+        )
+        print(
+            "=" * 64
+        )
+
+        print(
+            resumen_df[
+                [
+                    "modelo",
+                    "accuracy",
+                    "fit_seconds",
+                ]
+            ].to_string(
+                index=False
+            )
+        )
+
+        print(
+            "\nMODELO SELECCIONADO:"
+        )
+        print(
+            resultado[
+                "ganador"
+            ][
+                "nombre"
+            ]
+        )
+
+        print(
+            "Accuracy promedio: "
+            f"{resultado['ganador']['accuracy'] * 100:.2f}%"
+        )
+
+        print(
+            "Tiempo promedio: "
+            f"{resultado['ganador']['fit_seconds']:.4f} s"
+        )
+
+        print(
+            "\nArchivos generados:"
+        )
+        print(
+            ruta_csv
+        )
+        print(
+            ruta_repeticiones
+        )
+        print(
+            graficas[
+                "accuracy"
+            ]
+        )
+        print(
+            graficas[
+                "tiempos"
+            ]
+        )
+
+        print(
+            "\nBenchmark completado correctamente."
+        )
+
+    return resultado
+
+
+# ============================================================
+# CLI
+# ============================================================
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(
+        description=(
+            "Benchmark de modelos para el proyecto "
+            "Detección de Anomalías en Servidores."
         )
     )
 
-    print(
-        f"Accuracy: "
-        f"{mejor_accuracy * 100:.2f}%"
+    parser.add_argument(
+        "--repeticiones",
+        type=int,
+        default=1,
+        help=(
+            "Cantidad de veces que se ejecuta el benchmark. "
+            "Para Semana 11 se recomiendan 3."
+        ),
     )
 
-    print(
-        f"Tiempo de entrenamiento: "
-        f"{mejor_tiempo:.4f} s"
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        help=(
+            "Devuelve únicamente JSON por stdout. "
+            "Se utiliza para la integración con Flask."
+        ),
     )
 
-    # ========================================================
-    # ARCHIVOS GENERADOS
-    # ========================================================
+    return parser.parse_args()
 
-    print(
-        "\n"
-        + "=" * 64
-    )
-
-    print(
-        "ARCHIVOS GENERADOS"
-    )
-
-    print(
-        "=" * 64
-    )
-
-    print(
-        "\nCSV:"
-    )
-
-    print(
-        ruta_csv
-    )
-
-    print(
-        "\nGráfica de accuracy:"
-    )
-
-    print(
-        graficas[
-            "accuracy"
-        ]
-    )
-
-    print(
-        "\nGráfica de tiempos:"
-    )
-
-    print(
-        graficas[
-            "tiempos"
-        ]
-    )
-
-    print(
-        "\nDataset utilizado:"
-    )
-
-    print(
-        dataset_dir
-    )
-
-    print(
-        "\nBenchmark completado correctamente."
-    )
-
-
-# ============================================================
-# MAIN
-# ============================================================
 
 def main():
+    args = parse_arguments()
 
     try:
+        resultado = ejecutar_benchmark(
+            repeticiones=args.repeticiones,
+            verbose=not args.json,
+        )
 
-        ejecutar_benchmark()
+        if args.json:
+            print(
+                json.dumps(
+                    resultado,
+                    ensure_ascii=False,
+                )
+            )
 
     except KeyboardInterrupt:
+        if args.json:
+            print(
+                json.dumps(
+                    {
+                        "success": False,
+                        "error":
+                            "Ejecución cancelada por el usuario.",
+                    },
+                    ensure_ascii=False,
+                )
+            )
 
-        print(
-            "\nEjecución cancelada "
-            "por el usuario."
-        )
+        else:
+            print(
+                "\nEjecución cancelada por el usuario."
+            )
 
     except Exception as error:
+        if args.json:
+            print(
+                json.dumps(
+                    {
+                        "success": False,
+                        "error": str(
+                            error
+                        ),
+                    },
+                    ensure_ascii=False,
+                )
+            )
 
-        print(
-            "\nERROR EN SEMANA 11:"
-        )
-
-        print(
-            error
-        )
-
-        raise
+        else:
+            print(
+                "\nERROR EN SEMANA 11:"
+            )
+            print(
+                error
+            )
+            raise
 
 
 if __name__ == "__main__":
-
     main()
