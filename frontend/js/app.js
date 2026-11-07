@@ -43,6 +43,8 @@ const sectionTitles = {
     semana9: "Semana 9 - Reconocimiento y procesamiento de imágenes",
     semana10: "Semana 10 - Análisis físico mediante visión artificial",
     semana11: "Semana 11 - Benchmark y selección de modelo",
+    semana13: "Semana 13 - Motor de inferencia",
+    semana14: "Semana 14 - Redes semánticas",
     arquitectura: "Arquitectura"
 };
 
@@ -307,7 +309,7 @@ function loadInitialSection() {
 
 
     showSection(
-        "semana11"
+        "semana14"
     );
 
 }
@@ -7801,3 +7803,431 @@ function openSemana11Artifact(
     );
 
 }
+
+
+// ============================================================
+// SEMANA 13 - MOTOR DE INFERENCIA
+// ============================================================
+
+const semana13CasoA = [
+    "cpu_alta",
+    "ram_alta",
+    "latencia_alta",
+    "errores_altos",
+    "disco_critico"
+];
+
+const semana13CasoB = [
+    "cpu_alta",
+    "ram_alta",
+    "latencia_alta",
+    "errores_altos"
+];
+
+function loadSemana13Case(tipo) {
+    const valores = tipo === "b" ? semana13CasoB : semana13CasoA;
+    document.querySelectorAll("#semana13Facts input[type='checkbox']").forEach(input => {
+        input.checked = valores.includes(input.value);
+    });
+    setHidden("semana13Results", true);
+    setHidden("semana13Error", true);
+}
+
+function getSemana13Facts() {
+    return Array.from(
+        document.querySelectorAll("#semana13Facts input[type='checkbox']:checked")
+    ).map(input => input.value);
+}
+
+async function runSemana13() {
+    setHidden("semana13Error", true);
+    try {
+        const response = await fetch("/api/semana13", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({hechos: getSemana13Facts()})
+        });
+        const data = await response.json();
+        if (!response.ok || !data.success) {
+            throw new Error(data.error || "No fue posible ejecutar el motor.");
+        }
+        renderSemana13(data);
+    } catch (error) {
+        const box = document.getElementById("semana13Error");
+        if (box) {
+            box.textContent = error.message;
+            box.hidden = false;
+        }
+    }
+}
+
+function renderSemana13(data) {
+    setText("semana13Status", data.estado || "-");
+
+    const status = document.getElementById("semana13Status");
+    if (status) {
+        status.className = data.demostrada ? "knowledge-ok" : "knowledge-pending";
+    }
+
+    const derived = document.getElementById("semana13Derived");
+    if (derived) {
+        derived.innerHTML = "";
+        (data.hechos_inferidos || []).forEach(item => {
+            const tag = document.createElement("span");
+            tag.textContent = item;
+            derived.appendChild(tag);
+        });
+        if (!(data.hechos_inferidos || []).length) {
+            derived.textContent = "No se generaron hechos nuevos.";
+        }
+    }
+
+    const trace = document.getElementById("semana13Trace");
+    if (trace) {
+        trace.innerHTML = "";
+        (data.trazas || []).forEach((paso, index) => {
+            const row = document.createElement("div");
+            row.innerHTML = `
+                <span>${String(index + 1).padStart(2, "0")}</span>
+                <div>
+                    <strong>${escapeHtml(paso.regla || "-")} · ${escapeHtml(paso.conclusion || "-")}</strong>
+                    <small>${escapeHtml((paso.premisas || []).join(" ∧ "))}</small>
+                </div>
+            `;
+            trace.appendChild(row);
+        });
+        if (!(data.trazas || []).length) {
+            trace.textContent = "Ninguna regla pudo activarse.";
+        }
+    }
+
+    setHidden("semana13Results", false);
+}
+
+
+// ============================================================
+// SEMANA 14 - RED SEMÁNTICA
+// ============================================================
+
+const semana14Ejemplo = [
+    "El servidor_web es un servidor.",
+    "El servidor_bd es un servidor.",
+    "El servidor es un activo_ti.",
+    "El activo_ti es una infraestructura.",
+    "El servidor necesita monitoreo.",
+    "El servidor_bd necesita respaldo.",
+    "El monitor monitorea servidor_web."
+];
+
+function loadSemana14Example() {
+    const area = document.getElementById("semana14Sentences");
+    if (area) area.value = semana14Ejemplo.join("\n");
+    setHidden("semana14Results", true);
+    setHidden("semana14Error", true);
+}
+
+async function runSemana14() {
+    setHidden("semana14Error", true);
+
+    const area = document.getElementById("semana14Sentences");
+    const oraciones = (area?.value || "")
+        .split("\n")
+        .map(x => x.trim())
+        .filter(Boolean);
+
+    try {
+        const response = await fetch("/api/semana14", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                oraciones,
+                origen: document.getElementById("semana14Origin")?.value || "servidor_web",
+                categoria: document.getElementById("semana14Category")?.value || "infraestructura",
+                propiedades: document.getElementById("semana14Properties")?.value || "servidor_web"
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.error || "No fue posible construir la red.");
+        }
+
+        renderSemana14(data);
+        return data;
+
+    } catch (error) {
+        const box = document.getElementById("semana14Error");
+        if (box) {
+            box.textContent = error.message;
+            box.hidden = false;
+        }
+        return null;
+    }
+}
+
+async function runSemana14Demo() {
+    loadSemana14Example();
+
+    const data = await runSemana14();
+
+    if (data) {
+        document.getElementById("semana14Results")?.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    }
+}
+
+async function loadSemana14LastEvidence() {
+    setHidden("semana14Error", true);
+
+    try {
+        const response = await fetch(`/api/semana14/evidencia?t=${Date.now()}`);
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.error || "No existe evidencia guardada.");
+        }
+
+        if (Array.isArray(data.oraciones)) {
+            const area = document.getElementById("semana14Sentences");
+            if (area) area.value = data.oraciones.join("\n");
+        }
+
+        renderSemana14(data);
+
+        document.getElementById("semana14Results")?.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+    } catch (error) {
+        const box = document.getElementById("semana14Error");
+        if (box) {
+            box.textContent = error.message;
+            box.hidden = false;
+        }
+    }
+}
+
+function renderSemana14(data) {
+    setText("semana14ConceptCount", data.cantidad_conceptos ?? "-");
+    setText("semana14TripleCount", data.cantidad_triples ?? "-");
+
+    const consulta = data.consulta_jerarquia || {};
+    const tipo = consulta.tipo || (consulta.demostrada ? "inferida" : "sin_evidencia");
+
+    let estadoJerarquia = "SIN EVIDENCIA";
+    if (consulta.demostrada && tipo === "explicita") estadoJerarquia = "EXPLÍCITA";
+    if (consulta.demostrada && tipo === "inferida") estadoJerarquia = "INFERIDA";
+
+    setText("semana14HierarchyStatus", estadoJerarquia);
+
+    const triples = document.getElementById("semana14Triples");
+    if (triples) {
+        triples.innerHTML = "";
+
+        (data.triples || []).forEach((triple, index) => {
+            const row = document.createElement("div");
+            row.innerHTML = `<span>${String(index + 1).padStart(2,"0")}</span><code>(${escapeHtml(triple.join(", "))})</code>`;
+            triples.appendChild(row);
+        });
+    }
+
+    const path = document.getElementById("semana14Path");
+    if (path) {
+        const ruta = consulta.ruta || [];
+        path.innerHTML = "";
+
+        if (ruta.length) {
+            ruta.forEach((nodo, index) => {
+                const el = document.createElement("span");
+                el.textContent = nodo;
+                path.appendChild(el);
+
+                if (index < ruta.length - 1) {
+                    const arrow = document.createElement("b");
+                    arrow.textContent = "→";
+                    path.appendChild(arrow);
+                }
+            });
+        } else {
+            path.textContent = "No existe una ruta es_un que demuestre la consulta.";
+        }
+    }
+
+    const explanation = document.getElementById("semana14InferenceExplanation");
+    if (explanation) {
+        explanation.className = `semantic-explanation semantic-explanation-${tipo}`;
+        explanation.textContent = consulta.explicacion || "Sin explicación disponible.";
+    }
+
+    const inherited = document.getElementById("semana14Inherited");
+    if (inherited) {
+        inherited.innerHTML = "";
+        const props = data.propiedades?.resultados || [];
+
+        props.forEach(item => {
+            const tag = document.createElement("span");
+            tag.textContent = `necesita ${item.propiedad} · heredado desde ${item.origen}`;
+            inherited.appendChild(tag);
+        });
+
+        if (!props.length) {
+            inherited.textContent = "No se encontraron propiedades heredables.";
+        }
+    }
+
+    const inferences = document.getElementById("semana14Inferences");
+    if (inferences) {
+        inferences.innerHTML = "";
+        const items = data.inferencias || [];
+
+        items.forEach((item, index) => {
+            const card = document.createElement("div");
+            const triple = item.triple || [];
+            const label = item.tipo === "herencia" ? "HERENCIA" : "JERARQUÍA";
+
+            card.innerHTML = `
+                <span>${String(index + 1).padStart(2, "0")}</span>
+                <div>
+                    <strong>${escapeHtml(label)}</strong>
+                    <code>(${escapeHtml(triple.join(", "))})</code>
+                    <small>${escapeHtml(item.explicacion || "")}</small>
+                </div>
+            `;
+            inferences.appendChild(card);
+        });
+
+        if (!items.length) {
+            inferences.innerHTML = `
+                <div class="semantic-empty-state">
+                    No se generaron inferencias nuevas para esta consulta.
+                </div>
+            `;
+        }
+    }
+
+    const negative = document.getElementById("semana14NegativeQuery");
+    if (negative) {
+        const query = data.consulta_sin_evidencia || {};
+        negative.innerHTML = `
+            <strong>${escapeHtml(query.origen || "-")} es_un ${escapeHtml(query.categoria || "-")}</strong>
+            <span class="${query.demostrada ? "semantic-positive" : "semantic-negative"}">
+                ${query.demostrada ? "DEMOSTRADA" : "NO DEMOSTRADA"}
+            </span>
+            <small>${escapeHtml(query.interpretacion || "")}</small>
+        `;
+    }
+
+    const banner = document.getElementById("semana14EvidenceBanner");
+    const evidenceText = document.getElementById("semana14EvidenceText");
+
+    if (data.evidencia?.guardada && banner) {
+        banner.hidden = false;
+
+        if (evidenceText) {
+            evidenceText.textContent = data.evidencia.fecha
+                ? `Ejecución almacenada el ${data.evidencia.fecha}`
+                : "La ejecución quedó almacenada en artifacts.";
+        }
+    }
+
+    setHidden("semana14Results", false);
+}
+
+
+// ============================================================
+// PRUEBAS UNITARIAS SEMANAS 13 Y 14
+// ============================================================
+
+async function runKnowledgeTests(week) {
+    const output = document.getElementById(`tests-semana${week}`);
+    if (!output) return;
+
+    output.textContent = "Ejecutando pruebas unittest...";
+
+    if (week === 14) {
+        setHidden("semana14TestResults", true);
+    }
+
+    try {
+        const response = await fetch(`/api/semana${week}/tests`, {method: "POST"});
+        const data = await response.json();
+        const text = [data.stdout, data.stderr].filter(Boolean).join("\n");
+
+        output.textContent = text || (
+            data.success
+                ? "Pruebas correctas."
+                : "Las pruebas presentaron errores."
+        );
+
+        if (!response.ok || !data.success) {
+            output.textContent += "\n\nEstado: pruebas con errores";
+        } else {
+            output.textContent += "\n\nEstado: todas las pruebas finalizaron correctamente";
+        }
+
+        if (week === 14) {
+            renderSemana14Tests(data);
+        }
+
+    } catch (error) {
+        output.textContent = `Error al ejecutar pruebas:\n${error.message}`;
+    }
+}
+
+function renderSemana14Tests(data) {
+    setText("semana14TestsTotal", data.total ?? "-");
+    setText("semana14TestsPassed", data.correctas ?? "-");
+    setText("semana14TestsFailed", data.fallidas ?? "-");
+
+    const list = document.getElementById("semana14TestList");
+
+    if (list) {
+        list.innerHTML = "";
+
+        (data.pruebas || []).forEach((test, index) => {
+            const row = document.createElement("div");
+            row.className = test.correcta
+                ? "semantic-test-item semantic-test-ok"
+                : "semantic-test-item semantic-test-fail";
+
+            row.innerHTML = `
+                <span>${test.correcta ? "✓" : "×"}</span>
+                <div>
+                    <strong>${escapeHtml(test.nombre || `Prueba ${index + 1}`)}</strong>
+                    <small>${escapeHtml(test.descripcion || "")}</small>
+                </div>
+                <b>${test.correcta ? "OK" : escapeHtml((test.estado || "error").toUpperCase())}</b>
+            `;
+
+            list.appendChild(row);
+        });
+    }
+
+    const evidence = document.getElementById("semana14TestsEvidence");
+    if (evidence) {
+        if (data.evidencia) {
+            evidence.innerHTML = `
+                <strong>Evidencia de pruebas guardada</strong>
+                <span>${escapeHtml(data.evidencia.fecha || "")}</span>
+                <div class="block-actions">
+                    <a class="button button-secondary" href="/artifacts/semana14_pruebas.txt" target="_blank" rel="noopener">Ver TXT</a>
+                    <a class="button button-secondary" href="/artifacts/semana14_pruebas.json" target="_blank" rel="noopener">Ver JSON</a>
+                </div>
+            `;
+        } else {
+            evidence.textContent = "Las pruebas se ejecutaron, pero no se informó una ruta de evidencia.";
+        }
+    }
+
+    setHidden("semana14TestResults", false);
+}
+
+// Carga inicial del ejemplo de la semana actual.
+document.addEventListener("DOMContentLoaded", () => {
+    loadSemana13Case("a");
+    loadSemana14Example();
+});

@@ -1,8 +1,10 @@
 import json
 import os
+import re
 import subprocess
 import sys
 import uuid
+from datetime import datetime
 from pathlib import Path
 
 from flask import Flask, jsonify, request, send_from_directory
@@ -17,6 +19,7 @@ ROOT = Path(__file__).resolve().parent
 FRONTEND_DIR = ROOT / "frontend"
 SRC_DIR = ROOT / "src"
 ARTIFACTS_DIR = ROOT / "artifacts"
+ARTIFACTS_DIR.mkdir(parents=True, exist_ok=True)
 
 app = Flask(__name__)
 
@@ -66,6 +69,12 @@ SEMANA8_SCRIPT = SRC_DIR / "semana08_analisis.py"
 SEMANA9_SCRIPT = SRC_DIR / "semana09_analisis.py"
 SEMANA10_SCRIPT = SRC_DIR / "semana10_texturas.py"
 SEMANA11_SCRIPT = SRC_DIR / "semana11_benchmark.py"
+SEMANA13_DIR = SRC_DIR / "semana13"
+SEMANA14_DIR = SRC_DIR / "semana14"
+SEMANA13_SCRIPT = SEMANA13_DIR / "motor_inferencia.py"
+SEMANA13_TEST = SEMANA13_DIR / "test_motor_inferencia.py"
+SEMANA14_SCRIPT = SEMANA14_DIR / "main.py"
+SEMANA14_TEST = SEMANA14_DIR / "test_red_semantica.py"
 
 
 # ============================================================
@@ -76,6 +85,8 @@ ALLOWED_DIRECTORIES = [
     SRC_DIR,
     ROOT / "reports",
     ROOT / "data",
+    SEMANA13_DIR,
+    SEMANA14_DIR,
 ]
 
 
@@ -1134,6 +1145,268 @@ def api_semana11():
         ), 500
 
 
+
+# ============================================================
+# SEMANA 13
+# INGENIERÍA DEL CONOCIMIENTO - MOTOR DE INFERENCIA
+# ============================================================
+
+@app.route("/api/semana13", methods=["POST"])
+def api_semana13():
+    try:
+        if not SEMANA13_SCRIPT.exists():
+            return jsonify({"success": False, "error": "No existe motor_inferencia.py."}), 404
+
+        data = request.get_json(silent=True) or {}
+        hechos = data.get("hechos", [])
+
+        if not isinstance(hechos, list) or not all(isinstance(h, str) for h in hechos):
+            return jsonify({"success": False, "error": "'hechos' debe ser una lista de textos."}), 400
+
+        process = run_python_script(
+            [SEMANA13_SCRIPT, "--hechos-json", json.dumps(hechos, ensure_ascii=False), "--json"],
+            timeout=60,
+        )
+
+        if process.returncode != 0:
+            return jsonify({
+                "success": False,
+                "error": process.stderr.strip() or process.stdout.strip() or "Falló Semana 13.",
+            }), 500
+
+        analysis, error_response = parse_json_output(
+            process,
+            "Semana 13 no devolvió información.",
+            "Semana 13 devolvió una respuesta inválida.",
+        )
+        if error_response:
+            return error_response
+        return jsonify(analysis)
+
+    except subprocess.TimeoutExpired:
+        return jsonify({"success": False, "error": "Semana 13 superó el tiempo máximo."}), 504
+    except Exception as error:
+        return jsonify({"success": False, "error": str(error)}), 500
+
+
+@app.route("/api/semana13/tests", methods=["POST"])
+def api_semana13_tests():
+    try:
+        process = run_python_script([SEMANA13_TEST], timeout=60)
+        return jsonify({
+            "success": process.returncode == 0,
+            "stdout": process.stdout.strip(),
+            "stderr": process.stderr.strip(),
+            "returncode": process.returncode,
+        }), (200 if process.returncode == 0 else 500)
+    except Exception as error:
+        return jsonify({"success": False, "error": str(error)}), 500
+
+
+# ============================================================
+# SEMANA 14
+# REDES SEMÁNTICAS
+# ============================================================
+
+def _guardar_evidencia_semana14(analysis):
+    """Guarda la última ejecución y agrega una entrada al historial JSONL."""
+
+    marca_tiempo = datetime.now().astimezone().isoformat(timespec="seconds")
+    evidencia = {
+        "fecha": marca_tiempo,
+        **analysis,
+    }
+
+    ruta_ultima = ARTIFACTS_DIR / "semana14_ultima_ejecucion.json"
+    ruta_historial = ARTIFACTS_DIR / "semana14_historial.jsonl"
+
+    ruta_ultima.write_text(
+        json.dumps(evidencia, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+
+    with ruta_historial.open("a", encoding="utf-8") as archivo:
+        archivo.write(json.dumps(evidencia, ensure_ascii=False) + "\n")
+
+    return {
+        "guardada": True,
+        "fecha": marca_tiempo,
+        "ultima": "artifacts/semana14_ultima_ejecucion.json",
+        "historial": "artifacts/semana14_historial.jsonl",
+    }
+
+
+def _descripcion_prueba_semana14(nombre):
+    descripciones = {
+        "test_relacion_explicita": "Comprueba una relación es_un almacenada directamente.",
+        "test_transitividad": "Comprueba una inferencia jerárquica a través de varios niveles es_un.",
+        "test_herencia_propiedad": "Comprueba que una propiedad necesita se herede desde una categoría superior.",
+        "test_sin_evidencia_suficiente": "Comprueba que el sistema no invente una relación sin evidencia en la red.",
+        "test_interpretar_oracion": "Comprueba la conversión de una oración admitida a un triple semántico.",
+        "test_normalizacion": "Comprueba minúsculas, espacios y eliminación de tildes.",
+        "test_oracion_invalida": "Comprueba el rechazo controlado de oraciones fuera de los patrones permitidos.",
+        "test_ciclo_no_bloquea": "Comprueba que visitados evite ciclos infinitos en la jerarquía.",
+    }
+    return descripciones.get(nombre, "Prueba automática de la red semántica.")
+
+
+@app.route("/api/semana14", methods=["POST"])
+def api_semana14():
+    try:
+        if not SEMANA14_SCRIPT.exists():
+            return jsonify({"success": False, "error": "No existe main.py de Semana 14."}), 404
+
+        data = request.get_json(silent=True) or {}
+        oraciones = data.get("oraciones", [])
+        origen = str(data.get("origen", "servidor_web"))
+        categoria = str(data.get("categoria", "infraestructura"))
+        propiedades = str(data.get("propiedades", "servidor_web"))
+
+        if not isinstance(oraciones, list) or not oraciones or not all(isinstance(x, str) for x in oraciones):
+            return jsonify({"success": False, "error": "Debe enviarse una lista de oraciones."}), 400
+
+        process = run_python_script(
+            [
+                SEMANA14_SCRIPT,
+                "--oraciones-json", json.dumps(oraciones, ensure_ascii=False),
+                "--origen", origen,
+                "--categoria", categoria,
+                "--propiedades", propiedades,
+                "--json",
+            ],
+            timeout=60,
+        )
+
+        stdout = process.stdout.strip() if process.stdout else ""
+        stderr = process.stderr.strip() if process.stderr else ""
+
+        if process.returncode != 0:
+            try:
+                payload = json.loads(stdout) if stdout else {}
+            except json.JSONDecodeError:
+                payload = {}
+            return jsonify({
+                "success": False,
+                "error": payload.get("error") or stderr or stdout or "Falló Semana 14.",
+            }), 400
+
+        analysis, error_response = parse_json_output(
+            process,
+            "Semana 14 no devolvió información.",
+            "Semana 14 devolvió una respuesta inválida.",
+        )
+        if error_response:
+            return error_response
+
+        analysis["evidencia"] = _guardar_evidencia_semana14(analysis)
+        return jsonify(analysis)
+
+    except subprocess.TimeoutExpired:
+        return jsonify({"success": False, "error": "Semana 14 superó el tiempo máximo."}), 504
+    except Exception as error:
+        return jsonify({"success": False, "error": str(error)}), 500
+
+
+@app.route("/api/semana14/evidencia", methods=["GET"])
+def api_semana14_evidencia():
+    ruta = ARTIFACTS_DIR / "semana14_ultima_ejecucion.json"
+
+    if not ruta.exists():
+        return jsonify({
+            "success": False,
+            "error": "Todavía no existe una ejecución guardada de Semana 14.",
+        }), 404
+
+    try:
+        data = json.loads(ruta.read_text(encoding="utf-8"))
+        data["success"] = True
+        data["evidencia"] = {
+            "guardada": True,
+            "fecha": data.get("fecha"),
+            "ultima": "artifacts/semana14_ultima_ejecucion.json",
+            "historial": "artifacts/semana14_historial.jsonl",
+        }
+        return jsonify(data)
+    except Exception as error:
+        return jsonify({"success": False, "error": str(error)}), 500
+
+
+@app.route("/api/semana14/tests", methods=["POST"])
+def api_semana14_tests():
+    try:
+        if not SEMANA14_TEST.exists():
+            return jsonify({"success": False, "error": "No existe test_red_semantica.py."}), 404
+
+        process = run_python_script([SEMANA14_TEST], timeout=60)
+        stdout = process.stdout.strip() if process.stdout else ""
+        stderr = process.stderr.strip() if process.stderr else ""
+        texto = "\n".join(parte for parte in (stdout, stderr) if parte).strip()
+
+        pruebas = []
+        patron = re.compile(r"^(test_[A-Za-z0-9_]+).*\.\.\.\s+(ok|FAIL|ERROR)$")
+        for linea in texto.splitlines():
+            coincidencia = patron.match(linea.strip())
+            if not coincidencia:
+                continue
+            nombre, estado = coincidencia.groups()
+            pruebas.append({
+                "nombre": nombre,
+                "estado": estado.lower(),
+                "correcta": estado == "ok",
+                "descripcion": _descripcion_prueba_semana14(nombre),
+            })
+
+        total = len(pruebas)
+        correctas = sum(1 for prueba in pruebas if prueba["correcta"])
+        fallidas = total - correctas
+        marca_tiempo = datetime.now().astimezone().isoformat(timespec="seconds")
+
+        evidencia_texto = (
+            f"SEMANA 14 - PRUEBAS UNITARIAS\n"
+            f"Fecha: {marca_tiempo}\n"
+            f"Correctas: {correctas}/{total}\n"
+            f"Fallidas: {fallidas}\n\n"
+            f"{texto}\n"
+        )
+        (ARTIFACTS_DIR / "semana14_pruebas.txt").write_text(
+            evidencia_texto,
+            encoding="utf-8",
+        )
+
+        evidencia_json = {
+            "fecha": marca_tiempo,
+            "success": process.returncode == 0,
+            "total": total,
+            "correctas": correctas,
+            "fallidas": fallidas,
+            "pruebas": pruebas,
+        }
+        (ARTIFACTS_DIR / "semana14_pruebas.json").write_text(
+            json.dumps(evidencia_json, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+
+        payload = {
+            "success": process.returncode == 0,
+            "stdout": stdout,
+            "stderr": stderr,
+            "returncode": process.returncode,
+            "total": total,
+            "correctas": correctas,
+            "fallidas": fallidas,
+            "pruebas": pruebas,
+            "evidencia": {
+                "fecha": marca_tiempo,
+                "texto": "artifacts/semana14_pruebas.txt",
+                "json": "artifacts/semana14_pruebas.json",
+            },
+        }
+        return jsonify(payload), (200 if process.returncode == 0 else 500)
+
+    except Exception as error:
+        return jsonify({"success": False, "error": str(error)}), 500
+
+
 # ============================================================
 # ARTIFACTOS GENERADOS
 # ============================================================
@@ -1172,6 +1445,10 @@ def status():
                 SEMANA10_SCRIPT.exists(),
             "semana11":
                 SEMANA11_SCRIPT.exists(),
+            "semana13":
+                SEMANA13_SCRIPT.exists(),
+            "semana14":
+                SEMANA14_SCRIPT.exists(),
         }
     )
 
@@ -1182,7 +1459,7 @@ def status():
             "python_executable":
                 sys.executable,
             "encoding": "utf-8",
-            "current_week": 11,
+            "current_week": 14,
             "scripts":
                 available_scripts,
         }
@@ -1230,6 +1507,8 @@ if __name__ == "__main__":
         "semana9": SEMANA9_SCRIPT,
         "semana10": SEMANA10_SCRIPT,
         "semana11": SEMANA11_SCRIPT,
+        "semana13": SEMANA13_SCRIPT,
+        "semana14": SEMANA14_SCRIPT,
     }
 
     for name, path in status_scripts.items():

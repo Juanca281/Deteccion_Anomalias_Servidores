@@ -189,7 +189,7 @@
             </button>
 
 
-            <button class="nav-item active" data-section="semana11" type="button">
+            <button class="nav-item" data-section="semana11" type="button">
                 <span class="nav-index">
                     11
                 </span>
@@ -198,9 +198,17 @@
                     Semana 11
                 </span>
 
-                <span class="nav-badge">
-                    Actual
-                </span>
+            </button>
+
+            <button class="nav-item" data-section="semana13" type="button">
+                <span class="nav-index">13</span>
+                <span class="nav-name">Semana 13</span>
+            </button>
+
+            <button class="nav-item active" data-section="semana14" type="button">
+                <span class="nav-index">14</span>
+                <span class="nav-name">Semana 14</span>
+                <span class="nav-badge">Actual</span>
             </button>
 
             <div class="nav-separator"></div>
@@ -238,7 +246,7 @@
                     </strong>
 
                     <small>
-                        Semana 11
+                        Semana 14
                     </small>
 
                 </div>
@@ -296,7 +304,7 @@
                 </span>
 
                 <h1 id="pageTitle">
-                    Semana 11 - Benchmark y selección de modelo
+                    Semana 14 - Redes semánticas
                 </h1>
 
             </div>
@@ -376,12 +384,12 @@
                     </span>
 
                     <strong>
-                        11
+                        14
                     </strong>
 
                     <p>
-                        Benchmark y selección
-                        técnica de modelo
+                        Redes semánticas e
+                        inferencia por jerarquía
                     </p>
 
                 </div>
@@ -613,7 +621,7 @@
                     <div class="timeline-connector"></div>
 
 
-                    <div class="timeline-item current">
+                    <div class="timeline-item completed">
 
                         <span class="timeline-number">
                             11
@@ -634,6 +642,26 @@
 
                     </div>
 
+                    <div class="timeline-connector"></div>
+
+                    <div class="timeline-item completed">
+                        <span class="timeline-number">13</span>
+                        <div>
+                            <strong>Motor lógico</strong>
+                            <p>Reglas, inferencia y trazabilidad.</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-connector"></div>
+
+                    <div class="timeline-item current">
+                        <span class="timeline-number">14</span>
+                        <div>
+                            <strong>Red semántica</strong>
+                            <p>Triples, jerarquía y herencia.</p>
+                        </div>
+                    </div>
+
 
                 </div>
 
@@ -652,7 +680,7 @@
                     </span>
 
                     <strong>
-                        9
+                        11
                     </strong>
 
                     <small>
@@ -3884,7 +3912,7 @@
              SEMANA 11
         ================================================== -->
 
-        <section id="semana11" class="content-section active-section">
+        <section id="semana11" class="content-section">
 
             <div class="section-header semana11-header">
                 <div>
@@ -4382,6 +4410,258 @@
 
             </div>
 
+        </section>
+
+
+
+        <!-- =================================================
+             SEMANA 13
+        ================================================== -->
+
+        <section id="semana13" class="content-section">
+
+            <div class="section-title">
+                <div class="week-marker">13</div>
+                <div>
+                    <span class="section-kicker">SEMANA 13</span>
+                    <h2>Ingeniería del conocimiento y motor de inferencia</h2>
+                    <p>
+                        Reglas lógicas aplicadas a anomalías de servidores mediante
+                        encadenamiento hacia adelante, trazabilidad y pruebas automatizadas.
+                    </p>
+                </div>
+            </div>
+
+            <div class="knowledge-flow">
+                <div><span>01</span><strong>Hechos</strong><small>Evidencia técnica</small></div>
+                <b>→</b>
+                <div><span>02</span><strong>Reglas</strong><small>Premisas → conclusión</small></div>
+                <b>→</b>
+                <div><span>03</span><strong>Inferencia</strong><small>Forward chaining</small></div>
+                <b>→</b>
+                <div class="active"><span>04</span><strong>Traza</strong><small>Explicación verificable</small></div>
+            </div>
+
+            <div class="knowledge-grid">
+                <article class="knowledge-card">
+                    <span class="section-kicker">HECHOS INICIALES</span>
+                    <h3>Selecciona la evidencia disponible</h3>
+                    <p class="knowledge-help">La ausencia de un hecho no significa que su negación esté demostrada.</p>
+
+                    <div id="semana13Facts" class="knowledge-facts">
+                        <label><input type="checkbox" value="cpu_alta"> CPU alta</label>
+                        <label><input type="checkbox" value="ram_alta"> RAM alta</label>
+                        <label><input type="checkbox" value="latencia_alta"> Latencia alta</label>
+                        <label><input type="checkbox" value="errores_altos"> Errores altos</label>
+                        <label><input type="checkbox" value="disco_critico"> Disco crítico</label>
+                    </div>
+
+                    <div class="block-actions knowledge-actions">
+                        <button class="button button-secondary" type="button" onclick="loadSemana13Case('a')">Caso A</button>
+                        <button class="button button-secondary" type="button" onclick="loadSemana13Case('b')">Caso B</button>
+                        <button class="button button-primary" type="button" onclick="runSemana13()">Ejecutar inferencia</button>
+                    </div>
+
+                    <div id="semana13Error" class="knowledge-error" hidden></div>
+                </article>
+
+                <article class="knowledge-card">
+                    <span class="section-kicker">BASE DE REGLAS</span>
+                    <h3>Reglas originales de ServidorIA</h3>
+                    <div class="rule-list">
+                        <div><b>R1</b><code>cpu_alta ∧ ram_alta → sobrecarga_recursos</code></div>
+                        <div><b>R2</b><code>latencia_alta ∧ errores_altos → degradacion_servicio</code></div>
+                        <div><b>R3</b><code>disco_critico ∧ sobrecarga_recursos → riesgo_critico</code></div>
+                        <div><b>R4</b><code>sobrecarga_recursos ∧ degradacion_servicio → incidente_prioridad_alta</code></div>
+                        <div><b>R5</b><code>riesgo_critico ∧ incidente_prioridad_alta → escalar_soporte</code></div>
+                        <div><b>R6</b><code>escalar_soporte → mantenimiento_recomendado</code></div>
+                    </div>
+                </article>
+            </div>
+
+            <div id="semana13Results" class="knowledge-results" hidden>
+                <div class="knowledge-status-card">
+                    <div>
+                        <span>CONCLUSIÓN OBJETIVO</span>
+                        <h3>mantenimiento_recomendado</h3>
+                    </div>
+                    <strong id="semana13Status">-</strong>
+                </div>
+
+                <div class="knowledge-grid">
+                    <article class="knowledge-card">
+                        <span class="section-kicker">HECHOS DERIVADOS</span>
+                        <div id="semana13Derived" class="knowledge-tags"></div>
+                    </article>
+                    <article class="knowledge-card">
+                        <span class="section-kicker">TRAZABILIDAD</span>
+                        <div id="semana13Trace" class="trace-list"></div>
+                    </article>
+                </div>
+            </div>
+
+            <div class="section-block">
+                <div class="block-heading">
+                    <div>
+                        <span class="section-kicker">VERIFICACIÓN</span>
+                        <h3>Pruebas y archivos</h3>
+                    </div>
+                    <div class="block-actions">
+                        <button class="button button-primary" type="button" onclick="runKnowledgeTests(13)">Ejecutar unittest</button>
+                        <button class="button button-secondary" type="button" onclick="loadFile('src/semana13/motor_inferencia.py','viewer-semana13')">Motor</button>
+                        <button class="button button-secondary" type="button" onclick="loadFile('src/semana13/test_motor_inferencia.py','viewer-semana13')">Pruebas</button>
+                        <button class="button button-secondary" type="button" onclick="loadFile('reports/reporte_semana13.md','viewer-semana13')">Reporte</button>
+                    </div>
+                </div>
+                <pre id="tests-semana13" class="terminal">Ejecuta las pruebas para verificar el motor.</pre>
+                <pre id="viewer-semana13" class="file-viewer hidden"></pre>
+            </div>
+        </section>
+
+
+        <!-- =================================================
+             SEMANA 14
+        ================================================== -->
+
+        <section id="semana14" class="content-section active-section">
+
+            <div class="section-title">
+                <div class="week-marker current">14</div>
+                <div>
+                    <span class="section-kicker">SEMANA 14</span>
+                    <h2>Redes semánticas e inferencia por jerarquía</h2>
+                    <p>
+                        Conversión de oraciones simples en triples, construcción de una red dirigida,
+                        transitividad de <strong>es_un</strong> y herencia controlada de propiedades.
+                    </p>
+                </div>
+            </div>
+
+            <div class="semantic-flow">
+                <div><span>01</span><strong>Oración</strong></div><b>→</b>
+                <div><span>02</span><strong>Normalizar</strong></div><b>→</b>
+                <div><span>03</span><strong>Triple</strong></div><b>→</b>
+                <div><span>04</span><strong>Grafo</strong></div><b>→</b>
+                <div class="active"><span>05</span><strong>Inferir</strong></div>
+            </div>
+
+            <div class="semantic-grid">
+                <article class="knowledge-card semantic-input-card">
+                    <span class="section-kicker">BASE DE CONOCIMIENTO</span>
+                    <h3>Oraciones del dominio</h3>
+                    <p class="knowledge-help">Una oración por línea. El parser admite patrones simples y controlados.</p>
+                    <textarea id="semana14Sentences" rows="9"></textarea>
+                    <div class="block-actions knowledge-actions">
+                        <button class="button button-secondary" type="button" onclick="loadSemana14Example()">Cargar ejemplo</button>
+                        <button class="button button-primary" type="button" onclick="runSemana14()">Construir e inferir</button>
+                    </div>
+                    <div id="semana14Error" class="knowledge-error" hidden></div>
+                </article>
+
+                <article class="knowledge-card">
+                    <span class="section-kicker">CONSULTAS</span>
+                    <h3>¿Qué quieres demostrar?</h3>
+                    <label class="semantic-field">Origen<input id="semana14Origin" value="servidor_web"></label>
+                    <label class="semantic-field">Categoría<input id="semana14Category" value="infraestructura"></label>
+                    <label class="semantic-field">Propiedades heredadas de<input id="semana14Properties" value="servidor_web"></label>
+                    <div class="semantic-note">
+                        <b>Importante:</b> una respuesta sin ruta significa que la red no contiene evidencia suficiente.
+                    </div>
+                </article>
+            </div>
+
+            <div id="semana14Results" class="semantic-results" hidden>
+                <div class="semantic-summary">
+                    <div><span>Conceptos</span><strong id="semana14ConceptCount">-</strong></div>
+                    <div><span>Triples explícitos</span><strong id="semana14TripleCount">-</strong></div>
+                    <div><span>Consulta jerárquica</span><strong id="semana14HierarchyStatus">-</strong></div>
+                </div>
+
+                <div class="semantic-grid">
+                    <article class="knowledge-card">
+                        <span class="section-kicker">HECHOS EXPLÍCITOS</span>
+                        <h3>Triples almacenados</h3>
+                        <p class="knowledge-help">Estos hechos sí fueron cargados directamente en la red.</p>
+                        <div id="semana14Triples" class="triple-list"></div>
+                    </article>
+                    <article class="knowledge-card">
+                        <span class="section-kicker">INFERENCIA JERÁRQUICA</span>
+                        <h3>Ruta que demuestra la conclusión</h3>
+                        <div id="semana14Path" class="semantic-path"></div>
+                        <div id="semana14InferenceExplanation" class="semantic-explanation"></div>
+                        <span class="section-kicker semantic-subtitle">PROPIEDADES HEREDADAS</span>
+                        <div id="semana14Inherited" class="knowledge-tags"></div>
+                    </article>
+                </div>
+
+                <div class="semantic-grid semantic-detail-grid">
+                    <article class="knowledge-card">
+                        <span class="section-kicker">CONOCIMIENTO NUEVO</span>
+                        <h3>Inferencias obtenidas</h3>
+                        <p class="knowledge-help">Estas relaciones no fueron escritas directamente como triples; el sistema las dedujo.</p>
+                        <div id="semana14Inferences" class="semantic-inference-list"></div>
+                    </article>
+
+                    <article class="knowledge-card">
+                        <span class="section-kicker">CASO SIN EVIDENCIA</span>
+                        <h3>Conclusión no demostrada</h3>
+                        <div id="semana14NegativeQuery" class="semantic-negative-result"></div>
+                        <p class="knowledge-help semantic-open-world-note">
+                            Una conclusión no demostrada no se considera falsa automáticamente. Solo significa que la red actual no contiene una ruta que la pruebe.
+                        </p>
+                    </article>
+                </div>
+
+                <div id="semana14EvidenceBanner" class="semantic-evidence-banner" hidden>
+                    <div>
+                        <span class="section-kicker">EVIDENCIA GUARDADA</span>
+                        <strong id="semana14EvidenceText">-</strong>
+                    </div>
+                    <div class="block-actions">
+                        <a class="button button-secondary" href="/artifacts/semana14_ultima_ejecucion.json" target="_blank" rel="noopener">Abrir última ejecución</a>
+                        <a class="button button-secondary" href="/artifacts/semana14_historial.jsonl" target="_blank" rel="noopener">Abrir historial</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-block semantic-verification-block">
+                <div class="block-heading">
+                    <div>
+                        <span class="section-kicker">DEMOSTRACIÓN Y VERIFICACIÓN</span>
+                        <h3>Ejecutar la Semana 14</h3>
+                        <p>
+                            La demostración construye la red e infiere conocimiento. Las pruebas unitarias verifican automáticamente que cada comportamiento esperado siga funcionando.
+                        </p>
+                    </div>
+                    <div class="block-actions">
+                        <button class="button button-primary" type="button" onclick="runSemana14Demo()">Ejecutar demostración</button>
+                        <button class="button button-secondary" type="button" onclick="runKnowledgeTests(14)">Ejecutar 8 pruebas</button>
+                        <button class="button button-secondary" type="button" onclick="loadSemana14LastEvidence()">Cargar última evidencia</button>
+                    </div>
+                </div>
+
+                <div class="semantic-demo-guide">
+                    <div><span>1</span><strong>Construye</strong><small>Convierte oraciones en triples y arma el grafo.</small></div>
+                    <div><span>2</span><strong>Infiere</strong><small>Recorre es_un y hereda propiedades permitidas.</small></div>
+                    <div><span>3</span><strong>Verifica</strong><small>Unittest comprueba 8 comportamientos del motor.</small></div>
+                    <div><span>4</span><strong>Guarda</strong><small>La ejecución y las pruebas quedan como evidencia en artifacts.</small></div>
+                </div>
+
+                <div id="semana14TestResults" class="semantic-test-panel" hidden>
+                    <div class="semantic-test-summary">
+                        <div><span>Total</span><strong id="semana14TestsTotal">-</strong></div>
+                        <div><span>Correctas</span><strong id="semana14TestsPassed">-</strong></div>
+                        <div><span>Fallidas</span><strong id="semana14TestsFailed">-</strong></div>
+                    </div>
+                    <div id="semana14TestList" class="semantic-test-list"></div>
+                    <div id="semana14TestsEvidence" class="semantic-tests-evidence"></div>
+                </div>
+
+                <details class="semantic-raw-details">
+                    <summary>Ver salida técnica de unittest</summary>
+                    <pre id="tests-semana14" class="terminal">Ejecuta las pruebas para verificar la red.</pre>
+                </details>
+            </div>
         </section>
 
 

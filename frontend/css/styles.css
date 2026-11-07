@@ -6342,3 +6342,593 @@ div span {
 
 }
 
+
+
+/* ==========================================================
+   SEMANAS 13 Y 14 - INGENIERÍA DEL CONOCIMIENTO
+========================================================== */
+
+.knowledge-flow,
+.semantic-flow {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    overflow-x: auto;
+    margin-bottom: 22px;
+    padding: 14px;
+    border: 1px solid var(--green-200);
+    border-radius: var(--radius-md);
+    background: var(--green-50);
+}
+
+.knowledge-flow > div,
+.semantic-flow > div {
+    min-width: 150px;
+    display: flex;
+    flex-direction: column;
+    padding: 12px 14px;
+    border: 1px solid var(--green-200);
+    border-radius: var(--radius-sm);
+    background: var(--white);
+}
+
+.knowledge-flow > div.active,
+.semantic-flow > div.active {
+    background: var(--green-700);
+    border-color: var(--green-700);
+    color: var(--white);
+}
+
+.knowledge-flow span,
+.semantic-flow span {
+    color: var(--green-600);
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.knowledge-flow .active span,
+.semantic-flow .active span { color: var(--green-200); }
+
+.knowledge-flow small { color: var(--gray-500); font-size: 10px; }
+.knowledge-flow .active small { color: rgba(255,255,255,.7); }
+.knowledge-flow > b,
+.semantic-flow > b { color: var(--green-500); }
+
+.knowledge-grid,
+.semantic-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 18px;
+    margin-top: 18px;
+}
+
+.knowledge-card {
+    padding: 22px;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    background: var(--white);
+    box-shadow: var(--shadow-medium);
+}
+
+.knowledge-card h3 { margin: 5px 0 8px; color: var(--green-950); }
+.knowledge-help { margin: 0 0 16px; color: var(--gray-600); font-size: 13px; }
+
+.knowledge-facts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 10px;
+}
+
+.knowledge-facts label {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 11px 12px;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    background: var(--gray-50);
+    font-size: 13px;
+    font-weight: 650;
+}
+
+.knowledge-facts input { accent-color: var(--green-600); }
+.knowledge-actions { margin-top: 18px; }
+
+.rule-list { display: flex; flex-direction: column; gap: 9px; }
+.rule-list > div {
+    display: grid;
+    grid-template-columns: 34px minmax(0,1fr);
+    gap: 8px;
+    align-items: start;
+    padding: 10px;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    background: var(--gray-50);
+}
+.rule-list b { color: var(--green-700); }
+.rule-list code { white-space: normal; color: var(--gray-800); font-size: 12px; }
+
+.knowledge-error {
+    margin-top: 14px;
+    padding: 12px;
+    border: 1px solid #efc4c4;
+    border-radius: var(--radius-sm);
+    background: var(--danger-soft);
+    color: var(--danger);
+    font-size: 12px;
+}
+
+.knowledge-results,
+.semantic-results { margin-top: 20px; }
+
+.knowledge-status-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px 22px;
+    border: 1px solid var(--green-200);
+    border-radius: var(--radius-md);
+    background: linear-gradient(90deg,var(--green-50),var(--white));
+}
+.knowledge-status-card span { color: var(--green-600); font-size: 10px; font-weight: 800; }
+.knowledge-status-card h3 { margin: 4px 0 0; color: var(--green-950); }
+.knowledge-status-card > strong { max-width: 330px; text-align: right; font-size: 13px; }
+.knowledge-ok { color: var(--green-700); }
+.knowledge-pending { color: var(--warning); }
+
+.knowledge-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.knowledge-tags span {
+    padding: 7px 9px;
+    border: 1px solid var(--green-200);
+    border-radius: 4px;
+    background: var(--green-50);
+    color: var(--green-800);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.trace-list { display: flex; flex-direction: column; gap: 9px; margin-top: 12px; }
+.trace-list > div {
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    gap: 10px;
+    padding: 10px;
+    border-left: 3px solid var(--green-500);
+    background: var(--gray-50);
+}
+.trace-list > div > span { color: var(--green-600); font-size: 10px; font-weight: 800; }
+.trace-list strong { display: block; font-size: 12px; }
+.trace-list small { display: block; margin-top: 3px; color: var(--gray-500); font-size: 10px; }
+
+.semantic-input-card textarea {
+    width: 100%;
+    resize: vertical;
+    min-height: 220px;
+    padding: 13px;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-sm);
+    outline: none;
+    font-family: Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.65;
+}
+.semantic-input-card textarea:focus { border-color: var(--green-500); box-shadow: 0 0 0 3px rgba(32,163,111,.10); }
+
+.semantic-field { display: block; margin-top: 13px; color: var(--gray-700); font-size: 12px; font-weight: 700; }
+.semantic-field input {
+    width: 100%;
+    height: 40px;
+    margin-top: 5px;
+    padding: 0 10px;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-sm);
+}
+.semantic-note { margin-top: 16px; padding: 12px; background: var(--warning-soft); color: var(--gray-700); border-radius: var(--radius-sm); font-size: 11px; }
+
+.semantic-summary {
+    display: grid;
+    grid-template-columns: repeat(3,minmax(0,1fr));
+    gap: 12px;
+}
+.semantic-summary > div {
+    padding: 16px;
+    border: 1px solid var(--green-200);
+    border-radius: var(--radius-sm);
+    background: var(--green-50);
+}
+.semantic-summary span { display:block; color:var(--gray-500); font-size:10px; }
+.semantic-summary strong { display:block; margin-top:4px; color:var(--green-900); font-size:18px; }
+
+.triple-list { display:flex; flex-direction:column; gap:8px; margin-top:12px; }
+.triple-list > div { display:grid; grid-template-columns:30px 1fr; gap:8px; padding:9px 10px; background:var(--gray-50); border-radius:var(--radius-sm); }
+.triple-list span { color:var(--green-600); font-size:10px; font-weight:800; }
+.triple-list code { white-space:normal; font-size:12px; color:var(--gray-800); }
+
+.semantic-path { display:flex; align-items:center; flex-wrap:wrap; gap:7px; margin:12px 0 22px; }
+.semantic-path span { padding:8px 10px; border:1px solid var(--green-200); border-radius:var(--radius-sm); background:var(--green-50); color:var(--green-800); font-size:11px; font-weight:700; }
+.semantic-path b { color:var(--green-500); }
+.semantic-subtitle { margin-top:10px; }
+
+@media (max-width: 900px) {
+    .knowledge-grid,
+    .semantic-grid { grid-template-columns: 1fr; }
+    .knowledge-facts { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+    .semantic-summary { grid-template-columns: 1fr; }
+    .knowledge-status-card { align-items:flex-start; flex-direction:column; }
+    .knowledge-status-card > strong { text-align:left; }
+}
+
+/* ==========================================================
+   SEMANA 14 - DEMOSTRACIÓN, EVIDENCIA Y PRUEBAS
+========================================================== */
+
+.semantic-detail-grid {
+    margin-top: 18px;
+}
+
+.semantic-explanation {
+    margin: 4px 0 20px;
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.semantic-explanation-inferida {
+    border: 1px solid var(--green-200);
+    background: var(--green-50);
+    color: var(--green-900);
+}
+
+.semantic-explanation-explicita {
+    border: 1px solid var(--gray-200);
+    background: var(--gray-50);
+    color: var(--gray-800);
+}
+
+.semantic-explanation-sin_evidencia {
+    border: 1px solid #ead8a2;
+    background: var(--warning-soft);
+    color: var(--gray-800);
+}
+
+.semantic-inference-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.semantic-inference-list > div:not(.semantic-empty-state) {
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr);
+    gap: 10px;
+    padding: 12px;
+    border-left: 3px solid var(--green-500);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    background: var(--gray-50);
+}
+
+.semantic-inference-list > div > span {
+    color: var(--green-600);
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.semantic-inference-list strong,
+.semantic-inference-list code,
+.semantic-inference-list small {
+    display: block;
+}
+
+.semantic-inference-list strong {
+    color: var(--green-700);
+    font-size: 10px;
+    letter-spacing: .06em;
+}
+
+.semantic-inference-list code {
+    margin-top: 3px;
+    color: var(--gray-900);
+    font-size: 12px;
+    white-space: normal;
+}
+
+.semantic-inference-list small {
+    margin-top: 5px;
+    color: var(--gray-500);
+    font-size: 10px;
+    line-height: 1.55;
+}
+
+.semantic-empty-state {
+    padding: 14px;
+    border: 1px dashed var(--gray-300);
+    border-radius: var(--radius-sm);
+    color: var(--gray-500);
+    font-size: 12px;
+}
+
+.semantic-negative-result {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-top: 12px;
+    padding: 16px;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    background: var(--gray-50);
+}
+
+.semantic-negative-result strong {
+    color: var(--gray-900);
+    font-size: 13px;
+}
+
+.semantic-negative-result span {
+    width: fit-content;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.semantic-positive {
+    background: var(--green-100);
+    color: var(--green-800);
+}
+
+.semantic-negative {
+    background: var(--warning-soft);
+    color: var(--warning);
+}
+
+.semantic-negative-result small {
+    color: var(--gray-500);
+    font-size: 11px;
+    line-height: 1.55;
+}
+
+.semantic-open-world-note {
+    margin-top: 12px;
+}
+
+.semantic-evidence-banner {
+    margin-top: 18px;
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    border: 1px solid var(--green-200);
+    border-radius: var(--radius-md);
+    background: linear-gradient(90deg, var(--green-50), var(--white));
+}
+
+.semantic-evidence-banner strong {
+    display: block;
+    margin-top: 4px;
+    color: var(--green-900);
+    font-size: 12px;
+}
+
+.semantic-evidence-banner a {
+    text-decoration: none;
+}
+
+.semantic-verification-block .block-heading p {
+    max-width: 720px;
+}
+
+.semantic-demo-guide {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.semantic-demo-guide > div {
+    padding: 14px;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    background: var(--gray-50);
+}
+
+.semantic-demo-guide span {
+    display: inline-grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    margin-bottom: 8px;
+    border-radius: 50%;
+    background: var(--green-100);
+    color: var(--green-700);
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.semantic-demo-guide strong,
+.semantic-demo-guide small {
+    display: block;
+}
+
+.semantic-demo-guide strong {
+    color: var(--gray-900);
+    font-size: 12px;
+}
+
+.semantic-demo-guide small {
+    margin-top: 4px;
+    color: var(--gray-500);
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+.semantic-test-panel {
+    margin-top: 20px;
+}
+
+.semantic-test-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.semantic-test-summary > div {
+    padding: 14px;
+    border: 1px solid var(--green-200);
+    border-radius: var(--radius-sm);
+    background: var(--green-50);
+}
+
+.semantic-test-summary span,
+.semantic-test-summary strong {
+    display: block;
+}
+
+.semantic-test-summary span {
+    color: var(--gray-500);
+    font-size: 10px;
+}
+
+.semantic-test-summary strong {
+    margin-top: 4px;
+    color: var(--green-900);
+    font-size: 22px;
+}
+
+.semantic-test-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.semantic-test-item {
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr) 56px;
+    gap: 10px;
+    align-items: center;
+    padding: 11px 12px;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    background: var(--white);
+}
+
+.semantic-test-item > span {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    font-weight: 800;
+}
+
+.semantic-test-ok > span {
+    background: var(--green-100);
+    color: var(--green-700);
+}
+
+.semantic-test-fail > span {
+    background: var(--danger-soft);
+    color: var(--danger);
+}
+
+.semantic-test-item strong,
+.semantic-test-item small {
+    display: block;
+}
+
+.semantic-test-item strong {
+    color: var(--gray-900);
+    font-size: 12px;
+}
+
+.semantic-test-item small {
+    margin-top: 2px;
+    color: var(--gray-500);
+    font-size: 10px;
+    line-height: 1.45;
+}
+
+.semantic-test-item b {
+    justify-self: end;
+    font-size: 10px;
+    color: var(--green-700);
+}
+
+.semantic-test-fail b {
+    color: var(--danger);
+}
+
+.semantic-tests-evidence {
+    margin-top: 14px;
+    padding: 13px;
+    border: 1px solid var(--green-200);
+    border-radius: var(--radius-sm);
+    background: var(--green-50);
+}
+
+.semantic-tests-evidence strong,
+.semantic-tests-evidence span {
+    display: block;
+}
+
+.semantic-tests-evidence strong {
+    color: var(--green-900);
+    font-size: 12px;
+}
+
+.semantic-tests-evidence span {
+    margin: 3px 0 10px;
+    color: var(--gray-500);
+    font-size: 10px;
+}
+
+.semantic-tests-evidence a {
+    text-decoration: none;
+}
+
+.semantic-raw-details {
+    margin-top: 16px;
+    border-top: 1px solid var(--gray-200);
+    padding-top: 12px;
+}
+
+.semantic-raw-details summary {
+    cursor: pointer;
+    color: var(--gray-600);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+@media (max-width: 900px) {
+    .semantic-demo-guide {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .semantic-evidence-banner {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 600px) {
+    .semantic-demo-guide,
+    .semantic-test-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .semantic-test-item {
+        grid-template-columns: 30px minmax(0, 1fr);
+    }
+
+    .semantic-test-item b {
+        grid-column: 2;
+        justify-self: start;
+    }
+}

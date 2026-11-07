@@ -1,0 +1,18 @@
+SEMANA 14 - PRUEBAS UNITARIAS
+Fecha: 2026-11-06T22:40:43-05:00
+Correctas: 8/8
+Fallidas: 0
+
+test_ciclo_no_bloquea (__main__.RedSemanticaTest.test_ciclo_no_bloquea) ... ok
+test_herencia_propiedad (__main__.RedSemanticaTest.test_herencia_propiedad) ... ok
+test_interpretar_oracion (__main__.RedSemanticaTest.test_interpretar_oracion) ... ok
+test_normalizacion (__main__.RedSemanticaTest.test_normalizacion) ... ok
+test_oracion_invalida (__main__.RedSemanticaTest.test_oracion_invalida) ... ok
+test_relacion_explicita (__main__.RedSemanticaTest.test_relacion_explicita) ... ok
+test_sin_evidencia_suficiente (__main__.RedSemanticaTest.test_sin_evidencia_suficiente) ... ok
+test_transitividad (__main__.RedSemanticaTest.test_transitividad) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.001s
+
+OK

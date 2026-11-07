@@ -1,0 +1,57 @@
+{
+  "fecha": "2026-11-06T22:40:43-05:00",
+  "success": true,
+  "total": 8,
+  "correctas": 8,
+  "fallidas": 0,
+  "pruebas": [
+    {
+      "nombre": "test_ciclo_no_bloquea",
+      "estado": "ok",
+      "correcta": true,
+      "descripcion": "Comprueba que visitados evite ciclos infinitos en la jerarquía."
+    },
+    {
+      "nombre": "test_herencia_propiedad",
+      "estado": "ok",
+      "correcta": true,
+      "descripcion": "Comprueba que una propiedad necesita se herede desde una categoría superior."
+    },
+    {
+      "nombre": "test_interpretar_oracion",
+      "estado": "ok",
+      "correcta": true,
+      "descripcion": "Comprueba la conversión de una oración admitida a un triple semántico."
+    },
+    {
+      "nombre": "test_normalizacion",
+      "estado": "ok",
+      "correcta": true,
+      "descripcion": "Comprueba minúsculas, espacios y eliminación de tildes."
+    },
+    {
+      "nombre": "test_oracion_invalida",
+      "estado": "ok",
+      "correcta": true,
+      "descripcion": "Comprueba el rechazo controlado de oraciones fuera de los patrones permitidos."
+    },
+    {
+      "nombre": "test_relacion_explicita",
+      "estado": "ok",
+      "correcta": true,
+      "descripcion": "Comprueba una relación es_un almacenada directamente."
+    },
+    {
+      "nombre": "test_sin_evidencia_suficiente",
+      "estado": "ok",
+      "correcta": true,
+      "descripcion": "Comprueba que el sistema no invente una relación sin evidencia en la red."
+    },
+    {
+      "nombre": "test_transitividad",
+      "estado": "ok",
+      "correcta": true,
+      "descripcion": "Comprueba una inferencia jerárquica a través de varios niveles es_un."
+    }
+  ]
+}
